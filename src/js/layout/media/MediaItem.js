@@ -7,6 +7,7 @@ import Card, { CardActions, CardHeader, CardMedia } from 'material-ui/Card';
 import red from 'material-ui/colors/red';
 
 import url from 'url';
+import MediaDialog from './MediaDialog';
 
 const styles = {
     card: {
@@ -43,6 +44,10 @@ const styles = {
 };
 
 class MediaItem extends Component {
+    state = {
+        open: false
+    }
+
     render() {
         const { _source } = this.props.item;
         const icon = _source.favorite
@@ -74,9 +79,10 @@ class MediaItem extends Component {
                         overlay={_source.file.name}
                     />
                     <CardActions>
-                        <Button size="small">Learn More</Button>
+                        <Button size="small" onClick={() => this.setState({ open: true })}>Learn More</Button>
                     </CardActions>
                 </Card>
+                <MediaDialog item={this.props.item} open={this.state.open} onClose={() => this.setState({ open: false })} />
             </div>
         );
     }

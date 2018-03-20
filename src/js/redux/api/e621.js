@@ -1,8 +1,5 @@
 import { handleError } from './index'
 import axios from 'axios'
-import { resolve } from 'path';
-
-axios.defaults.headers['User-Agent'] = 'Googlebot/2.1 (+http://www.google.com/bot.html)'
 
 const findPost = (md5) => 
     new Promise((resolve, reject) => {
