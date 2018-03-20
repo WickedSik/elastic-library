@@ -9,7 +9,7 @@ function* search(actionObject) {
    try {
       const results = yield call(searchApi.search, actionObject.payload);
 
-      console.info('-- search result', results);
+      console.info('-- search:result', results);
 
       yield put(action(ActionTypes.SEARCH_SUCCESS, results.hits.hits));
    } catch (e) {

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import { Button, Icon, IconButton } from 'material-ui';
-import Card, { CardActions, CardHeader, CardMedia, CardTitle } from 'material-ui/Card';
+import Card, { CardActions, CardHeader, CardMedia } from 'material-ui/Card';
 import red from 'material-ui/colors/red';
 
 import url from 'url';
@@ -52,7 +52,7 @@ class MediaItem extends Component {
 
         return (
             <div className={classes.root}>
-                <Card raised>
+                <Card>
                     <CardHeader
                         classes={{
                             content: classes.header,
