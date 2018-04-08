@@ -33,7 +33,7 @@ class CardList extends React.Component {
                 <Grid container spacing={24}>
                     {results && results.map(result => (
                         <Grid key={result.id} item xs={4} md={3} lg={2}>
-                            <MediaItem item={result} />
+                            <MediaItem item={result} onDelete={this.props.onDelete} />
                         </Grid>
                     ))}
                     <Grid item xs={4} md={3} lg={2}>

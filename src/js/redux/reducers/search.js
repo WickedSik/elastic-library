@@ -68,6 +68,22 @@ const search = (state, action) => {
                 document: action.payload
             }
 
+        case ActionTypes.DELETE_DOCUMENT_REQUEST:
+            return {
+                ...state
+            }
+
+        case ActionTypes.DELETE_DOCUMENT_FAILED:
+            return {
+                ...state
+            }
+
+        case ActionTypes.DELETE_DOCUMENT_SUCCESS:
+            return {
+                ...state,
+                results: state.results ? state.results.filter(doc => doc.id !== action.payload) : []
+            }
+
         default:
             return {
                 ...state

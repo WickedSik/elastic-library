@@ -81,7 +81,7 @@ class MediaItem extends Component {
                             content: classes.header,
                             title: classes.headerTitle
                         }} 
-                        title={doc.attributes.file.name}
+                        title={doc.title}
                         action={<IconButton onClick={event => {
                             event.stopPropagation()
                             event.preventDefault()
@@ -91,8 +91,8 @@ class MediaItem extends Component {
                     <CardMedia 
                         className={classes.media}
                         image={doc.url}
-                        title={doc.attributes.file.name}
-                        overlay={doc.attributes.file.name}
+                        title={doc.title}
+                        overlay={doc.title}
                         onClick={() => this.setState({ overlayOpen: true })}
                     />
                     <CardActions>
@@ -104,6 +104,7 @@ class MediaItem extends Component {
                     open={this.state.open}
                     onOverlay={() => this.setState({ overlayOpen: true })}
                     onClose={() => this.setState({ open: false })} 
+                    onDelete={this.props.onDelete}
                 />
                 <MediaOverlay
                     item={this.props.item} 

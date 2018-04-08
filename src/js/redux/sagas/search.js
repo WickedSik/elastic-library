@@ -52,8 +52,19 @@ function* fetch(actionObject) {
     }
 }
 
+function* deleteDocument(actionObject) {
+    try {
+        yield call(searchApi.deleteDocument, actionObject.payload)
+
+        yield put(action(ActionTypes.DELETE_DOCUMENT_SUCCESS, actionObject.payload.id))
+    } catch(e) {
+        yield put(action(ActionTypes.DELETE_DOCUMENT_FAILED, e.message))
+    }
+}
+
 export default [
     takeLatest(ActionTypes.SEARCH_REQUEST, search),
     takeLatest(ActionTypes.SUBJECT_LIST_REQUEST, subjectList),
     takeEvery(ActionTypes.FETCH_DOCUMENT_REQUEST, fetch),
+    takeEvery(ActionTypes.DELETE_DOCUMENT_REQUEST, deleteDocument),
 ];

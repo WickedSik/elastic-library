@@ -87,7 +87,7 @@ export default class Document {
     get url() {
         const imageUrl = window.require
             ? url.format({
-                    pathname: this.attributes.file.path,
+                    pathname: encodeURI(this.attributes.file.path),
                     protocol: 'image:',
                     slashes: true,
                     query: {
@@ -95,12 +95,16 @@ export default class Document {
                     }
                 })
             : url.format({
-                    pathname: this.attributes.file.path,
+                    pathname: encodeURI(this.attributes.file.path),
                     protocol: 'file:',
                     slashes: true
                 })
         
         return imageUrl
+    }
+
+    get title() {
+        return this.attributes.title || this.attributes.file.name
     }
 
     /* Update Handlers */

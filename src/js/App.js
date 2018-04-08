@@ -76,7 +76,7 @@ class App extends Component {
                 <MuiThemeProvider theme={palette}>
                     <div>
                         <Header onSearch={search} term={this.state.searchterm} />
-                        <CardList results={results} onRequestMore={requestMore} />
+                        <CardList results={results} onRequestMore={requestMore} onDelete={this.props.delete} />
                     </div>
                 </MuiThemeProvider>
             </div>
@@ -116,6 +116,9 @@ App = connect(
             },
             subjectList() {
                 dispatch(actions.subjectList())
+            },
+            delete(id) {
+                dispatch(actions.deleteDocument(id))
             }
         }
     }

@@ -31,7 +31,7 @@ class MediaOverlay extends Component {
         const doc = this.props.item;
         const { classes } = this.props;
         const imageStyle = {
-            backgroundImage: `url(${doc.url})`
+            backgroundImage: `url("${doc.url}")`
         }
 
         return (

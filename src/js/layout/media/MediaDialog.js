@@ -10,6 +10,8 @@ import { FormControl, Input, InputAdornment, InputLabel, IconButton } from 'mate
 import Slide from 'material-ui/transitions/Slide'
 import Add from 'material-ui-icons/Add'
 
+import InlineEdit from '../partials/InlineEdit'
+
 import e621 from '../../redux/api/e621'
 import Config from '../../../config'
 
@@ -96,31 +98,45 @@ class MediaDialog extends React.Component {
     }
 
     handleDeleteKeyword(keyword) {
-        console.info('-- keyword:delete', keyword)
+        let keywords = this.state.keywords.filter(k => k !== keyword)
+
+        this.props.item.attributes.keywords = keywords
+        this.props.item.update()
+
+        this.setState({
+            keywords,
+            newKeyword: ''
+        })
+    }
+
+    handleUpdateTitle(value) {
+        this.props.item.attributes.title = value
+        this.props.item.update()
     }
     
     render() {
-        const { classes, onClose, selectedValue, onOverlay, ...other } = this.props
+        const { classes, onClose, onOverlay, open } = this.props
         const doc = this.props.item
 
         return (
             <div>
-                <Dialog onClose={onClose} transition={Transition} PaperProps={{className:classes.dialog}} {...other}>
-                    <DialogTitle>{doc.attributes.file.name}</DialogTitle>
+                <Dialog onClose={onClose} transition={Transition} PaperProps={{className:classes.dialog}} open={open}>
+                    <DialogTitle>{doc.title}</DialogTitle>
                     <DialogContent className={classes.dialogContent}>
                         <Grid container>
                             <Grid item xs={3}>
                                 <img 
                                     className={classes.img}
-                                    alt={doc.attributes.file.path}
+                                    alt={doc.title}
                                     src={doc.url}
                                     onClick={onOverlay} />
                             </Grid>
                             <Grid item xs={9}>
                                 <table className={classes.table}>
                                     <tbody>
-                                        <tr><th className={classes.th}>Name</th><td>{doc.attributes.file.name}</td></tr>
-                                        <tr><th className={classes.th}>Type</th><td>{doc.attributes.file.extension}</td></tr>
+                                        <tr><th className={classes.th}>Title</th><td><InlineEdit value={doc.title} onUpdate={this.handleUpdateTitle.bind(this)} /></td></tr>
+                                        <tr><th className={classes.th}>Filename</th><td>{doc.attributes.file.name}</td></tr>
+                                        <tr><th className={classes.th}>Extension</th><td>{doc.attributes.file.extension}</td></tr>
                                         <tr><th className={classes.th}>Size</th><td>{numeral(doc.attributes.file.size).format('0.00b')}</td></tr>
                                         <tr><th className={classes.th}>Created</th><td>{moment(doc.attributes.file.created_at).format('D MMMM YYYY')}</td></tr>
                                         <tr><th className={classes.th}>Updated</th><td>{moment(doc.attributes.file.updated_at).format('D MMMM YYYY')}</td></tr>
@@ -165,7 +181,7 @@ class MediaDialog extends React.Component {
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={this.searchOnE621.bind(this, doc.attributes.checksum)} color="primary">Check on E621</Button>
-                        <Button color="secondary">Delete</Button>
+                        <Button onClick={this.props.onDelete.bind(this, doc.id)} color="secondary">Delete</Button>
                     </DialogActions>
                 </Dialog>
             </div>
@@ -175,6 +191,6 @@ class MediaDialog extends React.Component {
 
 MediaDialog.propTypes = {
     classes: PropTypes.object.isRequired
-};
+}
 
 export default withStyles(styles)(MediaDialog)

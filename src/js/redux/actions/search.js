@@ -39,3 +39,12 @@ export const fetch = (id) => ({
         id
     }
 })
+
+export const deleteDocument = (id) => ({
+    type: ActionTypes.DELETE_DOCUMENT_REQUEST,
+    payload: {
+        index: Config.search.index,
+        type: Config.search.type,
+        id
+    }
+})
