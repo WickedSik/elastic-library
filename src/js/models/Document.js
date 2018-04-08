@@ -79,8 +79,6 @@ export default class Document {
             this.dirty = {}
 
             this.version = results._version
-
-            console.info('-- update:result', { org: this.original, d: this.dirty, v: this.version })
         })
     }
 
