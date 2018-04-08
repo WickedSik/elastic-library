@@ -31,7 +31,8 @@ class ButtonAppBar extends React.Component {
     }
 
     render() {
-        const { classes, term } = this.props;
+        const { classes, term } = this.props
+
         return (
             <div className={classes.root}>
                 <AppBar position="fixed">

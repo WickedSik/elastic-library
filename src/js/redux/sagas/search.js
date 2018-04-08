@@ -18,11 +18,7 @@ function* search(actionObject) {
             query.body.from = actionObject.payload.position
         }
 
-        console.info('-- search:request', query)
-
         const results = yield call(searchApi.search, query)
-
-        console.info('-- search:result', results, actionObject)
 
         if(actionObject.payload.add) {
             yield put(action(ActionTypes.SEARCH_SUCCESS_ADD, results.hits.hits.map(hit => new Document(hit))))

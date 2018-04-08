@@ -56,8 +56,6 @@ class App extends Component {
     handleToggle = () => this.setState({open: !this.state.open});
 
     handleSearch(term) {
-        console.info('-- search:handle', term)
-
         this.setState({
             searchterm: term
         })

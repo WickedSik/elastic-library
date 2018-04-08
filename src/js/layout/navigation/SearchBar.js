@@ -47,6 +47,12 @@ class SearchBar extends React.Component {
         }
     }
 
+    componentWillReceiveProps(props) {
+        this.setState({
+            value: this.state.value || props.term
+        })
+    }
+
     render() {
         const { classes, handleSearch } = this.props
 

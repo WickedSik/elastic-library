@@ -1,6 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
+import numeral from 'numeraljs'
+import moment from 'moment'
+
 import { withStyles, Chip } from 'material-ui'
 import { Dialog, DialogTitle, DialogContent, DialogActions, Grid, Button } from 'material-ui'
 import { FormControl, Input, InputAdornment, InputLabel, IconButton } from 'material-ui'
@@ -8,6 +11,7 @@ import Slide from 'material-ui/transitions/Slide'
 import Add from 'material-ui-icons/Add'
 
 import e621 from '../../redux/api/e621'
+import Config from '../../../config'
 
 const styles = (theme) => ({
     appBar: {
@@ -19,12 +23,24 @@ const styles = (theme) => ({
     dialogContent: {
         marginTop: theme.spacing.unit * 2
     },
+    dialog: {
+        minWidth: '50%',
+        '&:focus': {
+            outline: 'none'
+        }
+    },
     tags: {},
     chip: {
         margin: theme.spacing.unit / 2,
     },
     img: {
         maxWidth: '100%'
+    },
+    table: {
+        width: '100%'
+    },
+    th: {
+        textAlign: 'left'
     }
 })
 
@@ -33,9 +49,22 @@ function Transition(props) {
 }
 
 class MediaDialog extends React.Component {
-    state = {
-        newKeyword: '',
-        keywords: []
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            newKeyword: '',
+            keywords: []
+        }
+    
+        if(this.item && this.item.addNotifier) {
+            this.item.addNotifier({
+                fire:() => {
+                    // changing state actually rerenders the component!
+                    this.componentDidMount()
+                }
+            })
+        }
     }
 
     componentDidMount() {
@@ -45,7 +74,9 @@ class MediaDialog extends React.Component {
     }
 
     searchOnE621(md5) {
-        e621.findPost(md5).then(result => {
+        // e621.login(Config.e621.username, Config.e621.password)
+
+        e621.findPost(md5, Config.e621.username, Config.e621.password).then(result => {
             console.info('-- e621', result)
 
         }).catch(e => console.error('-- e621', e))
@@ -54,6 +85,9 @@ class MediaDialog extends React.Component {
     addNewKeyword() {
         let keywords = this.state.keywords
         keywords.push(this.state.newKeyword)
+
+        this.props.item.attributes.keywords = keywords
+        this.props.item.update()
 
         this.setState({
             keywords,
@@ -71,7 +105,7 @@ class MediaDialog extends React.Component {
 
         return (
             <div>
-                <Dialog onClose={onClose} transition={Transition} {...other}>
+                <Dialog onClose={onClose} transition={Transition} PaperProps={{className:classes.dialog}} {...other}>
                     <DialogTitle>{doc.attributes.file.name}</DialogTitle>
                     <DialogContent className={classes.dialogContent}>
                         <Grid container>
@@ -82,7 +116,16 @@ class MediaDialog extends React.Component {
                                     src={doc.url}
                                     onClick={onOverlay} />
                             </Grid>
-                            <Grid item>
+                            <Grid item xs={9}>
+                                <table className={classes.table}>
+                                    <tbody>
+                                        <tr><th className={classes.th}>Name</th><td>{doc.attributes.file.name}</td></tr>
+                                        <tr><th className={classes.th}>Type</th><td>{doc.attributes.file.extension}</td></tr>
+                                        <tr><th className={classes.th}>Size</th><td>{numeral(doc.attributes.file.size).format('0.00b')}</td></tr>
+                                        <tr><th className={classes.th}>Created</th><td>{moment(doc.attributes.file.created_at).format('D MMMM YYYY')}</td></tr>
+                                        <tr><th className={classes.th}>Updated</th><td>{moment(doc.attributes.file.updated_at).format('D MMMM YYYY')}</td></tr>
+                                    </tbody>
+                                </table>
                                 <p><strong>Tags</strong></p>
                                 <div className={classes.tags}>
                                     {this.state.keywords.map(keyword => {
