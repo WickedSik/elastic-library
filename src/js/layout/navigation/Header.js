@@ -1,21 +1,22 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
-import { AppBar, Toolbar, Typography, IconButton } from 'material-ui';
-import MenuIcon from 'material-ui-icons/Menu';
-import SideNav from './SideNav';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { withStyles } from 'material-ui/styles'
+import { AppBar, Toolbar, Typography, IconButton } from 'material-ui'
+import MenuIcon from 'material-ui-icons/Menu'
+import SideNav from './SideNav'
+import SearchBar from './SearchBar'
 
 const styles = {
-  root: {
-    flexGrow: 1,
-  },
-  flex: {
-    flex: 1,
-  },
-  menuButton: {
-    marginLeft: -12,
-    marginRight: 20,
-  },
+    root: {
+        flexGrow: 1,
+    },
+    flex: {
+        flex: 1,
+    },
+    menuButton: {
+        marginLeft: -12,
+        marginRight: 20,
+    },
 };
 
 class ButtonAppBar extends React.Component {
@@ -30,7 +31,7 @@ class ButtonAppBar extends React.Component {
     }
 
     render() {
-        const { classes } = this.props;
+        const { classes, term } = this.props;
         return (
             <div className={classes.root}>
                 <AppBar position="fixed">
@@ -41,7 +42,10 @@ class ButtonAppBar extends React.Component {
                         <Typography variant="title" color="inherit" className={classes.flex}>
                             Media Library
                         </Typography>
-                        {/* search bar */}
+                        <SearchBar term={term} handleSearch={x => {
+                            this.setState({ open: false })
+                            this.props.onSearch(x)
+                        }} />
                     </Toolbar>
                 </AppBar>
                 <SideNav open={this.state.open} 
@@ -49,8 +53,8 @@ class ButtonAppBar extends React.Component {
                             this.setState({ open: false }) 
                         }}
                         onSearch={x => { 
-                            this.setState({ open: false }); 
-                            this.props.onSearch(x); 
+                            this.setState({ open: false })
+                            this.props.onSearch(x)
                         }} />
             </div>
         );
@@ -59,7 +63,8 @@ class ButtonAppBar extends React.Component {
 
 ButtonAppBar.propTypes = {
   classes: PropTypes.object.isRequired,
-  onSearch: PropTypes.func.isRequired
-};
+  onSearch: PropTypes.func.isRequired,
+  term: PropTypes.string.isRequired
+}
 
-export default withStyles(styles)(ButtonAppBar);
+export default withStyles(styles)(ButtonAppBar)

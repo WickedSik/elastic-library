@@ -7,16 +7,36 @@ const client = new elasticsearch.Client({
 
 const search = (query) => 
     new Promise((resolve, reject) => {
-        client.search(query).then(response => {
+        client.search({
+            ...query
+        }).then(response => {
             resolve(response)
         }).catch(error => {
             reject(handleError(error))
         })
     })
 
-const update = (id, data) =>
+const update = (params) =>
     new Promise((resolve, reject) => {
-        client.update(id, data).then(response => {
+        client.update(params).then(response => {
+            resolve(response)
+        }).catch(error => {
+            reject(handleError(error))
+        })
+    })
+
+const fetch = (id) =>
+    new Promise((resolve, reject) => {
+        client.get(id).then(response => {
+            resolve(response)
+        }).catch(error => {
+            reject(handleError(error))
+        })
+    })
+
+const deleteDocument = (id) =>
+    new Promise((resolve, reject) => {
+        client.delete(id).then(response => {
             resolve(response)
         }).catch(error => {
             reject(handleError(error))
@@ -25,5 +45,7 @@ const update = (id, data) =>
 
 export default {
     search,
-    update
+    update,
+    fetch,
+    deleteDocument
 }

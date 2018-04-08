@@ -1,20 +1,37 @@
-import { call, put, takeLatest } from 'redux-saga/effects'
+import { call, put, takeLatest, takeEvery } from 'redux-saga/effects'
 import searchApi from '../api/search'
 
 import * as ActionTypes from '../ActionTypes'
 import { action } from './index'
 
-// worker Saga: will be fired on USER_FETCH_REQUESTED actions
+import { Document } from '../../models'
+
 function* search(actionObject) {
-   try {
-      const results = yield call(searchApi.search, actionObject.payload);
+    try {
+        const query = actionObject.payload.query
 
-      console.info('-- search:result', results);
+        if(actionObject.payload.size) {
+            query.body.size = actionObject.payload.size
+        }
 
-      yield put(action(ActionTypes.SEARCH_SUCCESS, results.hits.hits));
-   } catch (e) {
-      yield put(action(ActionTypes.SEARCH_FAILED, e.message));
-   }
+        if(actionObject.payload.position) {
+            query.body.from = actionObject.payload.position
+        }
+
+        console.info('-- search:request', query)
+
+        const results = yield call(searchApi.search, query)
+
+        console.info('-- search:result', results, actionObject)
+
+        if(actionObject.payload.add) {
+            yield put(action(ActionTypes.SEARCH_SUCCESS_ADD, results.hits.hits.map(hit => new Document(hit))))
+        } else {
+            yield put(action(ActionTypes.SEARCH_SUCCESS, results.hits.hits.map(hit => new Document(hit))))
+        }
+    } catch (e) {
+        yield put(action(ActionTypes.SEARCH_FAILED, e.message))
+    }
 }
 
 function* subjectList(actionObject) {
@@ -29,7 +46,18 @@ function* subjectList(actionObject) {
     }
 }
 
+function* fetch(actionObject) {
+    try {
+        const document = yield call(searchApi.fetch, actionObject.payload)
+
+        yield put(action(ActionTypes.FETCH_DOCUMENT_SUCCESS, new Document(document)))
+    } catch(e) {
+        yield put(action(ActionTypes.FETCH_DOCUMENT_FAILED, e.message))
+    }
+}
+
 export default [
     takeLatest(ActionTypes.SEARCH_REQUEST, search),
-    takeLatest(ActionTypes.SUBJECT_LIST_REQUEST, subjectList)
+    takeLatest(ActionTypes.SUBJECT_LIST_REQUEST, subjectList),
+    takeEvery(ActionTypes.FETCH_DOCUMENT_REQUEST, fetch),
 ];

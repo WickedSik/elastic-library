@@ -1,8 +1,9 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
-import { connect } from 'react-redux';
-import { Grid } from 'material-ui';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { withStyles } from 'material-ui/styles'
+import { connect } from 'react-redux'
+import { Grid, Button } from 'material-ui'
+import Cached from 'material-ui-icons/Cached'
 
 import MediaItem from './MediaItem'
 
@@ -17,6 +18,10 @@ const styles = theme => ({
         textAlign: 'center',
         color: theme.palette.text.secondary,
     },
+    nextButton: {
+        height: '100%',
+        width: '100%'
+    }
 });
 
 class CardList extends React.Component {
@@ -27,10 +32,15 @@ class CardList extends React.Component {
             <div className={classes.root}>
                 <Grid container spacing={24}>
                     {results && results.map(result => (
-                        <Grid key={result._id} item xs={3}>
+                        <Grid key={result.id} item xs={4} md={3} lg={2}>
                             <MediaItem item={result} />
                         </Grid>
                     ))}
+                    <Grid item xs={4} md={3} lg={2}>
+                        <Button className={classes.nextButton} onClick={this.props.onRequestMore} variant="raised">
+                            <Cached />
+                        </Button>
+                    </Grid>
                 </Grid>
             </div>
         );
@@ -40,7 +50,6 @@ class CardList extends React.Component {
 CardList = connect(
     (state, props) => {
         return {
-            results: state.search ? state.search.results : []
         }
     }
 )(CardList)

@@ -17,7 +17,7 @@ import actions from './redux/actions'
 import Header from './layout/navigation/Header'
 import CardList from './layout/media/CardList'
 
-// import CardList from './cards/CardList'
+import Config from '../config'
 
 const palette = createMuiTheme({}, {
     userAgent: false
@@ -43,26 +43,42 @@ class App extends Component {
         super(props)
 
         this.state = {
-            open: false
+            open: false,
+            searchterm: ''
         }
     }
 
     componentWillMount() {
         this.props.subjectList()
-        this.props.search('favorite:true')
+        this.handleSearch('favorite:true')
     }
 
     handleToggle = () => this.setState({open: !this.state.open});
 
+    handleSearch(term) {
+        console.info('-- search:handle', term)
+
+        this.setState({
+            searchterm: term
+        })
+        this.props.search(term)
+    }
+
+    handleRequestMore() {
+        this.props.search(this.state.searchterm, this.props.results.length, true)
+    }
+
     render() {
-        const search = _.debounce(this.props.search, 250, { trailing: true });
+        const { results } = this.props
+        const search = _.debounce(this.handleSearch.bind(this), 250, { trailing: true })
+        const requestMore = _.debounce(this.handleRequestMore.bind(this), 250, { trailing: true })
 
         return (
             <div className="App">
                 <MuiThemeProvider theme={palette}>
                     <div>
-                        <Header onSearch={(x) => { search(x) }} />
-                        <CardList />
+                        <Header onSearch={search} term={this.state.searchterm} />
+                        <CardList results={results} onRequestMore={requestMore} />
                     </div>
                 </MuiThemeProvider>
             </div>
@@ -78,10 +94,10 @@ App = connect(
     },
     dispatch => {
         return {
-            search(terms) {
+            search(terms, position, more) {
                 const query = {
-                    index: 'media',
-                    type: 'media',
+                    index: Config.search.index,
+                    type: Config.search.type,
                     body: {
                         query: {
                             bool: {
@@ -94,12 +110,11 @@ App = connect(
                         },
                         sort: [
                             { 'file.updated_at': 'desc' }
-                        ],
-                        size: 50
+                        ]
                     }
                 }
 
-                dispatch(actions.search(query))
+                dispatch(actions.search(query, Config.search.size, position || 0, more))
             },
             subjectList() {
                 dispatch(actions.subjectList())

@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
-import { Button, Icon, IconButton } from 'material-ui';
-import Card, { CardActions, CardHeader, CardMedia } from 'material-ui/Card';
-import red from 'material-ui/colors/red';
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
+import { withStyles } from 'material-ui/styles'
+import { Button, Icon, IconButton } from 'material-ui'
+import Card, { CardActions, CardHeader, CardMedia } from 'material-ui/Card'
+import red from 'material-ui/colors/red'
 
-import url from 'url';
-import MediaDialog from './MediaDialog';
+import MediaDialog from './MediaDialog'
+import MediaOverlay from './MediaOverlay'
 
 const styles = {
     card: {
@@ -39,18 +39,36 @@ const styles = {
         backgroundColor: red[500],
     },
     media: {
-        height: 200
+        height: 200,
+        cursor: 'pointer'
     }
 };
 
 class MediaItem extends Component {
-    state = {
-        open: false
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            open: false,
+            overlayOpen: false,
+            forceUpdate: false
+        }
+    
+        if(this.item && this.item.addNotifier) {
+            this.item.addNotifier({
+                fire:() => {
+                    // changing state actually rerenders the component!
+                    this.setState({
+                        forceUpdate: true
+                    })
+                }
+            })
+        }
     }
 
     render() {
-        const { _source } = this.props.item;
-        const icon = _source.favorite
+        const doc = this.props.item;
+        const icon = doc.attributes.favorite
                         ? <Icon color="action">favorite</Icon>
                         : <Icon color="action">favorite_border</Icon>
         const { classes } = this.props;
@@ -63,28 +81,46 @@ class MediaItem extends Component {
                             content: classes.header,
                             title: classes.headerTitle
                         }} 
-                        title={_source.file.name}
-                        action={<IconButton>{icon}</IconButton>} />
+                        title={doc.attributes.file.name}
+                        action={<IconButton onClick={event => {
+                            event.stopPropagation()
+                            event.preventDefault()
+
+                            this.setFavorite()
+                        }}>{icon}</IconButton>} />
                     <CardMedia 
                         className={classes.media}
-                        image={url.format({
-                            pathname: _source.file.path,
-                            protocol: 'image:',
-                            slashes: true,
-                            query: {
-                                w: 500
-                            }
-                        })}
-                        title={_source.file.name}
-                        overlay={_source.file.name}
+                        image={doc.url}
+                        title={doc.attributes.file.name}
+                        overlay={doc.attributes.file.name}
+                        onClick={() => this.setState({ overlayOpen: true })}
                     />
                     <CardActions>
-                        <Button size="small" onClick={() => this.setState({ open: true })}>Learn More</Button>
+                        <Button size="small" onClick={() => this.setState({ open: true })}>Details</Button>
                     </CardActions>
                 </Card>
-                <MediaDialog item={this.props.item} open={this.state.open} onClose={() => this.setState({ open: false })} />
+                <MediaDialog 
+                    item={this.props.item} 
+                    open={this.state.open}
+                    onOverlay={() => this.setState({ overlayOpen: true })}
+                    onClose={() => this.setState({ open: false })} 
+                />
+                <MediaOverlay
+                    item={this.props.item} 
+                    open={this.state.overlayOpen} 
+                    onClose={() => this.setState({ overlayOpen: false })}
+                />
             </div>
         );
+    }
+
+    setFavorite() {
+        this.setState({
+            forceUpdate: false // reset state
+        })
+
+        this.props.item.attributes.favorite = !this.props.item.attributes.favorite
+        this.props.item.update()
     }
 }
 
