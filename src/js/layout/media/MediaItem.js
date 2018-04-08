@@ -90,7 +90,7 @@ class MediaItem extends Component {
                         }}>{icon}</IconButton>} />
                     <CardMedia 
                         className={classes.media}
-                        image={doc.url}
+                        image={doc.thumb}
                         title={doc.title}
                         overlay={doc.title}
                         onClick={() => this.setState({ overlayOpen: true })}

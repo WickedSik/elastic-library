@@ -48,9 +48,15 @@ class SearchBar extends React.Component {
     }
 
     componentWillReceiveProps(props) {
-        this.setState({
-            value: this.state.value || props.term
-        })
+        if(this.props.term === this.state.value) {
+            this.setState({
+                value: props.term
+            })
+        } else {
+            this.setState({
+                value: this.state.value || props.term
+            })
+        }
     }
 
     render() {
@@ -64,6 +70,11 @@ class SearchBar extends React.Component {
                         type="text"
                         value={this.state.value}
                         onChange={event => this.setState({ value: event.target.value })}
+                        onKeyPress={event => {
+                            if(event.key === 'Enter') {
+                                handleSearch(this.state.value)
+                            }
+                        }}
                         className={classes.inputField}
                         endAdornment={
                             <InputAdornment position="end" color="inherit">

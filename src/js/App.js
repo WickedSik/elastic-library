@@ -67,7 +67,7 @@ class App extends Component {
     }
 
     render() {
-        const { results } = this.props
+        const { results, total } = this.props
         const search = _.debounce(this.handleSearch.bind(this), 250, { trailing: true })
         const requestMore = _.debounce(this.handleRequestMore.bind(this), 250, { trailing: true })
 
@@ -76,7 +76,7 @@ class App extends Component {
                 <MuiThemeProvider theme={palette}>
                     <div>
                         <Header onSearch={search} term={this.state.searchterm} />
-                        <CardList results={results} onRequestMore={requestMore} onDelete={this.props.delete} />
+                        <CardList results={results} total={total} onRequestMore={requestMore} onDelete={this.props.delete} />
                     </div>
                 </MuiThemeProvider>
             </div>
@@ -87,6 +87,7 @@ class App extends Component {
 App = connect(
     (state, props) => {
         return {
+            total: state.search ? state.search.total : 0,
             results: state.search ? state.search.results : []
         }
     },

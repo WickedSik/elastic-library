@@ -20,10 +20,15 @@ function* search(actionObject) {
 
         const results = yield call(searchApi.search, query)
 
+        const data = {
+            total: results.hits.total,
+            rows: results.hits.hits.map(hit => new Document(hit))
+        }
+
         if(actionObject.payload.add) {
-            yield put(action(ActionTypes.SEARCH_SUCCESS_ADD, results.hits.hits.map(hit => new Document(hit))))
+            yield put(action(ActionTypes.SEARCH_SUCCESS_ADD, data))
         } else {
-            yield put(action(ActionTypes.SEARCH_SUCCESS, results.hits.hits.map(hit => new Document(hit))))
+            yield put(action(ActionTypes.SEARCH_SUCCESS, data))
         }
     } catch (e) {
         yield put(action(ActionTypes.SEARCH_FAILED, e.message))

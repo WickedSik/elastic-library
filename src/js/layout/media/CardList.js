@@ -26,7 +26,7 @@ const styles = theme => ({
 
 class CardList extends React.Component {
     render() {
-        const { classes, results } = this.props;
+        const { classes, results, total } = this.props;
 
         return (
             <div className={classes.root}>
@@ -36,11 +36,13 @@ class CardList extends React.Component {
                             <MediaItem item={result} onDelete={this.props.onDelete} />
                         </Grid>
                     ))}
-                    <Grid item xs={4} md={3} lg={2}>
-                        <Button className={classes.nextButton} onClick={this.props.onRequestMore} variant="raised">
-                            <Cached />
-                        </Button>
-                    </Grid>
+                    {results && total > results.length && (
+                        <Grid item xs={4} md={3} lg={2}>
+                            <Button className={classes.nextButton} onClick={this.props.onRequestMore} variant="raised">
+                                <Cached />
+                            </Button>
+                        </Grid>
+                    )}
                 </Grid>
             </div>
         );

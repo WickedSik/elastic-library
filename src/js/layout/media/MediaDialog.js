@@ -27,6 +27,7 @@ const styles = (theme) => ({
     },
     dialog: {
         minWidth: '50%',
+        maxWidth: '90%',
         '&:focus': {
             outline: 'none'
         }
@@ -86,7 +87,9 @@ class MediaDialog extends React.Component {
 
     addNewKeyword() {
         let keywords = this.state.keywords
-        keywords.push(this.state.newKeyword)
+        if(keywords.indexOf(this.state.keyword) === -1) {
+            keywords.push(this.state.newKeyword)
+        }
 
         this.props.item.attributes.keywords = keywords
         this.props.item.update()
@@ -163,6 +166,11 @@ class MediaDialog extends React.Component {
                                             type="text"
                                             value={this.state.newKeyword}
                                             onChange={(event) => this.setState({ newKeyword: event.target.value })}
+                                            onKeyPress={event => {
+                                                if(event.key === 'Enter') {
+                                                    this.addNewKeyword()
+                                                }
+                                            }}
                                             endAdornment={
                                                 <InputAdornment position="end">
                                                     <IconButton

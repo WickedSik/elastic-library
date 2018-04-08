@@ -87,6 +87,22 @@ export default class Document {
             ? url.format({
                     pathname: encodeURI(this.attributes.file.path),
                     protocol: 'image:',
+                    slashes: true
+                })
+            : url.format({
+                    pathname: encodeURI(this.attributes.file.path),
+                    protocol: 'file:',
+                    slashes: true
+                })
+        
+        return imageUrl
+    }
+
+    get thumb() {
+        const imageUrl = window.require
+            ? url.format({
+                    pathname: encodeURI(this.attributes.file.path),
+                    protocol: 'image:',
                     slashes: true,
                     query: {
                         w: 500

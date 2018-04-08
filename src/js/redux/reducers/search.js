@@ -21,13 +21,15 @@ const search = (state, action) => {
         case ActionTypes.SEARCH_SUCCESS:
             return {
                 ...state,
-                results: action.payload,
+                total: action.payload.total,
+                results: action.payload.rows,
             }
 
         case ActionTypes.SEARCH_SUCCESS_ADD:
             return {
                 ...state,
-                results: _.concat(state.results || [], action.payload),
+                total: action.payload.total,
+                results: _.concat(state.results || [], action.payload.rows),
             }
 
         case ActionTypes.SUBJECT_LIST_REQUEST:

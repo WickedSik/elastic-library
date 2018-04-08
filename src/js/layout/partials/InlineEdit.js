@@ -59,7 +59,16 @@ class InlineEdit extends React.Component {
                 {isEditing && (
                     <Grid container className={classes.container}>
                         <Grid item xs={10} className={classes.item}>
-                            <TextField className={classes.input} value={value} onChange={event => this.setState({ value: event.target.value })} />
+                            <TextField 
+                                className={classes.input} 
+                                value={value} 
+                                onChange={event => this.setState({ value: event.target.value })} 
+                                onKeyPress={event => {
+                                    if(event.key === 'Enter') {
+                                        this.handleChange(this.state.value)
+                                    }
+                                }}
+                            />
                         </Grid>
                         <Grid item xs={2} className={classes.item}>
                             <Button mini className={classes.button} onClick={this.handleChange.bind(this)}>
