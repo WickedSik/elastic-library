@@ -33,7 +33,7 @@ export default class InlineEdit extends React.Component {
                         <div className={'cell auto'}>
                             {value}
                         </div>
-                        <div className={'cell large-1'}>
+                        <div className={'cell small-1'}>
                             <button className={'button tiny'} onClick={() => { this.setState({ isEditing: true }) }}>
                                 <FontAwesomeIcon icon={['fas', 'edit']} />
                             </button>

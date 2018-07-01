@@ -75,8 +75,6 @@ export default class MediaItem extends React.Component {
     }
 
     _handleOpen = (eve) => {
-        console.info('-- media-item:open')
-
         eve.stopPropagation()
         eve.preventDefault()
 
@@ -86,8 +84,6 @@ export default class MediaItem extends React.Component {
     }
 
     _handleClose = (eve) => {
-        console.info('-- media-item:close')
-
         eve.stopPropagation()
         eve.preventDefault()
 

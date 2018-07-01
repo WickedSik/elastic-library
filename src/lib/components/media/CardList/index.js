@@ -1,7 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import MediaItem from './MediaItem'
+import MediaItem from '../MediaItem'
+
+import './style.scss'
 
 export default class CardList extends React.Component {
     static propTypes = {
@@ -23,9 +26,9 @@ export default class CardList extends React.Component {
                         </div>
                     ))}
                     {results && total > results.length && (
-                        <div className={'cell small-6 medium-4 large-3'}>
-                            <button onClick={this.props.onRequestMore}>
-                                <span />
+                        <div className={'cell small-12'}>
+                            <button className={'add-more button'} onClick={this.props.onRequestMore}>
+                                <FontAwesomeIcon icon={['fas', 'sync']} />
                             </button>
                         </div>
                     )}

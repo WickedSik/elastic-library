@@ -68,64 +68,52 @@ export default class MediaDialog extends React.Component {
                     <h1>{item.title}</h1>
                     <div className={'content'}>
                         <div className={'grid-x'}>
-                            <div className={'cell large-3'}>
+                            <div className={'cell small-3'}>
                                 <img
                                     className={'img'}
                                     alt={item.title}
                                     src={item.url} />
                             </div>
                             <div className={'cell auto'}>
-                                <table className={'table'}>
-                                    <tbody>
-                                        <tr><th className={''}>Title</th><td><InlineEdit value={item.title} onUpdate={this._handleUpdateTitle} /></td></tr>
-                                        <tr><th className={''}>Filename</th><td>{item.attributes.file.name}</td></tr>
-                                        <tr><th className={''}>Extension</th><td>{item.attributes.file.extension}</td></tr>
-                                        <tr><th className={''}>Size</th><td>{numeral(item.attributes.file.size).format('0.00b')}</td></tr>
-                                        <tr><th className={''}>Created</th><td>{moment(item.attributes.file.created_at).format('D MMMM YYYY')}</td></tr>
-                                        <tr><th className={''}>Updated</th><td>{moment(item.attributes.file.updated_at).format('D MMMM YYYY')}</td></tr>
-                                    </tbody>
-                                </table>
-                                {/* <p><strong>Tags</strong></p>
-                                <div className={''}>
-                                    {this.state.keywords.map(keyword => {
-                                        return (
-                                            <div
-                                                key={keyword}
-                                                label={keyword}
-                                                onDelete={() => {
-                                                    this._handleDeleteKeyword(keyword)
+                                <div className={'grid-x'}>
+                                    <div className={'cell small-12'}>
+                                        <table className={'table'}>
+                                            <tbody>
+                                                <tr><th className={''}>Title</th><td><InlineEdit value={item.title} onUpdate={this._handleUpdateTitle} /></td></tr>
+                                                <tr><th className={''}>Filename</th><td>{item.attributes.file.name}</td></tr>
+                                                <tr><th className={''}>Extension</th><td>{item.attributes.file.extension}</td></tr>
+                                                <tr><th className={''}>Size</th><td>{numeral(item.attributes.file.size).format('0.00b')}</td></tr>
+                                                <tr><th className={''}>Created</th><td>{moment(item.attributes.file.created_at).format('D MMMM YYYY')}</td></tr>
+                                                <tr><th className={''}>Updated</th><td>{moment(item.attributes.file.updated_at).format('D MMMM YYYY')}</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div className={'cell small-12'}>
+                                        <div className={'tags'}>
+                                            {this.state.keywords.map(keyword => {
+                                                return (
+                                                    <div className={'label'} key={keyword}>
+                                                        <FontAwesomeIcon icon={['fas', 'times']} onClick={() => {
+                                                            this._handleDeleteKeyword(keyword)
+                                                        }} />
+                                                        <span>{keyword}</span>
+                                                    </div>
+                                                )
+                                            })}
+                                            <input value={this.state.newKeyword}
+                                                placeholder={'Add (+ enter)'}
+                                                onChange={(event) => {
+                                                    this.setState({ newKeyword: event.target.value })
                                                 }}
-                                                className={''}
+                                                onKeyPress={event => {
+                                                    if (event.key === 'Enter') {
+                                                        this._addNewKeyword()
+                                                    }
+                                                }}
                                             />
-                                        )
-                                    })}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <form className={''}>
-                                        <label htmlFor='new-keyword'>New Keyword</label>
-                                        <input
-                                            id='new-keyword'
-                                            type='text'
-                                            value={this.state.newKeyword}
-                                            onChange={(event) => this.setState({ newKeyword: event.target.value })}
-                                            onKeyPress={event => {
-                                                if (event.key === 'Enter') {
-                                                    this.addNewKeyword()
-                                                }
-                                            }}
-                                            endAdornment={
-                                                <span position='end'>
-                                                    <button
-                                                        aria-label='Add'
-                                                        onClick={this._addNewKeyword}
-                                                    >
-                                                        <span className={'fa fa-add'} />
-                                                    </button>
-                                                </span>
-                                            }
-                                        />
-                                    </form>
-                                </div> */}
                             </div>
                         </div>
                     </div>
