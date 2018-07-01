@@ -1,41 +1,39 @@
 // ./main.js
-const electron = require('electron');
+const electron = require('electron')
 const ImageHandler = require('./lib/images')
 
-const {app, BrowserWindow} = electron;
+const {app, BrowserWindow} = electron
 
-let win = null;
+let win = null
 
-
-const images = new ImageHandler();
-images.config(electron.protocol);
+const images = new ImageHandler()
+images.config(electron.protocol)
 
 function createWindow() {
-    images.register(electron.protocol);
+    images.register(electron.protocol)
 
     // Initialize the window to our specified dimensions
     win = new BrowserWindow({
         width: 1000,
         height: 600
-    });
+    })
 
     // Specify entry point
-    win.loadURL('http://localhost:3000');
+    win.loadURL('http://localhost:3000')
 
     // Show dev tools
     // Remove this line before distributing
     win.webContents.openDevTools()
 
     // Remove window once app is closed
-    win.on('closed', function () {
-        win = null;
-    });
+    win.on('closed', function() {
+        win = null
+    })
 }
 
-
-app.on('ready', function () {
-    createWindow();
-});
+app.on('ready', function() {
+    createWindow()
+})
 
 app.on('activate', () => {
     if (win === null) {
@@ -43,8 +41,8 @@ app.on('activate', () => {
     }
 })
 
-app.on('window-all-closed', function () {
+app.on('window-all-closed', function() {
     if (process.platform != 'darwin') {
-        app.quit();
+        app.quit()
     }
-});
+})
