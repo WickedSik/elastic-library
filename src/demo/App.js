@@ -4,6 +4,12 @@ import { createStore, applyMiddleware } from 'redux'
 import createSagaMiddleware from 'redux-saga'
 import { Provider, connect } from 'react-redux'
 import _ from 'lodash'
+import $ from 'jquery'
+import 'foundation-sites'
+
+import fontawesome from '@fortawesome/fontawesome'
+import regular from '@fortawesome/fontawesome-free-regular'
+import solid from '@fortawesome/fontawesome-free-solid'
 
 import './app.scss'
 
@@ -11,10 +17,13 @@ import reducer from '../lib/redux/reducers'
 import mySaga from '../lib/redux/sagas'
 import actions from '../lib/redux/actions'
 
-import Header from '../lib/components/layout/navigation/Header'
-import CardList from '../lib/components/layout/media/CardList'
+import Header from '../lib/components/navigation/Header'
+import CardList from '../lib/components/media/CardList'
+import SideNav from '../lib/components/navigation/SideNav'
 
 import Config from '../config'
+
+fontawesome.library.add(regular, solid)
 
 // create the saga middleware
 const sagaMiddleware = createSagaMiddleware()
@@ -41,13 +50,16 @@ class App extends React.Component {
     }
 
     state = {
-        open: false,
         searchterm: ''
+    }
+
+    componentDidMount() {
+        $(document).foundation()
     }
 
     componentWillMount() {
         this.props.subjectList()
-        this._handleSearch('favorite:true')
+        this._handleSearch('keywords:Ninjakitty')
     }
 
     render() {
@@ -56,20 +68,23 @@ class App extends React.Component {
         const requestMore = _.debounce(this._handleRequestMore, 250, { trailing: true })
 
         return (
-            <div className='App'>
-                <div>
-                    <Header onSearch={search} term={this.state.searchterm} />
+            <div className='app-container'>
+                <div className={'off-canvas position-left'} id={'sidebarMenu'} data-off-canvas>
+                    <SideNav onSearch={search} />
+                </div>
+                <div className={'off-canvas-content'} data-off-canvas-content>
+                    <Header onSearch={search} term={this.state.searchterm} offCanvasId={'sidebarMenu'} />
                     <CardList results={results} total={total} onRequestMore={requestMore} onDelete={this.props.delete} />
                 </div>
             </div>
         )
     }
 
-    _handleToggle = () => {
-        this.setState({open: !this.state.open})
-    }
-
     _handleSearch = (term) => {
+        // a little bit creative... I am strongly considering throwing Foundation out again
+        // and doing it myself (once again ._. )
+        $(document).find('#sidebarMenu').length && $(document).find('#sidebarMenu').foundation('close')
+
         this.setState({
             searchterm: term
         })
@@ -83,7 +98,7 @@ class App extends React.Component {
 }
 
 App = connect(
-    (state, props) => {
+    (state) => {
         return {
             total: state.search ? state.search.total : 0,
             results: state.search ? state.search.results : []

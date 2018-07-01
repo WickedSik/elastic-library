@@ -15,16 +15,16 @@ export default class CardList extends React.Component {
         const { results, total } = this.props
 
         return (
-            <div className={''}>
-                <div container spacing={24}>
+            <div className={'card-list'}>
+                <div className={'grid-x'}>
                     {results && results.map(result => (
-                        <div key={result.id} item xs={4} md={3} lg={2}>
+                        <div key={result.id} className={'cell small-6 medium-4 large-3'}>
                             <MediaItem item={result} onDelete={this.props.onDelete} />
                         </div>
                     ))}
                     {results && total > results.length && (
-                        <div item xs={4} md={3} lg={2}>
-                            <button className={''} onClick={this.props.onRequestMore}>
+                        <div className={'cell small-6 medium-4 large-3'}>
+                            <button onClick={this.props.onRequestMore}>
                                 <span />
                             </button>
                         </div>

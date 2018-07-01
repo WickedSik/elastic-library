@@ -32,40 +32,26 @@ export default class SearchBar extends React.Component {
     }
 
     render() {
-        const { handleSearch } = this.props
-
         return (
-            <div>
-                <form className={''}>
+            <ul className={'menu'}>
+                <li>
                     <input
-                        id='search-field'
-                        type='text'
+                        type={'search'}
                         value={this.state.value}
                         onChange={event => this.setState({ value: event.target.value })}
                         onKeyPress={event => {
                             if (event.key === 'Enter') {
-                                handleSearch(this.state.value)
+                                this.props.handleSearch(this.state.value)
                             }
                         }}
-                        className={''}
-                        endAdornment={
-                            <span position='end' color='inherit'>
-                                <button
-                                    onClick={() => {
-                                        this.props.handleSearch(this.state.value)
-                                    }}
-                                    onMouseDown={() => {
-                                        this.props.handleSearch(this.state.value)
-                                    }}
-                                    color='inherit'
-                                >
-                                    <span className={'fa fa-search'} />
-                                </button>
-                            </span>
-                        }
                     />
-                </form>
-            </div>
+                </li>
+                <li>
+                    <button className={'button'} onClick={() => {
+                        this.props.handleSearch(this.state.value)
+                    }}>Search</button>
+                </li>
+            </ul>
         )
     }
 }

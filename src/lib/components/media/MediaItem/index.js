@@ -1,13 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import Document from '../../Document'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
+import './style.scss'
+
 import MediaDialog from './MediaDialog'
-import MediaOverlay from './MediaOverlay'
+// import MediaOverlay from './MediaOverlay'
 
 export default class MediaItem extends React.Component {
     static propTypes = {
-        item: PropTypes.objectOf(Document),
+        item: PropTypes.object.isRequired,
         onDelete: PropTypes.func
     }
 
@@ -33,44 +36,31 @@ export default class MediaItem extends React.Component {
     render() {
         const { item } = this.props
         const icon = item.attributes.favorite
-            ? <span color='action'>favorite</span>
-            : <span color='action'>favorite_border</span>
+            ? <FontAwesomeIcon icon={['fas', 'heart']} />
+            : <FontAwesomeIcon icon={['far', 'heart']} />
 
         return (
-            <div className={''}>
-                <div>
-                    <div
-                        className={''}
-                        title={item.title}
-                        action={<span onClick={event => {
-                            event.stopPropagation()
-                            event.preventDefault()
+            <div className={'media-item'} onClick={this._handleOpen}>
+                <div className={'img'} style={{backgroundImage: `url("${item.thumb}")`}} />
+                <h4>{item.title}</h4>
+                <span className={'icon'} onClick={event => {
+                    event.stopPropagation()
+                    event.preventDefault()
 
-                            this._setFavorite()
-                        }}>{icon}</span>} />
-                    <div
-                        className={''}
-                        image={item.thumb}
-                        title={item.title}
-                        overlay={item.title}
-                        onClick={() => this.setState({ overlayOpen: true })}
-                    />
-                    <div>
-                        <button size='small' onClick={() => this.setState({ open: true })}>Details</button>
-                    </div>
-                </div>
+                    this._setFavorite()
+                }}>{icon}</span>
                 <MediaDialog
-                    item={this.props.item}
                     open={this.state.open}
-                    onOverlay={() => this.setState({ overlayOpen: true })}
-                    onClose={() => this.setState({ open: false })}
+                    item={this.props.item}
+                    onRequestFavorite={this._setFavorite}
                     onDelete={this.props.onDelete}
+                    onRequestClose={this._handleClose}
                 />
-                <MediaOverlay
+                {/* <MediaOverlay
                     item={this.props.item}
                     open={this.state.overlayOpen}
                     onClose={() => this.setState({ overlayOpen: false })}
-                />
+                /> */}
             </div>
         )
     }
@@ -82,5 +72,27 @@ export default class MediaItem extends React.Component {
 
         this.props.item.attributes.favorite = !this.props.item.attributes.favorite
         this.props.item.update()
+    }
+
+    _handleOpen = (eve) => {
+        console.info('-- media-item:open')
+
+        eve.stopPropagation()
+        eve.preventDefault()
+
+        this.setState({
+            open: true
+        })
+    }
+
+    _handleClose = (eve) => {
+        console.info('-- media-item:close')
+
+        eve.stopPropagation()
+        eve.preventDefault()
+
+        this.setState({
+            open: false
+        })
     }
 }

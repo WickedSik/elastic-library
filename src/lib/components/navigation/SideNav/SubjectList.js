@@ -2,6 +2,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
 class SubjectList extends React.Component {
     static propTypes = {
         onSearch: PropTypes.func.isRequired,
@@ -12,20 +14,20 @@ class SubjectList extends React.Component {
         const { subjects } = this.props
 
         return (
-            <div className={''}>
-                <ul component='nav'>
-                    <li button onClick={this._handleFavorite}>
-                        <span>
-                            <span className={'fa fa-heart'} />
-                        </span>
-                        <p primary='Favorites' />
+            <div className={'subject-list'}>
+                <ul className='menu vertical icons icon-left'>
+                    <li onClick={this._handleFavorite}>
+                        <FontAwesomeIcon icon={['fas', 'heart']} />
+                        <span>Favorites</span>
+                    </li>
+                    <li onClick={this._handleEverything}>
+                        <FontAwesomeIcon icon={['fas', 'globe']} />
+                        <span>Everything</span>
                     </li>
                     { subjects.map(subject =>
-                        <li key={subject.key} button onClick={() => { this._handleClick(subject) }}>
-                            <span>
-                                <span className={'fa fa-heart'} />
-                            </span>
-                            <p primary={subject.key} />
+                        <li key={subject.key} onClick={() => { this._handleClick(subject) }}>
+                            <FontAwesomeIcon icon={['fas', 'tag']} />
+                            <span>{subject.key}</span>
                         </li>
                     )}
                     <div />
@@ -40,6 +42,10 @@ class SubjectList extends React.Component {
 
     _handleFavorite = () => {
         this.props.onSearch('favorite:true')
+    }
+
+    _handleEverything = () => {
+        this.props.onSearch('*')
     }
 }
 

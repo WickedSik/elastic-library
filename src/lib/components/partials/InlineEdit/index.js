@@ -1,5 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
+import './style.scss'
 
 export default class InlineEdit extends React.Component {
     static propTypes = {
@@ -24,22 +27,22 @@ export default class InlineEdit extends React.Component {
         const { isEditing, value } = this.state
 
         return (
-            <div className={''}>
+            <div className={'inline-edit'}>
                 {!isEditing && (
-                    <div container className={''}>
-                        <div item xs={10} className={''}>
+                    <div className={'grid-x'}>
+                        <div className={'cell auto'}>
                             {value}
                         </div>
-                        <div item xs={2} className={''}>
-                            <button mini className={''} onClick={() => { this.setState({ isEditing: true }) }}>
-                                <span className={'fa fa-pencil'} />
+                        <div className={'cell large-1'}>
+                            <button className={'button tiny'} onClick={() => { this.setState({ isEditing: true }) }}>
+                                <FontAwesomeIcon icon={['fas', 'edit']} />
                             </button>
                         </div>
                     </div>
                 )}
                 {isEditing && (
-                    <div container className={''}>
-                        <div item xs={10} className={''}>
+                    <div className={'grid-x'}>
+                        <div className={'cell auto'}>
                             <input
                                 className={''}
                                 value={value}
@@ -51,9 +54,9 @@ export default class InlineEdit extends React.Component {
                                 }}
                             />
                         </div>
-                        <div item xs={2} className={''}>
-                            <button mini className={''} onClick={this._handleChange}>
-                                <span className={'fa fa-save'} />
+                        <div className={'cell large-1'}>
+                            <button className={'button tiny'} onClick={this._handleChange}>
+                                <FontAwesomeIcon icon={['fas', 'save']} />
                             </button>
                         </div>
                     </div>

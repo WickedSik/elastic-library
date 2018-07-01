@@ -1,21 +1,19 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
+import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import numeral from 'numeraljs'
 import moment from 'moment'
 
-import InlineEdit from '../partials/InlineEdit'
-
-import e621 from '../../../redux/api/e621'
-import Config from '../../../../config'
-
-import Document from '../../Document'
+import InlineEdit from '../../partials/InlineEdit'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export default class MediaDialog extends React.Component {
     static propTypes = {
-        item: PropTypes.objectOf(Document),
-        onClose: PropTypes.func,
-        onOverlay: PropTypes.func,
-        onDelete: PropTypes.func,
+        item: PropTypes.object.isRequired,
+        onDelete: PropTypes.func.isRequired,
+        onRequestClose: PropTypes.func.isRequired,
+        onRequestFavorite: PropTypes.func.isRequired,
         open: PropTypes.bool.isRequired
     }
 
@@ -28,7 +26,15 @@ export default class MediaDialog extends React.Component {
         keywords: []
     }
 
+    constructor(props) {
+        super(props)
+
+        this.el = document.createElement('div')
+    }
+
     componentWillMount() {
+        document.body.appendChild(this.el)
+
         if (this.props.item && this.props.item.addNotifier) {
             this.props.item.addNotifier({
                 fire: () => {
@@ -39,6 +45,10 @@ export default class MediaDialog extends React.Component {
         }
     }
 
+    componentWillUnmount() {
+        document.body.removeChild(this.el)
+    }
+
     componentDidMount() {
         this.setState({
             keywords: this.props.item.attributes.keywords
@@ -46,23 +56,26 @@ export default class MediaDialog extends React.Component {
     }
 
     render() {
-        const { onClose, onOverlay, open, item } = this.props
+        const { item } = this.props
 
-        return (
-            <div>
-                <div onClose={onClose} open={open}>
+        return ReactDOM.createPortal(
+            <div className={classnames('media-dialog', this.props.open && 'open')} onClick={this.props.onRequestClose}>
+                <div className={'media-dialog-content'} onClick={this._killPropagation}>
+                    <button className={'close-button'} onClick={this.props.onRequestClose}>
+                        <span aria-hidden={'true'}>&times;</span>
+                    </button>
+
                     <h1>{item.title}</h1>
-                    <div className={''}>
-                        <div container>
-                            <div item xs={3}>
+                    <div className={'content'}>
+                        <div className={'grid-x'}>
+                            <div className={'cell large-3'}>
                                 <img
-                                    className={''}
+                                    className={'img'}
                                     alt={item.title}
-                                    src={item.url}
-                                    onClick={onOverlay} />
+                                    src={item.url} />
                             </div>
-                            <div item xs={9}>
-                                <table className={''}>
+                            <div className={'cell auto'}>
+                                <table className={'table'}>
                                     <tbody>
                                         <tr><th className={''}>Title</th><td><InlineEdit value={item.title} onUpdate={this._handleUpdateTitle} /></td></tr>
                                         <tr><th className={''}>Filename</th><td>{item.attributes.file.name}</td></tr>
@@ -72,7 +85,7 @@ export default class MediaDialog extends React.Component {
                                         <tr><th className={''}>Updated</th><td>{moment(item.attributes.file.updated_at).format('D MMMM YYYY')}</td></tr>
                                     </tbody>
                                 </table>
-                                <p><strong>Tags</strong></p>
+                                {/* <p><strong>Tags</strong></p>
                                 <div className={''}>
                                     {this.state.keywords.map(keyword => {
                                         return (
@@ -112,18 +125,23 @@ export default class MediaDialog extends React.Component {
                                             }
                                         />
                                     </form>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <button onClick={this._searchOnE621} color='primary'>Check on E621</button>
-                        <button onClick={() => {
-                            this.props.onDelete(item.id)
-                        }} color='secondary'>Delete</button>
+                    <div className={'controls'}>
+                        <div className={'grid-x'}>
+                            <button className={'button clear cell auto'} onClick={this.props.onRequestFavorite}>
+                                <FontAwesomeIcon icon={[item.attributes.favorite ? 'fas' : 'far', 'heart']} />
+                            </button>
+                            <button className={'button clear cell auto'} onClick={() => { this.props.onDelete(item.id) }}>
+                                <FontAwesomeIcon icon={['fas', 'trash']} />
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
+            , this.el
         )
     }
 
@@ -131,14 +149,6 @@ export default class MediaDialog extends React.Component {
         this.setState({
             keywords: this.props.item.attributes.keywords
         })
-    }
-
-    _searchOnE621 = () => {
-        // e621.login(Config.e621.username, Config.e621.password)
-
-        e621.findPost(this.props.item.attributes.checksum, Config.e621.username, Config.e621.password).then(result => {
-            console.info('-- e621', result)
-        }).catch(e => console.error('-- e621', e))
     }
 
     _addNewKeyword = () => {
@@ -171,5 +181,12 @@ export default class MediaDialog extends React.Component {
     _handleUpdateTitle = (value) => {
         this.props.item.attributes.title = value
         this.props.item.update()
+    }
+
+    _killPropagation = (eve) => {
+        eve.stopPropagation()
+        eve.preventDefault()
+
+        return false
     }
 }

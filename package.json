@@ -3,12 +3,20 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
+        "@fortawesome/fontawesome": "^1.1.8",
+        "@fortawesome/fontawesome-free-regular": "^5.0.13",
+        "@fortawesome/fontawesome-free-solid": "^5.0.13",
+        "@fortawesome/fontawesome-svg-core": "^1.2.0",
+        "@fortawesome/react-fontawesome": "0.1.0-11",
         "axios": "^0.18.0",
+        "classnames": "^2.2.6",
         "elasticsearch": "^14.2.0",
         "foundation-sites": "^6.5.0-rc.1",
+        "jquery": "^3.3.1",
         "moment": "^2.22.0",
         "numeraljs": "^1.5.6",
-        "sharp": "^0.20.1"
+        "sharp": "^0.20.1",
+        "what-input": "^4.3.1"
     },
     "scripts": {
         "start": "node scripts/start.js",

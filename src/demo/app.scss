@@ -1,19 +1,20 @@
 @import 'foundation';
+@import url('https://fonts.googleapis.com/css?family=Anton|Muli');
 
-@include foundation-xy-grid-classes(
-    $base-grid: true,
-    $margin-grid: true,
-    $padding-grid: true,
-    $block-grid: true,
-    $collapse: true,
-    $offset: true,
-    $vertical-grid: true,
-    $frame-grid: true
-);
+@include foundation-everything();
+
+// Global styles
+@include foundation-global-styles();
+@include foundation-forms();
+@include foundation-typography();
+
+// Grids (choose one)
+@include foundation-xy-grid-classes();
 
 body {
-    background-color: gray;
+    background-color: black;
     color: white;
 
     padding-bottom: 50px;
+    font-family: Muli, sans-serif;
 }
