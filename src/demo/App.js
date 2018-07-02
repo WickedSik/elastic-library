@@ -59,7 +59,7 @@ class App extends React.Component {
 
     componentWillMount() {
         this.props.subjectList()
-        this._handleSearch('keywords:Ninjakitty')
+        this._handleSearch('keywords:*')
     }
 
     render() {
@@ -74,7 +74,7 @@ class App extends React.Component {
                 </div>
                 <div className={'off-canvas-content'} data-off-canvas-content>
                     <Header onSearch={search} term={this.state.searchterm} offCanvasId={'sidebarMenu'} />
-                    <CardList results={results} total={total} onRequestMore={requestMore} onDelete={this.props.delete} />
+                    <CardList results={results} total={total} onRequestMore={requestMore} onRequestDelete={this.props.delete} />
                 </div>
             </div>
         )

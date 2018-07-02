@@ -2,4 +2,14 @@
     .title-bar-title {
         margin-left: 10px;
     }
+
+    input[type="search"] {
+        appearance: none;
+        border: 0;
+        border-bottom: 1px solid #000;
+        
+        color: #eee;
+        background-color: transparent;
+        box-shadow: 2px 2px 1px rgba(#eee, .5);
+    }
 }

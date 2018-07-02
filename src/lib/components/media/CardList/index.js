@@ -10,7 +10,7 @@ export default class CardList extends React.Component {
     static propTypes = {
         results: PropTypes.array,
         total: PropTypes.number,
-        onDelete: PropTypes.func,
+        onRequestDelete: PropTypes.func,
         onRequestMore: PropTypes.func
     }
 
@@ -22,7 +22,7 @@ export default class CardList extends React.Component {
                 <div className={'grid-x'}>
                     {results && results.map(result => (
                         <div key={result.id} className={'cell small-6 medium-4 large-3'}>
-                            <MediaItem item={result} onDelete={this.props.onDelete} />
+                            <MediaItem item={result} onRequestDelete={this.props.onRequestDelete} />
                         </div>
                     ))}
                     {results && total > results.length && (

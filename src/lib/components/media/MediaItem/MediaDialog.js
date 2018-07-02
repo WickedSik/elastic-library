@@ -11,9 +11,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 export default class MediaDialog extends React.Component {
     static propTypes = {
         item: PropTypes.object.isRequired,
-        onDelete: PropTypes.func.isRequired,
+        onRequestDelete: PropTypes.func.isRequired,
         onRequestClose: PropTypes.func.isRequired,
         onRequestFavorite: PropTypes.func.isRequired,
+        onRequestOverlay: PropTypes.func.isRequired,
         open: PropTypes.bool.isRequired
     }
 
@@ -69,7 +70,7 @@ export default class MediaDialog extends React.Component {
                     <div className={'content'}>
                         <div className={'grid-x'}>
                             <div className={'cell small-3'}>
-                                <img
+                                <img onClick={this.props.onRequestOverlay}
                                     className={'img'}
                                     alt={item.title}
                                     src={item.url} />
@@ -122,7 +123,7 @@ export default class MediaDialog extends React.Component {
                             <button className={'button clear cell auto'} onClick={this.props.onRequestFavorite}>
                                 <FontAwesomeIcon icon={[item.attributes.favorite ? 'fas' : 'far', 'heart']} />
                             </button>
-                            <button className={'button clear cell auto'} onClick={() => { this.props.onDelete(item.id) }}>
+                            <button className={'button clear cell auto'} onClick={() => { this.props.onRequestDelete(item.id) }}>
                                 <FontAwesomeIcon icon={['fas', 'trash']} />
                             </button>
                         </div>

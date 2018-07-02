@@ -6,12 +6,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import './style.scss'
 
 import MediaDialog from './MediaDialog'
-// import MediaOverlay from './MediaOverlay'
+import MediaOverlay from './MediaOverlay'
 
 export default class MediaItem extends React.Component {
     static propTypes = {
         item: PropTypes.object.isRequired,
-        onDelete: PropTypes.func
+        onRequestDelete: PropTypes.func
     }
 
     state = {
@@ -26,7 +26,7 @@ export default class MediaItem extends React.Component {
                 fire: () => {
                     // changing state actually rerenders the component!
                     this.setState({
-                        forceUpdate: true
+                        forceUpdate: !this.state.forceUpdate
                     })
                 }
             })
@@ -52,22 +52,23 @@ export default class MediaItem extends React.Component {
                 <MediaDialog
                     open={this.state.open}
                     item={this.props.item}
+                    onRequestOverlay={this._handleOverlayOpen}
                     onRequestFavorite={this._setFavorite}
-                    onDelete={this.props.onDelete}
+                    onRequestDelete={this.props.onRequestDelete}
                     onRequestClose={this._handleClose}
                 />
-                {/* <MediaOverlay
+                <MediaOverlay
                     item={this.props.item}
                     open={this.state.overlayOpen}
-                    onClose={() => this.setState({ overlayOpen: false })}
-                /> */}
+                    onClose={this._handleOverlayClose}
+                />
             </div>
         )
     }
 
     _setFavorite = () => {
         this.setState({
-            forceUpdate: false // reset state
+            forceUpdate: !this.state.forceUpdate
         })
 
         this.props.item.attributes.favorite = !this.props.item.attributes.favorite
@@ -89,6 +90,24 @@ export default class MediaItem extends React.Component {
 
         this.setState({
             open: false
+        })
+    }
+
+    _handleOverlayOpen = (eve) => {
+        eve.stopPropagation()
+        eve.preventDefault()
+
+        this.setState({
+            overlayOpen: true
+        })
+    }
+
+    _handleOverlayClose = (eve) => {
+        eve.stopPropagation()
+        eve.preventDefault()
+
+        this.setState({
+            overlayOpen: false
         })
     }
 }
