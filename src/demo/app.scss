@@ -1,5 +1,24 @@
 @import 'foundation';
+@import '../assets/colors';
 @import url('https://fonts.googleapis.com/css?family=Anton|Muli');
+
+$foundation-palette: (
+    primary: $ink,
+    secondary: #767676,
+    success: #3adb76,
+    warning: #ffae00,
+    alert: #cc4b37
+);
+
+$titlebar-color: $ink;
+$titlebar-background: $oldpaper;
+$body-font-color: $ink;
+$button-color: $oldpaper;
+$button-background: $ink;
+$button-background-hover: darken($oldpaper, 75%);
+$table-background: transparent;
+$table-is-striped: false;
+$label-background: darken($oldpaper, 75%);
 
 @include foundation-everything();
 
@@ -12,13 +31,28 @@
 @include foundation-xy-grid-classes();
 
 body {
-    background-color: black;
-    color: white;
+    background-color: $oldpaper;
+    color: $ink;
 
     padding-bottom: 50px;
     font-family: Muli, sans-serif;
+    overflow: hidden;
 }
 
 button:focus, input:focus {
     outline: none;
+}
+
+input {
+    appearance: none;
+        
+    color: $ink;
+    background-color: transparent;
+    border: 0 none;
+    border-bottom: 1px solid darken($oldpaper, 20%);
+    box-shadow: none;
+
+    &::placeholder {
+        color: darken($oldpaper, 90%);
+    }
 }

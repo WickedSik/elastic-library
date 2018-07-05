@@ -1,7 +1,9 @@
+@import '../../../../assets/colors';
+
 .side-nav {
-    .subject-list {
-        background-color: #000;
-    }
+    height: 100vh;
+    overflow-y: auto;
+    box-shadow: inset 0px 0px 5px darken($oldpaper, 25%);
 
     .menu {
         li {
@@ -15,6 +17,11 @@
             span {
                 display: inline-block;
                 padding: 10px 0 10px 10px;
+            }
+
+            &:hover {
+                background-color: darken($oldpaper, 25%);
+                color: darken($oldpaper, 75%);
             }
         }
     }

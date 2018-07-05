@@ -1,5 +1,5 @@
 export default {
-    index: 'media-demo',
+    index: 'media',
     type: 'media',
     size: 100
 }

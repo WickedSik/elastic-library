@@ -69,12 +69,16 @@ class App extends React.Component {
 
         return (
             <div className='app-container'>
-                <div className={'off-canvas position-left'} id={'sidebarMenu'} data-off-canvas>
-                    <SideNav onSearch={search} />
-                </div>
-                <div className={'off-canvas-content'} data-off-canvas-content>
-                    <Header onSearch={search} term={this.state.searchterm} offCanvasId={'sidebarMenu'} />
-                    <CardList results={results} total={total} onRequestMore={requestMore} onRequestDelete={this.props.delete} />
+                <div className={'grid-x'}>
+                    <div className={'cell small-12'}>
+                        <Header onSearch={search} term={this.state.searchterm} offCanvasId={'sidebarMenu'} />
+                    </div>
+                    <div className={'cell small-2'}>
+                        <SideNav onSearch={search} />
+                    </div>
+                    <div className={'cell small-10'}>
+                        <CardList results={results} total={total} onRequestMore={requestMore} onRequestDelete={this.props.delete} />
+                    </div>
                 </div>
             </div>
         )

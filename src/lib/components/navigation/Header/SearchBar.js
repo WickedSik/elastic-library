@@ -33,8 +33,8 @@ export default class SearchBar extends React.Component {
 
     render() {
         return (
-            <ul className={'menu'}>
-                <li>
+            <div className={'grid-x'}>
+                <div className={'cell auto'}>
                     <input
                         type={'search'}
                         value={this.state.value}
@@ -45,13 +45,13 @@ export default class SearchBar extends React.Component {
                             }
                         }}
                     />
-                </li>
-                <li>
+                </div>
+                <div className={'cell small-2 medium-2 large-1'}>
                     <button className={'button'} onClick={() => {
                         this.props.handleSearch(this.state.value)
                     }}>Search</button>
-                </li>
-            </ul>
+                </div>
+            </div>
         )
     }
 }

@@ -1,7 +1,8 @@
+@import '../../../../assets/colors';
+
 .media-item {
     position: relative;
     height: 250px;
-    background-color: #000;
 
     cursor: pointer;
 
@@ -17,8 +18,8 @@
         margin: 0;
         padding: 20px;
 
-        color: darken(#fff, .25);
-        text-shadow: 1px 1px 1px #000;
+        color: darken($white, .25);
+        text-shadow: 1px 1px 1px $ink;
         font-family: Anton, sans-serif;
 
         background: linear-gradient(0deg, rgba(black, .7) 0%, rgba(black, 0) 100%);
@@ -29,6 +30,11 @@
         right: 10px;
         top: 10px;
         cursor: pointer;
+        color: darken($white, .25);
+
+        &.is-favorited {
+            color: $red;
+        }
     }
 
     .img {
@@ -56,7 +62,7 @@
     width: 100vw;
     height: 100vh;
 
-    background-color: rgba(#333, .5);
+    background-color: rgba($ink, .5);
 
     .media-dialog-content {
         position: relative;
@@ -64,9 +70,9 @@
         padding: 2em;
         margin: 4em 2em;
 
-        color: #000;
-        background-color: #fefefe;
-        box-shadow: 2px 2px 5px rgba(#fefefe, .75);
+        color: $ink;
+        background-color: $oldpaper;
+        box-shadow: 2px 2px 5px rgba($ink, .75);
 
         height: calc(100vh - 8em);
 
@@ -90,9 +96,14 @@
             .tags {
                 .label {
                     margin: 5px;
+                    cursor: pointer;
 
                     span {
                         margin-left: 5px;
+                    }
+
+                    &:hover {
+                        background-color: darken($oldpaper, 65%);
                     }
                 }
 
@@ -116,6 +127,26 @@
             .button {
                 margin-bottom: 0;
             }
+        }
+
+        .next-button, .prev-button {
+            font-size: 2em;
+            padding: 15px 10px;
+            background-color: darken($oldpaper, 25%);
+            box-shadow: 0px 0px 5px darken($oldpaper, 25%);
+
+            position: absolute;
+
+            top: calc(50% - 20px);
+            cursor: pointer;
+        }
+
+        .next-button {
+            right: -20px;
+        }
+
+        .prev-button {
+            left: -20px;
         }
     }
 
