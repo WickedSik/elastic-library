@@ -71,7 +71,7 @@ class App extends React.Component {
             <div className='app-container'>
                 <div className={'grid-x'}>
                     <div className={'cell small-12'}>
-                        <Header onSearch={search} term={this.state.searchterm} offCanvasId={'sidebarMenu'} />
+                        <Header onSearch={search} term={this.state.searchterm} />
                     </div>
                     <div className={'cell small-2'}>
                         <SideNav onSearch={search} />
