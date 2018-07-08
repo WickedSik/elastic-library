@@ -41,6 +41,14 @@ export default class MediaOverlay extends React.Component {
         }
     }
 
+    componentDidMount() {
+        document.addEventListener('keydown', this._closeIfEscape, false)
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this._closeIfEscape, false)
+    }
+
     render() {
         const { item, title } = this.props
         const imageStyle = {
@@ -93,5 +101,11 @@ export default class MediaOverlay extends React.Component {
 
         this.props.item.attributes.favorite = !this.props.item.attributes.favorite
         this.props.item.update()
+    }
+
+    _closeIfEscape = (event) => {
+        if (event.keyCode === 27) {
+            this.props.onRequestClose()
+        }
     }
 }

@@ -7,6 +7,7 @@ import './style.scss'
 
 export default class Header extends React.Component {
     static propTypes = {
+        onRequestOpenSettings: PropTypes.func.isRequired,
         onRequestSwitchDialogType: PropTypes.func.isRequired,
         onSearch: PropTypes.func.isRequired,
         dialogType: PropTypes.string.isRequired,
@@ -14,6 +15,7 @@ export default class Header extends React.Component {
     }
 
     static defaultProps = {
+        onRequestOpenSettings: () => {},
         onRequestSwitchDialogType: () => {},
         onSearch: () => {}
     }
@@ -23,6 +25,9 @@ export default class Header extends React.Component {
             <div className={'header'} data-sticky-container>
                 <div className={'title-bar'} data-sticky data-options={'marginTop:0;'}>
                     <div className={'title-bar-left'}>
+                        <div className={'settings-icon'} onClick={this.props.onRequestOpenSettings}>
+                            <FontAwesomeIcon icon={['fas', 'cogs']} />
+                        </div>
                         <span className={'title-bar-title'}>Media Library</span>
                     </div>
                     <div className={'top-bar-right'}>

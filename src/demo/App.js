@@ -20,6 +20,7 @@ import actions from '../lib/redux/actions'
 import Header from '../lib/components/navigation/Header'
 import CardList from '../lib/components/media/CardList'
 import SideNav from '../lib/components/navigation/SideNav'
+import SettingsDialog from '../lib/components/partials/SettingsDialog'
 
 import Config from '../config'
 
@@ -50,6 +51,7 @@ class App extends React.Component {
     }
 
     state = {
+        settingsOpen: false,
         dialogType: 'dialog',
         searchterm: ''
     }
@@ -75,6 +77,7 @@ class App extends React.Component {
                         <Header
                             dialogType={this.state.dialogType}
                             term={this.state.searchterm}
+                            onRequestOpenSettings={this._openSettings}
                             onRequestSwitchDialogType={this._switchDialogType}
                             onSearch={search}
                         />
@@ -92,6 +95,10 @@ class App extends React.Component {
                             onRequestDelete={this.props.delete}
                         />
                     </div>
+
+                    {this.state.settingsOpen && (
+                        <SettingsDialog onRequestClose={this._closeSettings} />
+                    )}
                 </div>
             </div>
         )
@@ -114,6 +121,18 @@ class App extends React.Component {
             return {
                 dialogType: state.dialogType === 'dialog' ? 'overlay' : 'dialog'
             }
+        })
+    }
+
+    _openSettings = () => {
+        this.setState({
+            settingsOpen: true
+        })
+    }
+
+    _closeSettings = () => {
+        this.setState({
+            settingsOpen: false
         })
     }
 }

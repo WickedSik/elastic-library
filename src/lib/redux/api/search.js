@@ -5,7 +5,7 @@ const client = new elasticsearch.Client({
     host: 'localhost:9200'
 })
 
-const search = (query) =>
+export const search = (query) =>
     new Promise((resolve, reject) => {
         client.search({
             ...query
@@ -16,7 +16,7 @@ const search = (query) =>
         })
     })
 
-const update = (params) =>
+export const update = (params) =>
     new Promise((resolve, reject) => {
         client.update(params).then(response => {
             resolve(response)
@@ -25,7 +25,7 @@ const update = (params) =>
         })
     })
 
-const fetch = (id) =>
+export const fetch = (id) =>
     new Promise((resolve, reject) => {
         client.get(id).then(response => {
             resolve(response)
@@ -34,9 +34,37 @@ const fetch = (id) =>
         })
     })
 
-const deleteDocument = (id) =>
+export const deleteDocument = (id) =>
     new Promise((resolve, reject) => {
         client.delete(id).then(response => {
+            resolve(response)
+        }).catch(error => {
+            reject(handleError(error))
+        })
+    })
+
+export const renameKeyword = (oldKeyword, newKeyword) =>
+    new Promise((resolve, reject) => {
+        client.updateByQuery({
+            query: {
+                term: {
+                    'keywords.keyword': oldKeyword
+                }
+            },
+            script: {
+                source: `
+                    ctx._source.keywords.remove(
+                        ctx._source.keywords.indexOf(params.oldKeyword)
+                    );
+                    ctx._source.keywords.add(params.newKeyword)
+                `,
+                params: {
+                    oldKeyword,
+                    newKeyword
+                },
+                lang: 'painless'
+            }
+        }).then(response => {
             resolve(response)
         }).catch(error => {
             reject(handleError(error))
@@ -47,5 +75,6 @@ export default {
     search,
     update,
     fetch,
-    deleteDocument
+    deleteDocument,
+    renameKeyword
 }

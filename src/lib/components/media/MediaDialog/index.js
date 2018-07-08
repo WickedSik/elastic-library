@@ -53,10 +53,13 @@ export default class MediaDialog extends React.Component {
     }
 
     componentWillUnmount() {
+        document.removeEventListener('keydown', this._closeIfEscape, false)
         document.body.removeChild(this.el)
     }
 
     componentDidMount() {
+        document.addEventListener('keydown', this._closeIfEscape, false)
+
         this.setState({
             keywords: this.props.item.attributes.keywords
         })
@@ -77,8 +80,8 @@ export default class MediaDialog extends React.Component {
         const { item } = this.props
 
         return ReactDOM.createPortal(
-            <div className={classnames('media-dialog', 'open')} onClick={this.props.onRequestClose}>
-                <div className={'media-dialog-content'} onClick={this._killPropagation}>
+            <div className={classnames('media-dialog', 'lib-dialog', 'open')} onClick={this.props.onRequestClose}>
+                <div className={'media-dialog-content lib-dialog-content'} onClick={this._killPropagation}>
                     <button className={'close-button'} onClick={this.props.onRequestClose}>
                         <span aria-hidden={'true'}>&times;</span>
                     </button>
@@ -163,6 +166,18 @@ export default class MediaDialog extends React.Component {
         )
     }
 
+    _closeIfEscape = (event) => {
+        if (event.keyCode === 27) {
+            this.props.onRequestClose()
+        }
+    }
+
+    _forceRerender = () => {
+        this.setState({
+            keywords: this.props.item.attributes.keywords
+        })
+    }
+
     _setFavorite = () => {
         this.setState({
             forceUpdate: !this.state.forceUpdate
@@ -170,12 +185,6 @@ export default class MediaDialog extends React.Component {
 
         this.props.item.attributes.favorite = !this.props.item.attributes.favorite
         this.props.item.update()
-    }
-
-    _forceRerender = () => {
-        this.setState({
-            keywords: this.props.item.attributes.keywords
-        })
     }
 
     _addNewKeyword = () => {
