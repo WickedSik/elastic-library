@@ -10,15 +10,22 @@ import './style.scss'
 
 export default class CardList extends React.Component {
     static propTypes = {
+        onRequestDelete: PropTypes.func.isRequired,
+        onRequestMore: PropTypes.func.isRequired,
+        onRequestSwitchDialogType: PropTypes.func.isRequired,
         results: PropTypes.array,
         total: PropTypes.number,
-        onRequestDelete: PropTypes.func,
-        onRequestMore: PropTypes.func
+        dialogType: PropTypes.string
+    }
+
+    static defaultProps = {
+        onRequestDelete: () => {},
+        onRequestMore: () => {},
+        onRequestSwitchDialogType: () => {}
     }
 
     state = {
-        selected: null,
-        dialogType: 'dialog'
+        selected: null
     }
 
     render() {
@@ -53,8 +60,8 @@ export default class CardList extends React.Component {
     }
 
     _buildDialog = () => {
-        const { selected, dialogType } = this.state
-        const { results, total } = this.props
+        const { selected } = this.state
+        const { results, total, dialogType } = this.props
 
         switch (dialogType) {
         case 'dialog':
@@ -62,11 +69,7 @@ export default class CardList extends React.Component {
                 <MediaDialog
                     item={results[selected]}
                     onRequestDelete={this.props.onRequestDelete}
-                    onRequestOverlay={() => {
-                        this.setState({
-                            dialogType: 'overlay'
-                        })
-                    }}
+                    onRequestOverlay={this.props.onRequestSwitchDialogType}
                     onRequestClose={this._deselect}
                     onRequestNext={this._next}
                     onRequestPrev={this._prev}
@@ -78,13 +81,10 @@ export default class CardList extends React.Component {
                     title={`${selected + 1} / ${total}`}
                     item={results[selected]}
                     onRequestDelete={this.props.onRequestDelete}
+                    onRequestOpenDialog={this.props.onRequestSwitchDialogType}
                     onRequestNext={this._next}
                     onRequestPrev={this._prev}
-                    onRequestClose={() => {
-                        this.setState({
-                            dialogType: 'dialog'
-                        })
-                    }}
+                    onRequestClose={this._deselect}
                 />
             )
         }

@@ -50,6 +50,7 @@ class App extends React.Component {
     }
 
     state = {
+        dialogType: 'dialog',
         searchterm: ''
     }
 
@@ -71,13 +72,25 @@ class App extends React.Component {
             <div className='app-container'>
                 <div className={'grid-x'}>
                     <div className={'cell small-12'}>
-                        <Header onSearch={search} term={this.state.searchterm} />
+                        <Header
+                            dialogType={this.state.dialogType}
+                            term={this.state.searchterm}
+                            onRequestSwitchDialogType={this._switchDialogType}
+                            onSearch={search}
+                        />
                     </div>
                     <div className={'cell small-2'}>
                         <SideNav onSearch={search} />
                     </div>
                     <div className={'cell small-10'}>
-                        <CardList results={results} total={total} onRequestMore={requestMore} onRequestDelete={this.props.delete} />
+                        <CardList
+                            dialogType={this.state.dialogType}
+                            results={results}
+                            total={total}
+                            onRequestSwitchDialogType={this._switchDialogType}
+                            onRequestMore={requestMore}
+                            onRequestDelete={this.props.delete}
+                        />
                     </div>
                 </div>
             </div>
@@ -85,10 +98,6 @@ class App extends React.Component {
     }
 
     _handleSearch = (term) => {
-        // a little bit creative... I am strongly considering throwing Foundation out again
-        // and doing it myself (once again ._. )
-        $(document).find('#sidebarMenu').length && $(document).find('#sidebarMenu').foundation('close')
-
         this.setState({
             searchterm: term
         })
@@ -98,6 +107,14 @@ class App extends React.Component {
 
     _handleRequestMore = () => {
         this.props.search(this.state.searchterm, this.props.results.length, true)
+    }
+
+    _switchDialogType = () => {
+        this.setState(state => {
+            return {
+                dialogType: state.dialogType === 'dialog' ? 'overlay' : 'dialog'
+            }
+        })
     }
 }
 

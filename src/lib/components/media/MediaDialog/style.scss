@@ -28,14 +28,29 @@
         }
 
         .content {
-            .img {
-                cursor: pointer;
+            height: calc(100vh - 12em - 75px);
+
+            > .grid-x {
+                max-height: 100%;
+            }
+
+            .image {
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                text-align: center;
+
+                .img {
+                    max-height: 100%;
+                    cursor: pointer;
+                }
             }
 
             .table {
                 margin: 0 10px;
 
                 th {
+                    width: 150px;
                     text-align: right;
                 }
             }

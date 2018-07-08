@@ -1,6 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import './style.scss'
+
 export default class SearchBar extends React.Component {
     static propTypes = {
         handleSearch: PropTypes.func,
@@ -33,7 +35,7 @@ export default class SearchBar extends React.Component {
 
     render() {
         return (
-            <div className={'grid-x'}>
+            <div className={'grid-x search-bar'}>
                 <div className={'cell auto'}>
                     <input
                         type={'search'}

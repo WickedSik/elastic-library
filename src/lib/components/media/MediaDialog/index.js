@@ -12,12 +12,12 @@ import './style.scss'
 
 export default class MediaDialog extends React.Component {
     static propTypes = {
-        item: PropTypes.object.isRequired,
         onRequestDelete: PropTypes.func.isRequired,
         onRequestClose: PropTypes.func.isRequired,
         onRequestOverlay: PropTypes.func.isRequired,
         onRequestNext: PropTypes.func.isRequired,
-        onRequestPrev: PropTypes.func.isRequired
+        onRequestPrev: PropTypes.func.isRequired,
+        item: PropTypes.object.isRequired
     }
 
     static defaultProps = {
@@ -62,6 +62,17 @@ export default class MediaDialog extends React.Component {
         })
     }
 
+    componentDidUpdate(prevProps) {
+        const oldKey = prevProps.item.attributes.keywords.join('-')
+        const newKey = this.props.item.attributes.keywords.join('-')
+
+        if (oldKey !== newKey) {
+            this.setState({ // eslint-disable-line react/no-did-update-set-state
+                keywords: this.props.item.attributes.keywords
+            })
+        }
+    }
+
     render() {
         const { item } = this.props
 
@@ -83,11 +94,13 @@ export default class MediaDialog extends React.Component {
                     <h1>{item.title}</h1>
                     <div className={'content'}>
                         <div className={'grid-x'}>
-                            <div className={'cell small-3'}>
-                                <img onClick={this.props.onRequestOverlay}
-                                    className={'img'}
-                                    alt={item.title}
-                                    src={item.url} />
+                            <div className={'cell small-3 medium-3 large-4'}>
+                                <div className={'image'}>
+                                    <img onClick={this.props.onRequestOverlay}
+                                        className={'img'}
+                                        alt={item.title}
+                                        src={item.url} />
+                                </div>
                             </div>
                             <div className={'cell auto'}>
                                 <div className={'grid-x'}>

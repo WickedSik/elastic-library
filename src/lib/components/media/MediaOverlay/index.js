@@ -7,6 +7,7 @@ import './style.scss'
 
 export default class MediaOverlay extends React.Component {
     static propTypes = {
+        onRequestOpenDialog: PropTypes.func.isRequired,
         onRequestClose: PropTypes.func.isRequired,
         onRequestDelete: PropTypes.func.isRequired,
         onRequestNext: PropTypes.func.isRequired,
@@ -16,6 +17,7 @@ export default class MediaOverlay extends React.Component {
     }
 
     static defaultProps = {
+        onRequestOpenDialog: () => {},
         onRequestClose: () => {},
         onRequestDelete: () => {},
         onRequestNext: () => {},
@@ -58,19 +60,26 @@ export default class MediaOverlay extends React.Component {
                 </button>
 
                 <div className={'controls'}>
-                    <div className={'grid-x'}>
-                        <div className={'title cell small-6'}>
+                    <div className={'grid-x align-top'}>
+                        <div className={'title cell auto'}>
                             <h4>{title}</h4>
                         </div>
-                        <button className={'button clear cell small-2'} onClick={this._setFavorite}>
-                            <FontAwesomeIcon icon={[item.attributes.favorite ? 'fas' : 'far', 'heart']} />
-                        </button>
-                        <button className={'button clear cell small-2'} onClick={() => { this.props.onRequestDelete(item.id) }}>
-                            <FontAwesomeIcon icon={['fas', 'trash']} />
-                        </button>
-                        <button className={'button clear cell small-2'} onClick={this.props.onRequestClose}>
-                            <FontAwesomeIcon icon={['fas', 'times']} />
-                        </button>
+                        <div className={'cell auto'}>
+                            <div className={'button-group'}>
+                                <button className={'button'} onClick={this._setFavorite}>
+                                    <FontAwesomeIcon icon={[item.attributes.favorite ? 'fas' : 'far', 'heart']} />
+                                </button>
+                                <button className={'button'} onClick={this.props.onRequestOpenDialog}>
+                                    <FontAwesomeIcon icon={['fas', 'address-card']} />
+                                </button>
+                                <button className={'button'} onClick={() => { this.props.onRequestDelete(item.id) }}>
+                                    <FontAwesomeIcon icon={['fas', 'trash']} />
+                                </button>
+                                <button className={'button'} onClick={this.props.onRequestClose}>
+                                    <FontAwesomeIcon icon={['fas', 'times']} />
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

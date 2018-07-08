@@ -1,0 +1,17 @@
+@import '../../../../assets/colors';
+
+.search-bar {
+    input[type="search"] {
+        appearance: none;
+        
+        color: $ink;
+        background-color: transparent;
+        border: 0 none;
+        border-bottom: 1px solid darken($oldpaper, 20%);
+        box-shadow: none;
+
+        margin: 0;
+
+        display: block;
+    }
+}

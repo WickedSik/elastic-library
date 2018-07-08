@@ -27,27 +27,28 @@
     .controls {
         position: absolute;
         bottom: 0;
-
-        width: 250px;
-        left: calc(50vw - 125px);
+        width: 100%;
 
         .title {
-            color: $white;
-            min-width: 100px;
+            color: $white;;
+            height: 100%;
             text-align: right;
-            position: relative;
 
             h4 {
-                position: absolute;
-                bottom: 0;
                 font-size: 1em;
-                width: 100%;
+                margin: 0;
+                padding: 8px;
             }
         }
 
-        .button {
-            color: $white;
-            margin-bottom: 0;
+        .button-group {
+            margin: 0;
+
+            .button {
+                background-color: transparent;
+                color: $white;
+                margin-bottom: 0;
+            }
         }
     }
 

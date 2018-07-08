@@ -19,6 +19,8 @@ $button-background-hover: darken($oldpaper, 75%);
 $table-background: transparent;
 $table-is-striped: false;
 $label-background: darken($oldpaper, 75%);
+$switch-background: darken($oldpaper, 75%);
+$switch-background-active: $ink;
 
 @include foundation-everything();
 

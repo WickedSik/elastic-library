@@ -23,6 +23,14 @@ export default class InlineEdit extends React.Component {
         }
     }
 
+    componentDidUpdate(prevProps) {
+        if (this.props.value !== prevProps.value) {
+            this.setState({ // eslint-disable-line react/no-did-update-set-state
+                value: this.props.value
+            })
+        }
+    }
+
     render() {
         const { isEditing, value } = this.state
 
