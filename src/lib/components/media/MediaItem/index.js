@@ -6,31 +6,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import './style.scss'
 
-import MediaDialog from './MediaDialog'
-import MediaOverlay from './MediaOverlay'
-
 export default class MediaItem extends React.Component {
     static propTypes = {
-        item: PropTypes.object.isRequired,
-        showModal: PropTypes.bool.isRequired,
-        onRequestOpen: PropTypes.func,
-        onRequestClose: PropTypes.func,
-        onRequestNext: PropTypes.func,
-        onRequestPrev: PropTypes.func,
-        onRequestDelete: PropTypes.func
+        onRequestOpen: PropTypes.func.isRequired,
+        item: PropTypes.object.isRequired
     }
 
     static defaultProps = {
-        showModal: false,
-        onRequestOpen: () => {},
-        onRequestClose: () => {},
-        onRequestNext: () => {},
-        onRequestPrev: () => {},
-        onRequestDelete: () => {}
+        onRequestOpen: () => {}
     }
 
     state = {
-        overlayOpen: false,
         forceUpdate: false
     }
 
@@ -54,7 +40,7 @@ export default class MediaItem extends React.Component {
             : <FontAwesomeIcon icon={['far', 'heart']} />
 
         return (
-            <div className={'media-item'} onClick={this._handleOpen}>
+            <div className={'media-item'} onClick={this.props.onRequestOpen}>
                 <div className={'img'} style={{backgroundImage: `url("${item.thumb}")`}} />
                 <h4>{item.title}</h4>
                 <span className={classnames('icon', item.attributes.favorite && 'is-favorited')} onClick={event => {
@@ -63,21 +49,6 @@ export default class MediaItem extends React.Component {
 
                     this._setFavorite()
                 }}>{icon}</span>
-                <MediaDialog
-                    open={this.props.showModal}
-                    item={this.props.item}
-                    onRequestOverlay={this._handleOverlayOpen}
-                    onRequestFavorite={this._setFavorite}
-                    onRequestDelete={this.props.onRequestDelete}
-                    onRequestClose={this._handleClose}
-                    onRequestNext={this.props.onRequestNext}
-                    onRequestPrev={this.props.onRequestPrev}
-                />
-                <MediaOverlay
-                    item={this.props.item}
-                    open={this.state.overlayOpen}
-                    onClose={this._handleOverlayClose}
-                />
             </div>
         )
     }
@@ -89,37 +60,5 @@ export default class MediaItem extends React.Component {
 
         this.props.item.attributes.favorite = !this.props.item.attributes.favorite
         this.props.item.update()
-    }
-
-    _handleOpen = (eve) => {
-        eve.stopPropagation()
-        eve.preventDefault()
-
-        this.props.onRequestOpen()
-    }
-
-    _handleClose = (eve) => {
-        eve.stopPropagation()
-        eve.preventDefault()
-
-        this.props.onRequestClose()
-    }
-
-    _handleOverlayOpen = (eve) => {
-        eve.stopPropagation()
-        eve.preventDefault()
-
-        this.setState({
-            overlayOpen: true
-        })
-    }
-
-    _handleOverlayClose = (eve) => {
-        eve.stopPropagation()
-        eve.preventDefault()
-
-        this.setState({
-            overlayOpen: false
-        })
     }
 }

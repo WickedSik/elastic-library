@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import MediaItem from '../MediaItem'
+import MediaDialog from '../MediaDialog'
+import MediaOverlay from '../MediaOverlay'
 
 import './style.scss'
 
@@ -15,7 +17,8 @@ export default class CardList extends React.Component {
     }
 
     state = {
-        selected: null
+        selected: null,
+        dialogType: 'dialog'
     }
 
     render() {
@@ -29,14 +32,9 @@ export default class CardList extends React.Component {
                         <div key={result.id} className={'cell small-6 medium-4 large-3'}>
                             <MediaItem
                                 item={result}
-                                showModal={selected === index}
                                 onRequestOpen={() => {
                                     this._go(index)
                                 }}
-                                onRequestClose={this._deselect}
-                                onRequestNext={this._next}
-                                onRequestPrev={this._prev}
-                                onRequestDelete={this.props.onRequestDelete}
                             />
                         </div>
                     ))}
@@ -47,18 +45,56 @@ export default class CardList extends React.Component {
                             </button>
                         </div>
                     )}
+
                 </div>
+                {selected !== null && this.props.results[selected] && this._buildDialog()}
             </div>
         )
+    }
+
+    _buildDialog = () => {
+        const { selected, dialogType } = this.state
+        const { results, total } = this.props
+
+        switch (dialogType) {
+        case 'dialog':
+            return (
+                <MediaDialog
+                    item={results[selected]}
+                    onRequestDelete={this.props.onRequestDelete}
+                    onRequestOverlay={() => {
+                        this.setState({
+                            dialogType: 'overlay'
+                        })
+                    }}
+                    onRequestClose={this._deselect}
+                    onRequestNext={this._next}
+                    onRequestPrev={this._prev}
+                />
+            )
+        case 'overlay':
+            return (
+                <MediaOverlay
+                    title={`${selected + 1} / ${total}`}
+                    item={results[selected]}
+                    onRequestDelete={this.props.onRequestDelete}
+                    onRequestNext={this._next}
+                    onRequestPrev={this._prev}
+                    onRequestClose={() => {
+                        this.setState({
+                            dialogType: 'dialog'
+                        })
+                    }}
+                />
+            )
+        }
     }
 
     _next = () => {
         const index = this.state.selected || 0
 
-        if (index + 1 <= this.props.results.length) {
-            this.setState({
-                selected: index + 1
-            })
+        if (index + 1 < this.props.total) {
+            this._go(index + 1)
         }
     }
 
@@ -66,14 +102,17 @@ export default class CardList extends React.Component {
         const index = this.state.selected || 0
 
         if (index - 1 >= 0) {
-            this.setState({
-                selected: index - 1
-            })
+            this._go(index - 1)
         }
     }
 
     _go = (index) => {
         if (index >= 0 && index < this.props.results.length) {
+            if (index === this.props.results.length - 1) {
+                // Request more data on last index
+                this.props.onRequestMore()
+            }
+
             this.setState({
                 selected: index
             })

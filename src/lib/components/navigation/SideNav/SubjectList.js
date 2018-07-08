@@ -27,7 +27,7 @@ class SubjectList extends React.Component {
                     { subjects.map(subject =>
                         <li key={subject.key} onClick={() => { this._handleClick(subject) }}>
                             <FontAwesomeIcon icon={['fas', 'tag']} />
-                            <span>{subject.key}</span>
+                            <span>{subject.key} ({subject.doc_count})</span>
                         </li>
                     )}
                     <div />

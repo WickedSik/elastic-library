@@ -8,20 +8,24 @@ import moment from 'moment'
 import InlineEdit from '../../partials/InlineEdit'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
+import './style.scss'
+
 export default class MediaDialog extends React.Component {
     static propTypes = {
         item: PropTypes.object.isRequired,
         onRequestDelete: PropTypes.func.isRequired,
         onRequestClose: PropTypes.func.isRequired,
-        onRequestFavorite: PropTypes.func.isRequired,
         onRequestOverlay: PropTypes.func.isRequired,
         onRequestNext: PropTypes.func.isRequired,
-        onRequestPrev: PropTypes.func.isRequired,
-        open: PropTypes.bool.isRequired
+        onRequestPrev: PropTypes.func.isRequired
     }
 
     static defaultProps = {
-        open: false
+        onRequestDelete: () => {},
+        onRequestClose: () => {},
+        onRequestOverlay: () => {},
+        onRequestNext: () => {},
+        onRequestPrev: () => {}
     }
 
     state = {
@@ -62,7 +66,7 @@ export default class MediaDialog extends React.Component {
         const { item } = this.props
 
         return ReactDOM.createPortal(
-            <div className={classnames('media-dialog', this.props.open && 'open')} onClick={this.props.onRequestClose}>
+            <div className={classnames('media-dialog', 'open')} onClick={this.props.onRequestClose}>
                 <div className={'media-dialog-content'} onClick={this._killPropagation}>
                     <button className={'close-button'} onClick={this.props.onRequestClose}>
                         <span aria-hidden={'true'}>&times;</span>
@@ -132,7 +136,7 @@ export default class MediaDialog extends React.Component {
                     </div>
                     <div className={'controls'}>
                         <div className={'grid-x'}>
-                            <button className={'button clear cell auto'} onClick={this.props.onRequestFavorite}>
+                            <button className={'button clear cell auto'} onClick={this._setFavorite}>
                                 <FontAwesomeIcon icon={[item.attributes.favorite ? 'fas' : 'far', 'heart']} />
                             </button>
                             <button className={'button clear cell auto'} onClick={() => { this.props.onRequestDelete(item.id) }}>
@@ -144,6 +148,15 @@ export default class MediaDialog extends React.Component {
             </div>
             , this.el
         )
+    }
+
+    _setFavorite = () => {
+        this.setState({
+            forceUpdate: !this.state.forceUpdate
+        })
+
+        this.props.item.attributes.favorite = !this.props.item.attributes.favorite
+        this.props.item.update()
     }
 
     _forceRerender = () => {
