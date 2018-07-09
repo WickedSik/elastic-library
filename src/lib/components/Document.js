@@ -79,6 +79,8 @@ export default class Document {
             this.dirty = {}
 
             this.version = results._version
+
+            this.fireNotifiers()
         })
     }
 

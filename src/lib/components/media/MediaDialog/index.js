@@ -173,9 +173,9 @@ export default class MediaDialog extends React.Component {
     }
 
     _forceRerender = () => {
-        this.setState({
-            keywords: this.props.item.attributes.keywords
-        })
+        this.setState((state, props) => ({
+            keywords: props.item.attributes.keywords
+        }))
     }
 
     _setFavorite = () => {
