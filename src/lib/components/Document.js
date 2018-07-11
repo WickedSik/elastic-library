@@ -3,27 +3,37 @@ import url from 'url'
 import SearchApi from '../redux/api/search'
 
 /**
- * {
-        _index: "media",
-        _type: "media",
-        _id: "AWI-Ba_QEDPZlr1t9Qe_",
-        _version: 1,
-        found: true,
-        _source: {
-            file: {
-                name: "1491766607.gorshapendragon_АНАЛЬЩИНА",
-                extension: ".png",
-                filename: "1491766607.gorshapendragon_АНАЛЬЩИНА.png",
-                path: "/Volumes/SMALLCAKES/Personal/Images/FurAffinity/1491766607.gorshapendragon_АНАЛЬЩИНА.png",
-                created_at: "2017-04-11T21:49:34.000Z",
-                updated_at: "2017-04-11T21:49:34.000Z",
-                size: 163205
+ *  {
+        "_index": "media",
+        "_type": "media",
+        "_id": "AWRsOe8oLZ81I4cnYxr3",
+        "_score": 8.735082,
+        "_source": {
+            "file": {
+                "name": "1530598687.gorshapendragon_trakhi",
+                "extension": ".png",
+                "filename": "1530598687.gorshapendragon_trakhi.png",
+                "path": "/Volumes/BIGCAKES/Images/FurAffinity/1530598687.gorshapendragon_trakhi.png",
+                "created_at": "2018-07-04T22:37:16.000Z",
+                "updated_at": "2018-07-04T22:37:16.000Z",
+                "size": 248897
             },
-            keywords: [
-                "FurAffinity"
-            ],
-            checksum: "dccfa91972c7784912e939da8a6f49cfe58588ce",
-            favorite: false
+            "keywords": ["FurAffinity", "1530598687", "Gorshapendragon"],
+            "numbers": ["1530598687"],
+            "author": "Gorshapendragon",
+            "title": "Trakhi",
+            "image": {
+                "format": "jpeg",
+                "width": 1280,
+                "height": 781,
+                "space": "srgb",
+                "channels": 3,
+                "depth": "uchar",
+                "hasProfile": false,
+                "hasAlpha": false
+            },
+            "checksum": "34d66bcb7486e118f885dc127cd622d957359f91",
+            "favorite": false
         }
     }
  */

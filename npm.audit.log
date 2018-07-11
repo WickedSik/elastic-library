@@ -1,20 +1,5 @@
 === npm audit security report ===                        
                                                                                 
-# Run  npm install elasticsearch@15.1.1  to resolve 1 vulnerability
-SEMVER WARNING: Recommended action is a potentially breaking change
-┌───────────────┬──────────────────────────────────────────────────────────────┐
-│ Low           │ Prototype Pollution                                          │
-├───────────────┼──────────────────────────────────────────────────────────────┤
-│ Package       │ lodash                                                       │
-├───────────────┼──────────────────────────────────────────────────────────────┤
-│ Dependency of │ elasticsearch                                                │
-├───────────────┼──────────────────────────────────────────────────────────────┤
-│ Path          │ elasticsearch > lodash                                       │
-├───────────────┼──────────────────────────────────────────────────────────────┤
-│ More info     │ https://nodesecurity.io/advisories/577                       │
-└───────────────┴──────────────────────────────────────────────────────────────┘
-
-
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │                                Manual Review                                 │
 │            Some vulnerabilities require your attention to resolve            │
@@ -74,6 +59,5 @@ SEMVER WARNING: Recommended action is a potentially breaking change
 ├───────────────┼──────────────────────────────────────────────────────────────┤
 │ More info     │ https://nodesecurity.io/advisories/566                       │
 └───────────────┴──────────────────────────────────────────────────────────────┘
-found 5 vulnerabilities (1 low, 4 moderate) in 15259 scanned packages
-  1 vulnerability requires semver-major dependency updates.
+found 4 moderate severity vulnerabilities in 15256 scanned packages
   4 vulnerabilities require manual review. See the full report for details.
