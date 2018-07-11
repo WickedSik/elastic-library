@@ -9,14 +9,19 @@
         "@fortawesome/fontawesome-svg-core": "^1.2.0",
         "@fortawesome/react-fontawesome": "0.1.0-11",
         "axios": "^0.18.0",
+        "checksum": "^0.1.1",
         "classnames": "^2.2.6",
         "elasticsearch": "^14.2.0",
+        "exif": "^0.6.0",
         "foundation-sites": "^6.5.0-rc.1",
         "gsap": "^2.0.1",
         "jquery": "^3.3.1",
+        "lodash": "^4.17.10",
         "moment": "^2.22.0",
         "numeraljs": "^1.5.6",
-        "sharp": "^0.20.1",
+        "queue": "^4.4.2",
+        "recursive-readdir": "^2.2.2",
+        "sharp": "^0.20.5",
         "what-input": "^4.3.1"
     },
     "scripts": {
@@ -25,7 +30,9 @@
         "demo": "node scripts/demo.js",
         "test": "node scripts/test.js --env=jsdom",
         "eslint": "node node_modules/.bin/eslint src",
-        "gui": "ELECTRON_DISABLE_SECURITY_WARNINGS=1 electron ."
+        "gui": "ELECTRON_DISABLE_SECURITY_WARNINGS=1 electron .",
+        "server": "FORCE_COLOR=true node --harmony server/index.js",
+        "purge": "FORCE_COLOR=true node --harmony server/purge.js"
     },
     "main": "main.js",
     "devDependencies": {
@@ -55,7 +62,7 @@
         "fs-extra": "3.0.1",
         "html-webpack-plugin": "2.29.0",
         "jest": "20.0.4",
-        "node-sass": "^4.9.0",
+        "node-sass": "^4.9.2",
         "object-assign": "4.1.1",
         "postcss-flexbugs-fixes": "3.2.0",
         "postcss-loader": "2.0.8",

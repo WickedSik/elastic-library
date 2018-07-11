@@ -1,8 +1,10 @@
 # To Do
 
 - [ ] Slideshow
-- [ ] Toggle for details or big image (for use in media dialog)
+- [x] Toggle for details or big image (for use in media dialog)
       This does probably mean I need to connect the media dialog to the store, as it's a global setting
+      This works with a "local" store too, given that everything is focussed on one state (`<App />`'s state)
+- [ ] Use `react-d3` for charts, fed by `elasticsearch`
 
 # Food for thought
 
