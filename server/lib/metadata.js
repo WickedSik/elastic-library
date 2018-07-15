@@ -91,7 +91,7 @@ class Metadata {
                 if (!_new[key].compare(_old[key])) {
                     dirty[key] = _new[key]
                 }
-            } else if (_new[key] != _old[key]) {
+            } else if (_new[key] !== _old[key]) {
                 dirty[key] = _new[key]
             }
         }

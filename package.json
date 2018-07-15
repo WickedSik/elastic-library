@@ -12,6 +12,7 @@
         "checksum": "^0.1.1",
         "classnames": "^2.2.6",
         "elasticsearch": "^15.1.1",
+        "electron-rpc": "^2.0.1",
         "exif": "^0.6.0",
         "foundation-sites": "^6.5.0-rc.1",
         "gsap": "^2.0.1",

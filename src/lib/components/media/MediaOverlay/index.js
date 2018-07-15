@@ -24,6 +24,8 @@ export default class MediaOverlay extends React.Component {
         onRequestPrev: () => {}
     }
 
+    __timer = null
+
     state = {
         forceUpdate: false
     }
@@ -47,6 +49,7 @@ export default class MediaOverlay extends React.Component {
 
     componentWillUnmount() {
         document.removeEventListener('keydown', this._closeIfEscape, false)
+        this._stopTimer()
     }
 
     render() {
@@ -77,6 +80,9 @@ export default class MediaOverlay extends React.Component {
                                 <button className={'button'} onClick={this._setFavorite}>
                                     <FontAwesomeIcon icon={[item.attributes.favorite ? 'fas' : 'far', 'heart']} />
                                 </button>
+                                <button className={'button'} onClick={this._toggleTimer}>
+                                    <FontAwesomeIcon icon={['fas', 'clock']} color={this.__timer ? 'red' : 'white'} />
+                                </button>
                                 <button className={'button'} onClick={this.props.onRequestOpenDialog}>
                                     <FontAwesomeIcon icon={['fas', 'address-card']} />
                                 </button>
@@ -106,6 +112,30 @@ export default class MediaOverlay extends React.Component {
     _closeIfEscape = (event) => {
         if (event.keyCode === 27) {
             this.props.onRequestClose()
+        }
+    }
+
+    _toggleTimer = () => {
+        if (this.__timer) {
+            this._stopTimer()
+        } else {
+            this._startTimer()
+        }
+        this.setState({
+            forceUpdate: !this.state.forceUpdate
+        })
+    }
+
+    _startTimer = () => {
+        if (!this.__timer) {
+            this.__timer = setInterval(this.props.onRequestNext, 5000)
+        }
+    }
+
+    _stopTimer = () => {
+        if (this.__timer) {
+            clearInterval(this.__timer)
+            this.__timer = null
         }
     }
 }
