@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import classnames from 'classnames'
 import PropTypes from 'prop-types'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -10,8 +11,15 @@ class SubjectList extends React.Component {
         subjects: PropTypes.array
     }
 
+    state = {
+        term: '*'
+    }
+
     render() {
         const { subjects } = this.props
+        const { term } = this.state
+
+        console.info('-- search', term)
 
         return (
             <div className={'subject-list'}>
@@ -25,7 +33,7 @@ class SubjectList extends React.Component {
                         <span>Everything</span>
                     </li>
                     { subjects.map(subject =>
-                        <li key={subject.key} onClick={() => { this._handleClick(subject) }}>
+                        <li key={subject.key} onClick={() => { this._handleClick(subject) }} className={classnames(subject.key === term && 'active')}>
                             <FontAwesomeIcon icon={['fas', 'tag']} />
                             <span>{subject.key} ({subject.doc_count})</span>
                         </li>
@@ -37,7 +45,11 @@ class SubjectList extends React.Component {
     }
 
     _handleClick = (subject) => {
-        this.props.onSearch('keywords:' + subject.key)
+        this.setState({
+            term: subject.key
+        }, () => {
+            this.props.onSearch(`keywords:${subject.key}`)
+        })
     }
 
     _handleFavorite = () => {

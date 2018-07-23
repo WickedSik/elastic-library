@@ -35,9 +35,16 @@
             text-align: right;
 
             h4 {
+                display: inline-block;
+
                 font-size: 1em;
                 margin: 0;
-                padding: 8px;
+                padding: 8px 16px;
+                margin-right: 2px;
+
+                background-color: rgba($ink, .2);
+                border-right: 1px solid rgba($ink, .1);
+                border-bottom: 1px solid rgba($ink, .1);
             }
         }
 
@@ -45,7 +52,10 @@
             margin: 0;
 
             .button {
-                background-color: transparent;
+                background-color: rgba($ink, .2);
+                border-right: 1px solid rgba($ink, .1);
+                border-bottom: 1px solid rgba($ink, .1);
+
                 color: $white;
                 margin-bottom: 0;
             }

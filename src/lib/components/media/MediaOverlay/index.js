@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
+import KeyCodes from '../../../constants/KeyCodes'
+
 import './style.scss'
 
 export default class MediaOverlay extends React.Component {
@@ -44,11 +46,11 @@ export default class MediaOverlay extends React.Component {
     }
 
     componentDidMount() {
-        document.addEventListener('keydown', this._closeIfEscape, false)
+        document.addEventListener('keydown', this._handleKeydown, false)
     }
 
     componentWillUnmount() {
-        document.removeEventListener('keydown', this._closeIfEscape, false)
+        document.removeEventListener('keydown', this._handleKeydown, false)
         this._stopTimer()
     }
 
@@ -62,11 +64,11 @@ export default class MediaOverlay extends React.Component {
             <div className={classnames('media-item-overlay', 'open')}>
                 <div style={imageStyle} className={'image'} />
 
-                <button className={'next-button'} onClick={this.props.onRequestNext}>
+                <button className={'next-button'} onClick={this._requestNext}>
                     <FontAwesomeIcon icon={['fas', 'caret-right']} fixedWidth />
                 </button>
 
-                <button className={'prev-button'} onClick={this.props.onRequestPrev}>
+                <button className={'prev-button'} onClick={this._requestPrev}>
                     <FontAwesomeIcon icon={['fas', 'caret-left']} fixedWidth />
                 </button>
 
@@ -78,7 +80,7 @@ export default class MediaOverlay extends React.Component {
                         <div className={'cell auto'}>
                             <div className={'button-group'}>
                                 <button className={'button'} onClick={this._setFavorite}>
-                                    <FontAwesomeIcon icon={[item.attributes.favorite ? 'fas' : 'far', 'heart']} />
+                                    <FontAwesomeIcon icon={[item.attributes.favorite ? 'fas' : 'far', 'heart']} color={item.attributes.favorite ? 'red' : 'white'} />
                                 </button>
                                 <button className={'button'} onClick={this._toggleTimer}>
                                     <FontAwesomeIcon icon={['fas', 'clock']} color={this.__timer ? 'red' : 'white'} />
@@ -89,7 +91,7 @@ export default class MediaOverlay extends React.Component {
                                 <button className={'button'} onClick={() => { this.props.onRequestDelete(item.id) }}>
                                     <FontAwesomeIcon icon={['fas', 'trash']} />
                                 </button>
-                                <button className={'button'} onClick={this.props.onRequestClose}>
+                                <button className={'button'} onClick={this._requestClose}>
                                     <FontAwesomeIcon icon={['fas', 'times']} />
                                 </button>
                             </div>
@@ -98,6 +100,27 @@ export default class MediaOverlay extends React.Component {
                 </div>
             </div>
         )
+    }
+
+    _requestNext = () => {
+        if (this.__timer) {
+            this._stopTimer()
+            this._startTimer()
+        }
+        this.props.onRequestNext()
+    }
+
+    _requestPrev = () => {
+        if (this.__timer) {
+            this._stopTimer()
+            this._startTimer()
+        }
+        this.props.onRequestPrev()
+    }
+
+    _requestClose = () => {
+        this._stopTimer()
+        this.props.onRequestClose()
     }
 
     _setFavorite = () => {
@@ -109,9 +132,21 @@ export default class MediaOverlay extends React.Component {
         this.props.item.update()
     }
 
-    _closeIfEscape = (event) => {
-        if (event.keyCode === 27) {
-            this.props.onRequestClose()
+    _handleKeydown = (event) => {
+        switch (event.keyCode) {
+        case KeyCodes.ESCAPE:
+            this._requestClose()
+            break
+        case KeyCodes.ARROW_LEFT:
+            this._requestPrev()
+            break
+        case KeyCodes.ARROW_RIGHT:
+            this._requestNext()
+            break
+        }
+
+        if (KeyCodes.getCharacterFromCode(event.keyCode) === 'l') {
+            this._setFavorite()
         }
     }
 

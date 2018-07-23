@@ -23,6 +23,10 @@
                 background-color: darken($oldpaper, 25%);
                 color: darken($oldpaper, 75%);
             }
+
+            &.active {
+                background-color: darken($oldpaper, 15%);
+            }
         }
     }
 }

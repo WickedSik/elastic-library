@@ -9,14 +9,17 @@ export default class Header extends React.Component {
     static propTypes = {
         onRequestOpenSettings: PropTypes.func.isRequired,
         onRequestSwitchDialogType: PropTypes.func.isRequired,
+        onRequestSwitchSort: PropTypes.func.isRequired,
         onSearch: PropTypes.func.isRequired,
         dialogType: PropTypes.string.isRequired,
+        sort: PropTypes.string.isRequired,
         term: PropTypes.string.isRequired
     }
 
     static defaultProps = {
         onRequestOpenSettings: () => {},
         onRequestSwitchDialogType: () => {},
+        onRequestSwitchSort: () => {},
         onSearch: () => {}
     }
 
@@ -40,6 +43,20 @@ export default class Header extends React.Component {
                             <div className={'cell small-1'}>
                                 <div className={'switch large'}>
                                     <input className={'switch-input'} id={'dialogtype'} type={'checkbox'} checked={this.props.dialogType === 'dialog'} onChange={this.props.onRequestSwitchDialogType} />
+                                    <label className={'switch-paddle'} htmlFor={'dialogtype'}>
+                                        <span className={'show-for-sr'}>Dialog Type</span>
+                                        <span className={'switch-active'} aria-hidden={'true'}>
+                                            <FontAwesomeIcon icon={['fas', 'address-card']} fixedWidth />
+                                        </span>
+                                        <span className={'switch-inactive'} aria-hidden={'true'}>
+                                            <FontAwesomeIcon icon={['fas', 'image']} fixedWidth />
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div className={'cell small-1'}>
+                                <div className={'switch large'}>
+                                    <input className={'switch-input'} id={'sorttype'} type={'checkbox'} checked={this.props.sort === '_id'} onChange={this.props.onRequestSwitchSort} />
                                     <label className={'switch-paddle'} htmlFor={'dialogtype'}>
                                         <span className={'show-for-sr'}>Dialog Type</span>
                                         <span className={'switch-active'} aria-hidden={'true'}>

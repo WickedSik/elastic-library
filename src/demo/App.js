@@ -26,6 +26,9 @@ import Config from '../config'
 
 fontawesome.library.add(regular, solid)
 
+// const fs = electron.remote.require('fs')
+const Client = window.require('electron-rpc/client')
+
 // create the saga middleware
 const sagaMiddleware = createSagaMiddleware()
 // mount it on the Store
@@ -40,6 +43,16 @@ const store = createStore(
 
 // then run the saga
 sagaMiddleware.run(mySaga)
+
+const rpc = new Client()
+
+rpc.on('imported', (err, data) => {
+    console.info('-- imported', err, data)
+})
+
+rpc.on('import-total', (err, data) => {
+    console.info('-- rpc:total', err, data)
+})
 
 class App extends React.Component {
     static propTypes = {
@@ -58,6 +71,8 @@ class App extends React.Component {
 
     componentDidMount() {
         $(document).foundation()
+
+        rpc.request('loaded')
     }
 
     componentWillMount() {

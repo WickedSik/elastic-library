@@ -85,7 +85,8 @@
     },
     "peerDependencies": {
         "react": ">=0.14",
-        "react-dom": ">=0.14"
+        "react-dom": ">=0.14",
+        "electron": "^2.0.5"
     },
     "jest": {
         "collectCoverageFrom": [
