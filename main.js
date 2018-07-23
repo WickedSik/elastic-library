@@ -1,8 +1,11 @@
 // ./main.js
 const electron = require('electron')
 const Server = require('electron-rpc/server')
+const Raven = require('raven')
 const ImageHandler = require('./lib/images')
 const Connector = require('./server/connector')
+
+Raven.config('https://40db1016f052405b8464d41bcaca698e@sentry.io/1248073').install()
 
 const { app, BrowserWindow } = electron
 const rpc = new Server()

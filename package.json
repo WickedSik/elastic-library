@@ -21,6 +21,7 @@
         "moment": "^2.22.0",
         "numeraljs": "^1.5.6",
         "queue": "^4.4.2",
+        "raven": "^2.6.3",
         "recursive-readdir": "^2.2.2",
         "sharp": "^0.20.5",
         "what-input": "^4.3.1"
