@@ -66,7 +66,8 @@ class App extends React.Component {
     state = {
         settingsOpen: false,
         dialogType: 'dialog',
-        searchterm: ''
+        searchterm: '',
+        sort: 'file.updated_at'
     }
 
     componentDidMount() {
@@ -92,8 +93,10 @@ class App extends React.Component {
                         <Header
                             dialogType={this.state.dialogType}
                             term={this.state.searchterm}
+                            sort={this.state.sort}
                             onRequestOpenSettings={this._openSettings}
                             onRequestSwitchDialogType={this._switchDialogType}
+                            onRequestSwitchSort={this._switchSort}
                             onSearch={search}
                         />
                     </div>
@@ -119,16 +122,22 @@ class App extends React.Component {
         )
     }
 
+    get sort() {
+        return this.state.sort === '_id' ? { '_uid': 'asc' } : { 'file.updated_at': 'desc' }
+    }
+
     _handleSearch = (term) => {
         this.setState({
             searchterm: term
         })
 
-        this.props.search(term)
+        console.info('-- search', term, this.sort)
+
+        this.props.search(term, 0, this.sort)
     }
 
     _handleRequestMore = () => {
-        this.props.search(this.state.searchterm, this.props.results.length, true)
+        this.props.search(this.state.searchterm, this.props.results.length, this.sort, true)
     }
 
     _switchDialogType = () => {
@@ -137,6 +146,16 @@ class App extends React.Component {
                 dialogType: state.dialogType === 'dialog' ? 'overlay' : 'dialog'
             }
         })
+    }
+
+    _switchSort = () => {
+        this.setState(state => {
+            return {
+                sort: state.sort === '_id' ? 'file.updated_at' : '_id'
+            }
+        })
+
+        this.props.search(this.state.searchterm, 0, this.sort)
     }
 
     _openSettings = () => {
@@ -161,7 +180,7 @@ App = connect(
     },
     dispatch => {
         return {
-            search(terms, position, more) {
+            search(terms, position, sort, more) {
                 const query = {
                     index: Config.search.index,
                     type: Config.search.type,
@@ -175,9 +194,7 @@ App = connect(
                                 }
                             }
                         },
-                        sort: [
-                            { 'file.updated_at': 'desc' }
-                        ]
+                        sort
                     }
                 }
 

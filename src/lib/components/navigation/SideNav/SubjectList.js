@@ -19,8 +19,6 @@ class SubjectList extends React.Component {
         const { subjects } = this.props
         const { term } = this.state
 
-        console.info('-- search', term)
-
         return (
             <div className={'subject-list'}>
                 <ul className='menu vertical icons icon-left'>

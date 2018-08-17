@@ -10,6 +10,7 @@
         "@fortawesome/react-fontawesome": "0.1.0-11",
         "axios": "^0.18.0",
         "checksum": "^0.1.1",
+        "cheerio": "^1.0.0-rc.2",
         "classnames": "^2.2.6",
         "elasticsearch": "^15.1.1",
         "electron-rpc": "^2.0.1",
@@ -23,6 +24,7 @@
         "queue": "^4.4.2",
         "raven": "^2.6.3",
         "recursive-readdir": "^2.2.2",
+        "request": "^2.88.0",
         "sharp": "^0.20.5",
         "what-input": "^4.3.1"
     },

@@ -3,23 +3,23 @@ const electron = require('electron')
 const Server = require('electron-rpc/server')
 const Raven = require('raven')
 const ImageHandler = require('./lib/images')
-const Connector = require('./server/connector')
+// const Connector = require('./server/connector')
 
 Raven.config('https://40db1016f052405b8464d41bcaca698e@sentry.io/1248073').install()
 
 const { app, BrowserWindow } = electron
 const rpc = new Server()
-const connector = new Connector(rpc)
+// const connector = new Connector(rpc)
 
-rpc.on('loaded', (req, next) => {
-    console.info('-- rpc:loaded', req)
+// rpc.on('loaded', (req, next) => {
+//     console.info('-- rpc:loaded', req)
 
-    if (!connector.connected) {
-        connector.init()
-    }
+//     if (!connector.connected) {
+//         connector.init()
+//     }
 
-    next()
-})
+//     next()
+// })
 
 let win = null
 

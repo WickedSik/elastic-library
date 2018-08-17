@@ -56,14 +56,14 @@ export default class Header extends React.Component {
                             </div>
                             <div className={'cell small-1'}>
                                 <div className={'switch large'}>
-                                    <input className={'switch-input'} id={'sorttype'} type={'checkbox'} checked={this.props.sort === '_id'} onChange={this.props.onRequestSwitchSort} />
-                                    <label className={'switch-paddle'} htmlFor={'dialogtype'}>
-                                        <span className={'show-for-sr'}>Dialog Type</span>
+                                    <input className={'switch-input'} id={'sorttype'} type={'checkbox'} checked={this.props.sort === 'file.updated_at'} onChange={this.props.onRequestSwitchSort} />
+                                    <label className={'switch-paddle'} htmlFor={'sorttype'}>
+                                        <span className={'show-for-sr'}>Sort</span>
                                         <span className={'switch-active'} aria-hidden={'true'}>
-                                            <FontAwesomeIcon icon={['fas', 'address-card']} fixedWidth />
+                                            <FontAwesomeIcon icon={['fas', 'sort-amount-down']} fixedWidth />
                                         </span>
                                         <span className={'switch-inactive'} aria-hidden={'true'}>
-                                            <FontAwesomeIcon icon={['fas', 'image']} fixedWidth />
+                                            <FontAwesomeIcon icon={['fas', 'clock']} fixedWidth />
                                         </span>
                                     </label>
                                 </div>
