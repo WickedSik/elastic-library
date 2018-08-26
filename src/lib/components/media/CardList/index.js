@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import classnames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import MediaItem from '../MediaItem'
@@ -13,7 +14,9 @@ export default class CardList extends React.Component {
         onRequestDelete: PropTypes.func.isRequired,
         onRequestMore: PropTypes.func.isRequired,
         onRequestSwitchDialogType: PropTypes.func.isRequired,
+        onRequestSelected: PropTypes.func.isRequired,
         results: PropTypes.array,
+        bulkSelection: PropTypes.array,
         total: PropTypes.number,
         dialogType: PropTypes.string
     }
@@ -21,33 +24,39 @@ export default class CardList extends React.Component {
     static defaultProps = {
         onRequestDelete: () => {},
         onRequestMore: () => {},
-        onRequestSwitchDialogType: () => {}
+        onRequestSwitchDialogType: () => {},
+        onRequestSelected: () => {}
     }
 
     state = {
+        bulkSelection: [],
         selected: null
     }
 
     render() {
-        const { results, total } = this.props
+        const { results, total, bulkSelection } = this.props
         const { selected } = this.state
 
         return (
-            <div className={'card-list'}>
+            <div className={classnames('card-list', bulkSelection.length > 0 && 'has-bulk-selection')}>
                 <div className={'grid-x'}>
                     {results && results.map((result, index) => (
                         <div key={result.id} className={'cell small-6 medium-4 large-3'}>
                             <MediaItem
                                 item={result}
+                                selected={bulkSelection.indexOf(index) !== -1}
                                 onRequestOpen={() => {
                                     this._go(index)
+                                }}
+                                onRequestSelected={() => {
+                                    this.props.onRequestSelected(index)
                                 }}
                             />
                         </div>
                     ))}
                     {results && total > results.length && (
                         <div className={'cell small-12'}>
-                            <button className={'add-more button'} onClick={this.props.onRequestMore}>
+                            <button className={'load-more button'} onClick={this.props.onRequestMore}>
                                 <FontAwesomeIcon icon={['fas', 'sync']} />
                             </button>
                         </div>

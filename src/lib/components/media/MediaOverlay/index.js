@@ -124,12 +124,12 @@ export default class MediaOverlay extends React.Component {
     }
 
     _setFavorite = () => {
+        this.props.item.attributes.favorite = !this.props.item.attributes.favorite
+        this.props.item.update()
+
         this.setState({
             forceUpdate: !this.state.forceUpdate
         })
-
-        this.props.item.attributes.favorite = !this.props.item.attributes.favorite
-        this.props.item.update()
     }
 
     _handleKeydown = (event) => {

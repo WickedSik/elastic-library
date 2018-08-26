@@ -19,7 +19,7 @@ $imported: () !default;
             width: 100vw;
             height: 100vh;
 
-            background-color: rgba($ink, .5);
+            background-color: rgba($text-color, .5);
 
             .lib-dialog-content {
                 position: relative;
@@ -27,9 +27,9 @@ $imported: () !default;
                 padding: 2em;
                 margin: 4em 2em;
 
-                color: $ink;
-                background-color: $oldpaper;
-                box-shadow: 2px 2px 5px rgba($ink, .75);
+                color: $text-color;
+                background-color: $background-color;
+                box-shadow: 2px 2px 5px rgba($text-color, .75);
 
                 height: calc(100vh - 8em);
 
@@ -75,7 +75,7 @@ $imported: () !default;
                             }
 
                             &:hover {
-                                background-color: darken($oldpaper, 65%);
+                                background-color: darken($background-color, 65%);
                             }
                         }
 
@@ -104,8 +104,8 @@ $imported: () !default;
                 .next-button, .prev-button {
                     font-size: 2em;
                     padding: 15px 10px;
-                    background-color: darken($oldpaper, 25%);
-                    box-shadow: 0px 0px 5px darken($oldpaper, 25%);
+                    background-color: darken($background-color, 25%);
+                    box-shadow: 0px 0px 5px darken($background-color, 25%);
 
                     position: absolute;
 

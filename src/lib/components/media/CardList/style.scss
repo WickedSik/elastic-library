@@ -3,9 +3,10 @@
 .card-list {
     height: calc(100vh - 55px);
     overflow-y: auto;
-    box-shadow: inset 0px 0px 5px darken($oldpaper, 25%);
+    box-shadow: inset 0px 0px 5px darken($background-color, 25%);
+    background-color: $background-color;
 
-    .add-more {
+    .load-more {
         width: 100%;
         text-align: center;
         padding: 10px;

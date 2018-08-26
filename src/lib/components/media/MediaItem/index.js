@@ -9,11 +9,15 @@ import './style.scss'
 export default class MediaItem extends React.Component {
     static propTypes = {
         onRequestOpen: PropTypes.func.isRequired,
+        onRequestSelected: PropTypes.func.isRequired,
+        selected: PropTypes.bool.isRequired,
         item: PropTypes.object.isRequired
     }
 
     static defaultProps = {
-        onRequestOpen: () => {}
+        onRequestOpen: () => {},
+        onRequestSelected: () => {},
+        selected: false
     }
 
     state = {
@@ -34,21 +38,32 @@ export default class MediaItem extends React.Component {
     }
 
     render() {
-        const { item } = this.props
-        const icon = item.attributes.favorite
-            ? <FontAwesomeIcon icon={['fas', 'heart']} />
-            : <FontAwesomeIcon icon={['far', 'heart']} />
+        const { item, selected } = this.props
+        const favoriteIcon = item.attributes.favorite
+            ? <FontAwesomeIcon icon={['fas', 'heart']} size={'2x'} />
+            : <FontAwesomeIcon icon={['far', 'heart']} size={'2x'} />
+        const selectedIcon = selected
+            ? <FontAwesomeIcon icon={['fas', 'check-square']} size={'2x'} />
+            : <FontAwesomeIcon icon={['far', 'check-square']} size={'2x'} />
 
         return (
             <div className={'media-item'} onClick={this.props.onRequestOpen}>
                 <div className={'img'} style={{backgroundImage: `url("${item.thumb}")`}} />
                 <h4>{item.title}</h4>
-                <span className={classnames('icon', item.attributes.favorite && 'is-favorited')} onClick={event => {
+
+                <span className={classnames('icon', 'select-icon', selected && 'is-selected')} onClick={event => {
+                    event.stopPropagation()
+                    event.preventDefault()
+
+                    this.props.onRequestSelected()
+                }}>{selectedIcon}</span>
+
+                <span className={classnames('icon', 'favorite-icon', item.attributes.favorite && 'is-favorited')} onClick={event => {
                     event.stopPropagation()
                     event.preventDefault()
 
                     this._setFavorite()
-                }}>{icon}</span>
+                }}>{favoriteIcon}</span>
             </div>
         )
     }

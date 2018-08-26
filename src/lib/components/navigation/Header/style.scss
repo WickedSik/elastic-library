@@ -6,14 +6,20 @@
 
 .header {
     height: 56px;
-
+    
     .title-bar-title {
+        color: $ink;
         margin-left: 10px;
     }
 
+    .menu-icon::after{
+        background: $teal;
+        box-shadow: 0 7px 0 $teal, 0 14px 0 $teal; 
+    }
+    
     .settings-icon {
+        color: $teal;
         display: inline-block;
-        color: $ink;
         margin-left: 0.25rem;
         margin-right: 0.25rem;
         cursor: pointer;
@@ -21,6 +27,14 @@
 
     button {
         margin: 0;
+    }
+
+    .button {
+        background-color: $teal;
+    }
+
+    input:checked ~ .switch-paddle {
+        background-color: $teal;
     }
 
     .grid-x {

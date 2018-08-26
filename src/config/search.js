@@ -1,5 +1,6 @@
 export default {
-    index: 'media',
+    index: 'media-demo',
     type: 'media',
-    size: 100
+    size: 100,
+    defaultSearch: '*'
 }

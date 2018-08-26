@@ -1,27 +1,27 @@
 @import 'foundation';
 @import '../assets/colors';
-@import url('https://fonts.googleapis.com/css?family=Anton|Muli');
+@import url('https://fonts.googleapis.com/css?family=Anton|Muli|Open+Sans');
 
 $foundation-palette: (
-    primary: $ink,
+    primary: $text-color,
     secondary: #767676,
     success: #3adb76,
     warning: #ffae00,
     alert: #cc4b37
 );
 
-$titlebar-color: $ink;
-$titlebar-background: $oldpaper;
-$titlebar-icon-color: $ink;
-$body-font-color: $ink;
-$button-color: $oldpaper;
-$button-background: $ink;
-$button-background-hover: darken($oldpaper, 75%);
+$titlebar-color: $text-color;
+$titlebar-background: $background-color;
+$titlebar-icon-color: $text-color;
+$body-font-color: $text-color;
+$button-color: $background-color;
+$button-background: $text-color;
+$button-background-hover: darken($background-color, 75%);
 $table-background: transparent;
 $table-is-striped: false;
-$label-background: darken($oldpaper, 75%);
-$switch-background: darken($oldpaper, 75%);
-$switch-background-active: $ink;
+$label-background: darken($background-color, 75%);
+$switch-background: darken($background-color, 75%);
+$switch-background-active: $text-color;
 
 @include foundation-everything();
 
@@ -34,11 +34,12 @@ $switch-background-active: $ink;
 @include foundation-xy-grid-classes();
 
 body {
-    background-color: $oldpaper;
-    color: $ink;
+    background-color: $background-color;
+    color: $text-color;
 
     padding-bottom: 50px;
-    font-family: Muli, sans-serif;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
     overflow: hidden;
 }
 
@@ -49,13 +50,13 @@ button:focus, input:focus {
 input {
     appearance: none;
         
-    color: $ink;
+    color: $text-color;
     background-color: transparent;
     border: 0 none;
-    border-bottom: 1px solid darken($oldpaper, 20%);
+    border-bottom: 1px solid darken($background-color, 20%);
     box-shadow: none;
 
     &::placeholder {
-        color: darken($oldpaper, 90%);
+        color: darken($background-color, 90%);
     }
 }

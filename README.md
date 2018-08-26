@@ -6,6 +6,10 @@
       This works with a "local" store too, given that everything is focussed on one state (`<App />`'s state)
 - [ ] Use `react-d3` for charts, fed by `elasticsearch`
 
+## Bulk actions
+
+- [ ] ?
+
 # Food for thought
 
 > Late night rambling

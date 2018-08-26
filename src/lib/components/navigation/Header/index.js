@@ -28,8 +28,9 @@ export default class Header extends React.Component {
             <div className={'header'} data-sticky-container>
                 <div className={'title-bar'} data-sticky data-options={'marginTop:0;'}>
                     <div className={'title-bar-left'}>
+                        <div className={'menu-icon'} data-toggle={'offCanvas'} />
                         <div className={'settings-icon'} onClick={this.props.onRequestOpenSettings}>
-                            <FontAwesomeIcon icon={['fas', 'cogs']} />
+                            <FontAwesomeIcon icon={['fas', 'cogs']} color={'inherit'} />
                         </div>
                         <span className={'title-bar-title'}>Media Library</span>
                     </div>

@@ -4,6 +4,7 @@ import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import numeral from 'numeraljs'
 import moment from 'moment'
+import Booru from 'booru'
 
 import InlineEdit from '../../partials/InlineEdit'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -158,6 +159,9 @@ export default class MediaDialog extends React.Component {
                             <button className={'button clear cell auto'} onClick={() => { this.props.onRequestDelete(item.id) }}>
                                 <FontAwesomeIcon icon={['fas', 'trash']} />
                             </button>
+                            <button className={'button clear cell auto'} onClick={this._checkE621}>
+                                <FontAwesomeIcon icon={['fas', 'globe']} />
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -224,5 +228,33 @@ export default class MediaDialog extends React.Component {
         eve.preventDefault()
 
         return false
+    }
+
+    _checkBooru = () => {
+        const booru = new Booru()
+
+        console.info('-- booru', booru)
+
+        booru.show('e621', this.props.item.attributes.checksum)
+            .then(result => {
+                console.info('-- booru:result', result)
+            })
+            .catch(error => {
+                console.error('-- booru:catch', error)
+            })
+    }
+
+    _checkE621 = () => {
+        const booru = new Booru()
+
+        console.info('-- e621', booru)
+
+        booru.show('e621', this.props.item.attributes.file.name)
+            .then(result => {
+                console.info('-- e621:result', result)
+            })
+            .catch(error => {
+                console.error('-- e621:catch', error)
+            })
     }
 }

@@ -30,7 +30,7 @@
         width: 100%;
 
         .title {
-            color: $white;;
+            color: $background-color;;
             height: 100%;
             text-align: right;
 
@@ -42,9 +42,9 @@
                 padding: 8px 16px;
                 margin-right: 2px;
 
-                background-color: rgba($ink, .2);
-                border-right: 1px solid rgba($ink, .1);
-                border-bottom: 1px solid rgba($ink, .1);
+                background-color: rgba($text-color, .2);
+                border-right: 1px solid rgba($text-color, .1);
+                border-bottom: 1px solid rgba($text-color, .1);
             }
         }
 
@@ -52,11 +52,11 @@
             margin: 0;
 
             .button {
-                background-color: rgba($ink, .2);
-                border-right: 1px solid rgba($ink, .1);
-                border-bottom: 1px solid rgba($ink, .1);
+                background-color: rgba($text-color, .2);
+                border-right: 1px solid rgba($text-color, .1);
+                border-bottom: 1px solid rgba($text-color, .1);
 
-                color: $white;
+                color: $background-color;
                 margin-bottom: 0;
             }
         }
@@ -72,7 +72,7 @@
         height: 100vh;
         width: 10vw;
         cursor: pointer;
-        color: $white;
+        color: $background-color;
     }
 
     .next-button {

@@ -19,6 +19,7 @@ import actions from '../lib/redux/actions'
 
 import Header from '../lib/components/navigation/Header'
 import CardList from '../lib/components/media/CardList'
+import BulkActionBar from '../lib/components/media/CardList/BulkActionBar'
 import SideNav from '../lib/components/navigation/SideNav'
 import SettingsDialog from '../lib/components/partials/SettingsDialog'
 
@@ -64,6 +65,7 @@ class App extends React.Component {
     }
 
     state = {
+        bulkSelection: [],
         settingsOpen: false,
         dialogType: 'dialog',
         searchterm: '',
@@ -78,45 +80,59 @@ class App extends React.Component {
 
     componentWillMount() {
         this.props.subjectList()
-        this._handleSearch('keywords:*')
+        this._handleSearch(Config.search.defaultSearch)
     }
 
     render() {
         const { results, total } = this.props
+        const { bulkSelection } = this.state
         const search = _.debounce(this._handleSearch, 250, { trailing: true })
         const requestMore = _.debounce(this._handleRequestMore, 250, { trailing: true })
 
         return (
-            <div className='app-container'>
-                <div className={'grid-x'}>
-                    <div className={'cell small-12'}>
-                        <Header
-                            dialogType={this.state.dialogType}
-                            term={this.state.searchterm}
-                            sort={this.state.sort}
-                            onRequestOpenSettings={this._openSettings}
-                            onRequestSwitchDialogType={this._switchDialogType}
-                            onRequestSwitchSort={this._switchSort}
-                            onSearch={search}
-                        />
-                    </div>
-                    <div className={'cell small-2'}>
-                        <SideNav onSearch={search} />
-                    </div>
-                    <div className={'cell small-10'}>
-                        <CardList
-                            dialogType={this.state.dialogType}
-                            results={results}
-                            total={total}
-                            onRequestSwitchDialogType={this._switchDialogType}
-                            onRequestMore={requestMore}
-                            onRequestDelete={this.props.delete}
-                        />
-                    </div>
+            <div className={'off-canvas-wrapper'}>
+                <div className={'off-canvas position-left'} id={'offCanvas'} data-off-canvas>
+                    <SideNav onSearch={search} />
+                </div>
+                <div className={'app-container off-canvas-content'} data-off-canvas-content>
+                    <div className={'grid-x'}>
+                        <div className={'cell small-12'}>
+                            <Header
+                                dialogType={this.state.dialogType}
+                                term={this.state.searchterm}
+                                sort={this.state.sort}
+                                onRequestOpenSettings={this._openSettings}
+                                onRequestSwitchDialogType={this._switchDialogType}
+                                onRequestSwitchSort={this._switchSort}
+                                onSearch={search}
+                            />
+                        </div>
+                        <div className={'cell small-12'}>
+                            <CardList
+                                dialogType={this.state.dialogType}
+                                bulkSelection={bulkSelection}
+                                results={results}
+                                total={total}
+                                onRequestSwitchDialogType={this._switchDialogType}
+                                onRequestMore={requestMore}
+                                onRequestDelete={this.props.delete}
+                                onRequestSelected={i => {
+                                    if (bulkSelection.indexOf(i) === -1) {
+                                        this._bulkSelect(i)
+                                    } else {
+                                        this._bulkDeselect(i)
+                                    }
+                                }}
+                            />
+                            {bulkSelection.length > 0 && (
+                                <BulkActionBar bulkSelection={bulkSelection.map(i => results[i])} />
+                            )}
+                        </div>
 
-                    {this.state.settingsOpen && (
-                        <SettingsDialog onRequestClose={this._closeSettings} />
-                    )}
+                        {this.state.settingsOpen && (
+                            <SettingsDialog onRequestClose={this._closeSettings} />
+                        )}
+                    </div>
                 </div>
             </div>
         )
@@ -168,6 +184,18 @@ class App extends React.Component {
         this.setState({
             settingsOpen: false
         })
+    }
+
+    _bulkSelect = (id) => {
+        this.setState(state => ({
+            bulkSelection: [...state.bulkSelection, id]
+        }))
+    }
+
+    _bulkDeselect = (id) => {
+        this.setState(state => ({
+            bulkSelection: state.bulkSelection.filter(r => r !== id)
+        }))
     }
 }
 

@@ -1,6 +1,5 @@
 require('./shared/extend/promises')
 
-const config = require('../config.json')
 const queue = require('queue')
 const fs = require('fs')
 const ProgressBar = require('progress')
@@ -8,6 +7,16 @@ const ProgressBar = require('progress')
 const Watcher = require('./lib/watcher')
 const Metadata = require('./lib/metadata')
 const Indexer = require('./lib/indexer')
+
+const getopts = require('getopts')
+
+const options = getopts(process.argv.slice(2), {
+    alias: {
+        c: 'config'
+    }
+})
+
+const config = require(`../${options.config || 'config.json'}`)
 
 const watchers = []
 const q = queue({

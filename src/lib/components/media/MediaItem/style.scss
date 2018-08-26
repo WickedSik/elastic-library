@@ -3,6 +3,8 @@
 .media-item {
     position: relative;
     height: 250px;
+    margin: 15px;
+    background-color: $card-color;
 
     cursor: pointer;
 
@@ -16,38 +18,60 @@
         width: 100%;
 
         margin: 0;
-        padding: 20px;
+        padding: 15px;
 
-        color: darken($white, .25);
-        text-shadow: 1px 1px 1px $ink;
+        color: $text-color;
+        // text-shadow: 1px 1px 1px $ink;
+        text-align: center;
         font-family: Anton, sans-serif;
+        font-size: 24px;
 
-        background: linear-gradient(0deg, rgba(black, .7) 0%, rgba(black, 0) 100%);
+        // background: linear-gradient(0deg, rgba(black, .7) 0%, rgba(black, 0) 100%);
     }
 
     .icon {
         position: absolute;
-        right: 10px;
         top: 10px;
         cursor: pointer;
-        color: darken($white, .25);
+        color: darken($background-color, .25);
 
-        &.is-favorited {
-            color: $red;
+        &.favorite-icon {
+            right: 10px;
+
+            &.is-favorited {
+                color: $red;
+            }
+        }
+
+        &.select-icon {
+            left: 10px;
+            visibility: hidden;
+
+            transition: visibility .5s;
+
+            &.is-selected {
+                visibility: visible;
+            }
         }
     }
 
     .img {
         width: 100%;
-        height: 100%;
+        height: calc(100% - 65px);
         
         background-position: center;
         background-size: cover;
         background-repeat: no-repeat;
 
         z-index: -1;
+    }
 
-        &:hover {
+    &:hover {
+        .icon.select-icon {
+            visibility: visible;
+        }
+
+        .img {
             background-size: contain;
         }
     }

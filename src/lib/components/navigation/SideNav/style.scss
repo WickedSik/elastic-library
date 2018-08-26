@@ -3,7 +3,12 @@
 .side-nav {
     height: 100vh;
     overflow-y: auto;
-    box-shadow: inset 0px 0px 5px darken($oldpaper, 25%);
+    box-shadow: inset 0px 0px 5px darken($background-color, 25%);
+    background-color: $background-color;
+
+    color: $black;
+    font-family: 'Open Sans';
+    font-size: 14px;
 
     .menu {
         li {
@@ -17,15 +22,20 @@
             span {
                 display: inline-block;
                 padding: 10px 0 10px 10px;
+                font-weight: normal;
             }
 
             &:hover {
-                background-color: darken($oldpaper, 25%);
-                color: darken($oldpaper, 75%);
+                background-color: $teal;
+                color: $white;
+
+                span {
+                    font-weight: bold;
+                }
             }
 
             &.active {
-                background-color: darken($oldpaper, 15%);
+                background-color: darken($background-color, 15%);
             }
         }
     }
