@@ -4,6 +4,7 @@ import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import numeral from 'numeraljs'
 import moment from 'moment'
+import _ from 'lodash'
 
 import InlineEdit from '../../partials/InlineEdit'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -43,12 +44,7 @@ export default class MediaDialog extends React.Component {
         document.body.appendChild(this.el)
 
         if (this.props.item && this.props.item.addNotifier) {
-            this.props.item.addNotifier({
-                fire: () => {
-                    // changing state actually rerenders the component!
-                    this._forceRerender()
-                }
-            })
+            this.props.item.addNotifier(this._forceRerender)
         }
     }
 
@@ -73,6 +69,12 @@ export default class MediaDialog extends React.Component {
             this.setState({ // eslint-disable-line react/no-did-update-set-state
                 keywords: this.props.item.attributes.keywords
             })
+        }
+
+        if (prevProps.item.id !== this.props.item.id) {
+            if (this.props.item && this.props.item.addNotifier) {
+                this.props.item.addNotifier(this._forceRerender)
+            }
         }
     }
 
@@ -114,7 +116,12 @@ export default class MediaDialog extends React.Component {
                                                 <tr><th>Filename</th><td>{item.attributes.file.name}</td></tr>
                                                 <tr><th>Extension</th><td>{item.attributes.file.extension}</td></tr>
                                                 <tr><th>Size</th><td>{numeral(item.attributes.file.size).format('0.00b')}</td></tr>
-                                                <tr><th>Checksum</th><td>{item.attributes.checksum}</td></tr>
+                                                {item.attributes.author && (
+                                                    <tr><th>Author</th><td>{item.attributes.author}</td></tr>
+                                                )}
+                                                {(item.attributes.checksum !== item.attributes.file.name) && (
+                                                    <tr><th>Checksum</th><td>{item.attributes.checksum}</td></tr>
+                                                )}
                                                 <tr><th>Created</th><td>{moment(item.attributes.file.created_at).format('D MMMM YYYY')}</td></tr>
                                                 <tr><th>Updated</th><td>{moment(item.attributes.file.updated_at).format('D MMMM YYYY')}</td></tr>
                                                 <tr><th>Tags</th>
@@ -177,8 +184,11 @@ export default class MediaDialog extends React.Component {
     }
 
     _forceRerender = () => {
-        this.setState((state, props) => ({
-            keywords: props.item.attributes.keywords
+        console.info('-- media-dialog:force-rerender')
+
+        this.setState(state => ({
+            forceUpdate: !state.forceUpdate,
+            keywords: this.props.item.attributes.keywords
         }))
     }
 
@@ -231,10 +241,25 @@ export default class MediaDialog extends React.Component {
     }
 
     _checkBooru = () => {
-        fetch(`booru://${this.props.item.attributes.checksum}`)
+        fetch(`booru://e621/${this.props.item.attributes.checksum}`)
             .then(result => result.json())
             .then(result => {
-                console.info('-- booru', result)
+                console.table(result)
+
+                this.props.item.attributes.author = result.artist
+                this.props.item.attributes.source = result.source
+                this.props.item.attributes.rating = ((rating) => {
+                    switch (rating) {
+                    case 'q': return 'questionable'
+                    case 's': return 'safe'
+                    case 'e': return 'explicit'
+                    }
+                })(result.rating)
+
+                const keywords = [...this.props.item.attributes.keywords, ...result.tags.split(/\s+/g)]
+
+                this.props.item.attributes.keywords = _.uniq(keywords)
+                this.props.item.update()
             })
             .catch(err => {
                 console.warn('-- booru', err)

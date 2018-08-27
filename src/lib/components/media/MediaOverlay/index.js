@@ -34,14 +34,7 @@ export default class MediaOverlay extends React.Component {
 
     componentWillMount() {
         if (this.props.item && this.props.item.addNotifier) {
-            this.props.item.addNotifier({
-                fire: () => {
-                    // changing state actually rerenders the component!
-                    this.setState({
-                        forceUpdate: !this.state.forceUpdate
-                    })
-                }
-            })
+            this.props.item.addNotifier(this._forceRerender)
         }
     }
 
@@ -100,6 +93,14 @@ export default class MediaOverlay extends React.Component {
                 </div>
             </div>
         )
+    }
+
+    _forceRerender = () => {
+        console.info('-- media-overyaly:force-rerender')
+
+        this.setState(state => ({
+            forceUpdate: !state.forceUpdate
+        }))
     }
 
     _requestNext = () => {

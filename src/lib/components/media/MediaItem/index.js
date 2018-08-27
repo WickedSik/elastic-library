@@ -26,14 +26,7 @@ export default class MediaItem extends React.Component {
 
     componentWillMount() {
         if (this.props.item && this.props.item.addNotifier) {
-            this.props.item.addNotifier({
-                fire: () => {
-                    // changing state actually rerenders the component!
-                    this.setState({
-                        forceUpdate: !this.state.forceUpdate
-                    })
-                }
-            })
+            this.props.item.addNotifier(this._forceRerender)
         }
     }
 
@@ -66,6 +59,14 @@ export default class MediaItem extends React.Component {
                 }}>{favoriteIcon}</span>
             </div>
         )
+    }
+
+    _forceRerender = () => {
+        console.info('-- media-item:force-rerender')
+
+        this.setState(state => ({
+            forceUpdate: !state.forceUpdate
+        }))
     }
 
     _setFavorite = () => {

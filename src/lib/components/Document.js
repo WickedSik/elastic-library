@@ -136,7 +136,7 @@ export default class Document {
     /* Update Handlers */
 
     fireNotifiers() {
-        this.notifiers.forEach(note => note.fire())
+        this.notifiers.forEach(note => note())
     }
 
     addNotifier(note) {
