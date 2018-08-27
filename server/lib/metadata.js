@@ -3,6 +3,9 @@ const flatten = require('../shared/extend').flatten
 
 const parsers = []
 
+/**
+ * @class
+ */
 class Metadata {
     constructor(dir, file) {
         this.dir = dir

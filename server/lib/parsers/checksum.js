@@ -12,7 +12,7 @@ class ChecksumParser {
      */
     parse(metadata) {
         return new Promise((resolve, reject) => {
-            checksum.file(metadata.getFilePath(), (err, sum) => {
+            checksum.file(metadata.getFilePath(), { algorithm: 'md5' }, (err, sum) => {
                 if (err) {
                     reject(err)
                 }
