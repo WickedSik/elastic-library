@@ -33,7 +33,7 @@
         position: absolute;
         top: 10px;
         cursor: pointer;
-        color: darken($background-color, .25);
+        color: $teal;
 
         &.favorite-icon {
             right: 10px;

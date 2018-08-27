@@ -2,5 +2,5 @@ export default {
     index: 'media',
     type: 'media',
     size: 100,
-    defaultSearch: '*'
+    defaultSearch: 'keywords:E621'
 }
