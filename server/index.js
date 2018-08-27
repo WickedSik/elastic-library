@@ -88,25 +88,37 @@ indexer.init().on('ready', () => {
         }
     }
 
+    const watcherPromise = []
+
     watchers.forEach((w) => {
+        let watcherComplete
+
+        watcherPromise.push(new Promise((resolve, reject) => {
+            watcherComplete = resolve
+        }))
+
         w.on('watcher:rename', handleFileEvent)
         w.on('watcher:change', handleFileEvent)
         w.on('watcher:read', handleFileEvent)
         w.on('watcher:finished', () => {
-            let bar = new ProgressBar('-- indexing [:bar] :percent :etas', {
-                complete: '=',
-                incomplete: ' ',
-                width: 50,
-                total: q.length
-            })
-
-            q.on('success', () => { bar.tick() })
-
-            if (q.length > 0) {
-                q.start()
-            }
+            watcherComplete()
         })
 
         w.watch().read()
+    })
+
+    Promise.all(watcherPromise).then(() => {
+        let bar = new ProgressBar('-- indexing [:bar] :percent :etas', {
+            complete: '=',
+            incomplete: ' ',
+            width: 50,
+            total: q.length
+        })
+
+        q.on('success', () => { bar.tick() })
+
+        if (q.length > 0) {
+            q.start()
+        }
     })
 })

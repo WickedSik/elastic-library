@@ -37,20 +37,24 @@
 
         &.favorite-icon {
             right: 10px;
+            opacity: 0;
+
+            transition: opacity .5s linear;
 
             &.is-favorited {
+                opacity: 1;
                 color: $red;
             }
         }
 
         &.select-icon {
             left: 10px;
-            visibility: hidden;
+            opacity: 0;
 
-            transition: visibility .5s;
+            transition: opacity .5s linear;
 
             &.is-selected {
-                visibility: visible;
+                opacity: 1;
             }
         }
     }
@@ -67,12 +71,12 @@
     }
 
     &:hover {
-        .icon.select-icon {
-            visibility: visible;
+        .icon.select-icon, .icon.favorite-icon {
+            opacity: 1;
         }
 
         .img {
             background-size: contain;
         }
     }
-}
+}   
