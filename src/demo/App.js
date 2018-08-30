@@ -6,10 +6,12 @@ import { Provider, connect } from 'react-redux'
 import _ from 'lodash'
 import $ from 'jquery'
 import 'foundation-sites'
+import { NotificationContainer } from 'react-notifications'
 
 import fontawesome from '@fortawesome/fontawesome'
 import regular from '@fortawesome/fontawesome-free-regular'
 import solid from '@fortawesome/fontawesome-free-solid'
+import 'react-notifications/lib/notifications.css'
 
 import './app.scss'
 
@@ -141,6 +143,8 @@ class App extends React.Component {
                         )}
                     </div>
                 </div>
+
+                <NotificationContainer />
             </div>
         )
     }

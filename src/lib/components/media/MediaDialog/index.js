@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import numeral from 'numeraljs'
 import moment from 'moment'
 import _ from 'lodash'
+import { NotificationManager } from 'react-notifications'
 
 import InlineEdit from '../../partials/InlineEdit'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -260,9 +261,13 @@ export default class MediaDialog extends React.Component {
 
                 this.props.item.attributes.keywords = _.uniq(keywords)
                 this.props.item.update()
+
+                NotificationManager.success('E621 successfully checked')
             })
             .catch(err => {
                 console.warn('-- booru', err)
+
+                NotificationManager.warning('Not found on E621')
             })
     }
 }
