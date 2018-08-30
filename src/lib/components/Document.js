@@ -39,6 +39,25 @@ import SearchApi from '../redux/api/search'
  */
 
 export default class Document {
+    static __global_listeners = {
+        update: [],
+        create: [],
+        loaded: []
+    }
+
+    static globalOn(event, callback) {
+        if (event in Document.__global_listeners) {
+            Document.__global_listeners[event].push(callback)
+        }
+    }
+
+    static globalTrigger(event, data) {
+        if (event in Document.__global_listeners) {
+            // eslint-disable-next-line standard/no-callback-literal
+            Document.__global_listeners[event].forEach(callback => callback(this, data))
+        }
+    }
+
     constructor(props) {
         const self = this
 
@@ -59,7 +78,14 @@ export default class Document {
         })
         this.dirty = {}
 
-        this.notifiers = []
+        this.__on = {
+            update: [],
+            create: [],
+            loaded: [],
+            ...Document.__global_listeners
+        }
+
+        this.trigger('loaded')
     }
 
     set(deepProp, value) {
@@ -90,7 +116,7 @@ export default class Document {
 
             this.version = results._version
 
-            this.fireNotifiers()
+            this.trigger('update')
         })
     }
 
@@ -134,12 +160,16 @@ export default class Document {
     }
 
     /* Update Handlers */
-
-    fireNotifiers() {
-        this.notifiers.forEach(note => note())
+    on(event, callback) {
+        if (event in this.__on) {
+            this.__on[event].push(callback)
+        }
     }
 
-    addNotifier(note) {
-        this.notifiers.push(note)
+    trigger(event, data = null) {
+        if (event in this.__on) {
+            // eslint-disable-next-line standard/no-callback-literal
+            this.__on[event].forEach(callback => callback(this, data))
+        }
     }
 }

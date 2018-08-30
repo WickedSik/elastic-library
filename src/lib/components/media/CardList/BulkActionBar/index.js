@@ -26,6 +26,9 @@ export default class BulkActionBar extends React.Component {
                     <span className={'icon button'}>
                         <FontAwesomeIcon icon={['fas', 'trash']} />
                     </span>
+                    <span className={'icon button'}>
+                        <FontAwesomeIcon icon={['fas', 'th']} />
+                    </span>
                 </div>
             </div>
         )

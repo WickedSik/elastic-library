@@ -25,8 +25,8 @@ export default class MediaItem extends React.Component {
     }
 
     componentWillMount() {
-        if (this.props.item && this.props.item.addNotifier) {
-            this.props.item.addNotifier(this._forceRerender)
+        if (this.props.item && this.props.item.on) {
+            this.props.item.on('update', this._forceRerender)
         }
     }
 

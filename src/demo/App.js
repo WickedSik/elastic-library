@@ -22,6 +22,8 @@ import CardList from '../lib/components/media/CardList'
 import BulkActionBar from '../lib/components/media/CardList/BulkActionBar'
 import SideNav from '../lib/components/navigation/SideNav'
 import SettingsDialog from '../lib/components/partials/SettingsDialog'
+import Document from '../lib/components/Document'
+import ImagePreloader from '../lib/components/loaders/ImagePreloader'
 
 import Config from '../config'
 
@@ -55,6 +57,11 @@ rpc.on('import-total', (err, data) => {
     console.info('-- rpc:total', err, data)
 })
 
+const loader = new ImagePreloader()
+Document.globalOn('loaded', (doc, data) => {
+    loader.add(doc.url)
+})
+
 class App extends React.Component {
     static propTypes = {
         subjectList: PropTypes.func.isRequired,
@@ -69,7 +76,7 @@ class App extends React.Component {
         settingsOpen: false,
         dialogType: 'dialog',
         searchterm: '',
-        sort: 'file.updated_at'
+        sort: 'yes'
     }
 
     componentDidMount() {
@@ -100,7 +107,7 @@ class App extends React.Component {
                             <Header
                                 dialogType={this.state.dialogType}
                                 term={this.state.searchterm}
-                                sort={this.state.sort}
+                                sort={Config.search.sortingOptions[this.state.sort]}
                                 onRequestOpenSettings={this._openSettings}
                                 onRequestSwitchDialogType={this._switchDialogType}
                                 onRequestSwitchSort={this._switchSort}
@@ -138,18 +145,15 @@ class App extends React.Component {
         )
     }
 
-    get sort() {
-        return this.state.sort === '_id' ? { '_uid': 'asc' } : { 'file.updated_at': 'desc' }
-    }
-
     _handleSearch = (term) => {
         this.setState({
+            bulkSelection: [],
             searchterm: term
         })
 
-        console.info('-- search', term, this.sort)
+        console.info('-- search', term, Config.search.sortingOptions[this.state.sort])
 
-        this.props.search(term, 0, this.sort)
+        this.props.search(term, 0, Config.search.sortingOptions[this.state.sort])
     }
 
     _handleRequestMore = () => {
@@ -167,11 +171,14 @@ class App extends React.Component {
     _switchSort = () => {
         this.setState(state => {
             return {
-                sort: state.sort === '_id' ? 'file.updated_at' : '_id'
+                bulkSelection: [],
+                sort: state.sort === 'yes' ? 'no' : 'yes'
             }
-        })
+        }, () => {
+            console.info('-- sort', this.state.searchterm, Config.search.sortingOptions[this.state.sort])
 
-        this.props.search(this.state.searchterm, 0, this.sort)
+            this.props.search(this.state.searchterm, 0, Config.search.sortingOptions[this.state.sort])
+        })
     }
 
     _openSettings = () => {

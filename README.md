@@ -5,6 +5,7 @@
       This does probably mean I need to connect the media dialog to the store, as it's a global setting
       This works with a "local" store too, given that everything is focussed on one state (`<App />`'s state)
 - [ ] Use `react-d3` for charts, fed by `elasticsearch`
+- [ ] Discard selection when changing tags for media that is no longer in the result-set
 
 ## Bulk actions
 

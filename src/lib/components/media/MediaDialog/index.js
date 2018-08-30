@@ -43,8 +43,8 @@ export default class MediaDialog extends React.Component {
     componentWillMount() {
         document.body.appendChild(this.el)
 
-        if (this.props.item && this.props.item.addNotifier) {
-            this.props.item.addNotifier(this._forceRerender)
+        if (this.props.item && this.props.item.on) {
+            this.props.item.on('update', this._forceRerender)
         }
     }
 
@@ -72,8 +72,8 @@ export default class MediaDialog extends React.Component {
         }
 
         if (prevProps.item.id !== this.props.item.id) {
-            if (this.props.item && this.props.item.addNotifier) {
-                this.props.item.addNotifier(this._forceRerender)
+            if (this.props.item && this.props.item.on) {
+                this.props.item.on('update', this._forceRerender)
             }
         }
     }

@@ -12,7 +12,7 @@ export default class Header extends React.Component {
         onRequestSwitchSort: PropTypes.func.isRequired,
         onSearch: PropTypes.func.isRequired,
         dialogType: PropTypes.string.isRequired,
-        sort: PropTypes.string.isRequired,
+        sort: PropTypes.object.isRequired,
         term: PropTypes.string.isRequired
     }
 
@@ -57,7 +57,7 @@ export default class Header extends React.Component {
                             </div>
                             <div className={'cell small-1'}>
                                 <div className={'switch large'}>
-                                    <input className={'switch-input'} id={'sorttype'} type={'checkbox'} checked={this.props.sort === 'file.updated_at'} onChange={this.props.onRequestSwitchSort} />
+                                    <input className={'switch-input'} id={'sorttype'} type={'checkbox'} checked={'_score' in this.props.sort} onChange={this.props.onRequestSwitchSort} />
                                     <label className={'switch-paddle'} htmlFor={'sorttype'}>
                                         <span className={'show-for-sr'}>Sort</span>
                                         <span className={'switch-active'} aria-hidden={'true'}>
