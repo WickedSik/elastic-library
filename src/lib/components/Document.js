@@ -2,6 +2,18 @@ import _ from 'lodash'
 import url from 'url'
 import SearchApi from '../redux/api/search'
 
+const removeFromArray = function(arr, ...arg) {
+    let L = arg.length
+    let ax
+    while (L && arr.length) {
+        let what = arg[--L]
+        while ((ax = arr.indexOf(what)) !== -1) {
+            arr.splice(ax, 1)
+        }
+    }
+    return arr
+}
+
 /**
  *  {
         "_index": "media",
@@ -137,6 +149,10 @@ export default class Document {
     }
 
     get thumb() {
+        if (this.attributes.image.thumbnail) {
+            return `data:image/jpeg;base64,${this.attributes.image.thumbnail}`
+        }
+
         const imageUrl = window.require
             ? url.format({
                 pathname: encodeURI(this.attributes.file.path),
@@ -163,6 +179,12 @@ export default class Document {
     on(event, callback) {
         if (event in this.__on) {
             this.__on[event].push(callback)
+        }
+    }
+
+    off(event, callback) {
+        if (event in this.__on) {
+            removeFromArray(this.__on[event], callback)
         }
     }
 

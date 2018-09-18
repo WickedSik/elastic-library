@@ -29,6 +29,22 @@
         // background: linear-gradient(0deg, rgba(black, .7) 0%, rgba(black, 0) 100%);
     }
 
+    .palette {
+        display: flex;
+        flex-wrap: nowrap;
+        padding: 0;
+        margin: 0;
+        height: 0;
+        overflow: visible;
+
+        li {
+            flex-shrink: 1;
+            flex-grow: 1;
+            height: 5px;
+            display: block;
+        }
+    }
+
     .icon {
         position: absolute;
         top: 10px;
@@ -77,6 +93,12 @@
 
         .img {
             background-size: contain;
+        }
+
+        .palette {
+            li {
+                height: 15px;
+            }
         }
     }
 }   

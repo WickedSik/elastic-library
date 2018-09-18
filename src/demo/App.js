@@ -60,7 +60,8 @@ rpc.on('import-total', (err, data) => {
 })
 
 const loader = new ImagePreloader()
-Document.globalOn('loaded', (doc, data) => {
+Document.globalOn('loaded', doc => {
+    console.info('-- doc:loaded', doc.attributes.image)
     loader.add(doc.url)
 })
 

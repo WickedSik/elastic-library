@@ -52,6 +52,10 @@ export default class MediaDialog extends React.Component {
     componentWillUnmount() {
         document.removeEventListener('keydown', this._closeIfEscape, false)
         document.body.removeChild(this.el)
+
+        // if (this.props.item && this.props.item.off) {
+        //     this.props.item.off('update', this._forceRerender)
+        // }
     }
 
     componentDidMount() {
@@ -76,6 +80,9 @@ export default class MediaDialog extends React.Component {
             if (this.props.item && this.props.item.on) {
                 this.props.item.on('update', this._forceRerender)
             }
+            // if (prevProps.item && prevProps.item.off) {
+            //     prevProps.item.off('update', this._forceRerender)
+            // }
         }
     }
 
@@ -257,7 +264,7 @@ export default class MediaDialog extends React.Component {
                     }
                 })(result.rating)
 
-                const keywords = [...this.props.item.attributes.keywords, ...result.tags.split(/\s+/g)]
+                const keywords = [...this.props.item.attributes.keywords, ...result.tags.split(/\s+/g), 'E621']
 
                 this.props.item.attributes.keywords = _.uniq(keywords)
                 this.props.item.update()
