@@ -1,6 +1,7 @@
 const Exif = require('exif')
+const Parser = require('./base/parser')
 
-class ExifParser {
+class ExifParser extends Parser {
     validate(value) {
         if (value instanceof Buffer) {
             return value.toString('utf8')
@@ -36,11 +37,11 @@ class ExifParser {
                 image: metadata.getFilePath()
             }, (error, data) => {
                 if (error) {
-                    if (error.code === 'NO_EXIF_SEGMENT' || error.code === 'NOT_A_JPEG') {
-                        resolve()
-                    } else {
-                        reject(error)
-                    }
+                    // if (error.code === 'NO_EXIF_SEGMENT' || error.code === 'NOT_A_JPEG') {
+                    resolve()
+                    // } else {
+                    //     reject(error)
+                    // }
                 } else {
                     metadata.set('exif', this.validate(data))
 

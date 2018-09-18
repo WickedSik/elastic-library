@@ -23,7 +23,31 @@ class Metadata {
             // normal parsers
             let parselist = []
             for (const parser of parsers) {
-                parselist.push(parser.parse(this))
+                if (parser.accepts(this.file) && parser.runsForExistingItems) {
+                    parselist.push(parser.parse(this))
+                }
+            }
+
+            // console.info('-- starting parsing');
+            Promise.all(parselist)
+                .then(() => {
+                    // console.info('-- finished parsing');
+                    resolve(this)
+                }).catch((e) => {
+                    // console.info('-- error while parsing', e);
+                    reject(e)
+                })
+        })
+    }
+
+    extendData() {
+        return new Promise((resolve, reject) => {
+            // normal parsers
+            let parselist = []
+            for (const parser of parsers) {
+                if (parser.accepts(this.file)) {
+                    parselist.push(parser.parse(this))
+                }
             }
 
             // console.info('-- starting parsing');

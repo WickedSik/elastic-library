@@ -1,6 +1,7 @@
 const _ = require('lodash')
+const Parser = require('./base/parser')
 
-class FurAffinityParser {
+class FurAffinityParser extends Parser {
     /**
      * @param {Metadata} metadata
      * @returns {Promise}

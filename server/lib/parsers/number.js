@@ -1,4 +1,6 @@
-class NumberParser {
+const Parser = require('./base/parser')
+
+class NumberParser extends Parser {
     /**
      * [[Description]]
      * @param   {Metadata} metadata [[Description]]
@@ -28,6 +30,14 @@ class NumberParser {
                 type: 'integer'
             }
         }
+    }
+
+    accepts(file) {
+        return true
+    }
+
+    get runsForExistingItems() {
+        return true
     }
 }
 

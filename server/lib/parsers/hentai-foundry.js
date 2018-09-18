@@ -1,6 +1,7 @@
 const _ = require('lodash')
+const Parser = require('./base/parser')
 
-class HentaiFoundryParser {
+class HentaiFoundryParser extends Parser {
     /**
      * @param {Metadata} metadata
      * @returns {Promise}

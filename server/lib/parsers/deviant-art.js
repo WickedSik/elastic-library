@@ -1,6 +1,7 @@
 const _ = require('lodash')
+const Parser = require('./base/parser')
 
-class DeviantArtParser {
+class DeviantArtParser extends Parser {
     /**
      * @param {Metadata} metadata
      * @returns {Promise}

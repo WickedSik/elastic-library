@@ -1,9 +1,10 @@
 const fs = require('fs')
+const Parser = require('./base/parser')
 
 /**
  * @class StatsParser
  */
-class StatsParser {
+class StatsParser extends Parser {
     /**
      * @param {Metadata} metadata
      * @memberof StatsParser
@@ -42,6 +43,14 @@ class StatsParser {
                 }
             }
         }
+    }
+
+    accepts(file) {
+        return true
+    }
+
+    get runsForExistingItems() {
+        return true
     }
 }
 

@@ -1,7 +1,10 @@
 const path = require('path')
+const Parser = require('./base/parser')
 
-class PathParser {
+class PathParser extends Parser {
     constructor(config) {
+        super()
+
         this.config = config
     }
 
@@ -49,6 +52,14 @@ class PathParser {
                 }
             }
         }
+    }
+
+    accepts(file) {
+        return true
+    }
+
+    get runsForExistingItems() {
+        return true
     }
 }
 

@@ -1,8 +1,10 @@
+const Parser = require('./base/parser')
+
 /**
  * @class TitleParser
  * @implements Parser
  */
-class TitleParser {
+class TitleParser extends Parser {
     /**
      * [[Description]]
      * @param   {Metadata} metadata [[Description]]
@@ -34,6 +36,14 @@ class TitleParser {
                 store: true
             }
         }
+    }
+
+    accepts(file) {
+        return true
+    }
+
+    get runsForExistingItems() {
+        return true
     }
 }
 

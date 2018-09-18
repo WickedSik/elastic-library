@@ -57,10 +57,17 @@ function handleFileEvent(data) {
                     })
                     .catch(() => {
                         // console.info('-- %s does not exist', metadata.get('checksum'));
-                        indexer.index(metadata)
-                            .finally(() => {
-                                cb()
-                            })
+                        metadata.extendData().then(() => {
+                            indexer.index(metadata)
+                                .finally(() => {
+                                    cb()
+                                })
+                        }).catch(() => { // index regardless of extended data
+                            indexer.index(metadata)
+                                .finally(() => {
+                                    cb()
+                                })
+                        })
                     })
             })
             .catch((e) => {
@@ -108,10 +115,10 @@ indexer.init().on('ready', () => {
     })
 
     Promise.all(watcherPromise).then(() => {
-        let bar = new ProgressBar('-- indexing [:bar] :percent :etas', {
+        let bar = new ProgressBar('-- indexing [:bar] :percent :etas (:rate/s)', {
             complete: '=',
             incomplete: ' ',
-            width: 50,
+            width: 120,
             total: q.length
         })
 

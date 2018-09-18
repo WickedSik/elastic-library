@@ -1,10 +1,11 @@
 const checksum = require('checksum')
+const Parser = require('./base/parser')
 
 /**
  * @class ChecksumParser
  * @implements Parser
  */
-class ChecksumParser {
+class ChecksumParser extends Parser {
     /**
      * [[Description]]
      * @param   {Metadata} metadata [[Description]]
@@ -30,6 +31,14 @@ class ChecksumParser {
                 type: 'keyword'
             }
         }
+    }
+
+    accepts(file) {
+        return true
+    }
+
+    get runsForExistingItems() {
+        return true
     }
 }
 
