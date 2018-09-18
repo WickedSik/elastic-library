@@ -48,15 +48,6 @@ function createWindow() {
     // Remove this line before distributing
     win.webContents.openDevTools()
 
-    console.info('== app data path', app.getPath('userData'))
-
-    electron.protocol.isProtocolHandled(BooruHandler.PROTOCOL, function(x) {
-        console.info('== is protocol handled:', BooruHandler.PROTOCOL, x)
-    })
-    electron.protocol.isProtocolHandled(ImageHandler.PROTOCOL, function(x) {
-        console.info('== is protocol handled:', ImageHandler.PROTOCOL, x)
-    })
-
     // Remove window once app is closed
     win.on('closed', function() {
         win = null
