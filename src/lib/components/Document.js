@@ -149,7 +149,7 @@ export default class Document {
     }
 
     get thumb() {
-        if (this.attributes.image.thumbnail) {
+        if (this.attributes.image && this.attributes.image.thumbnail) {
             return `data:image/jpeg;base64,${this.attributes.image.thumbnail}`
         }
 

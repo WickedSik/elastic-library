@@ -6,9 +6,9 @@ import numeral from 'numeraljs'
 import moment from 'moment'
 import _ from 'lodash'
 import { NotificationManager } from 'react-notifications'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import InlineEdit from '../../partials/InlineEdit'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import './style.scss'
 
