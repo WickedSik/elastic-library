@@ -21,7 +21,7 @@ export const subjectList = () => ({
             aggs: {
                 keywords: {
                     terms: {
-                        field: 'keywords.keyword',
+                        field: 'keywords',
                         order: { '_count': 'desc' },
                         size: 10000
                     }

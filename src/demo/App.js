@@ -61,7 +61,7 @@ rpc.on('import-total', (err, data) => {
 
 const loader = new ImagePreloader()
 Document.globalOn('loaded', doc => {
-    console.info('-- doc:loaded', doc.attributes.image)
+    // console.info('-- doc:loaded', doc.attributes.image)
     loader.add(doc.url)
 })
 
@@ -79,7 +79,7 @@ class App extends React.Component {
         settingsOpen: false,
         dialogType: 'dialog',
         searchterm: '',
-        sort: 'yes'
+        sort: 'no'
     }
 
     componentDidMount() {

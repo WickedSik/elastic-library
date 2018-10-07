@@ -42,21 +42,36 @@ function handleFileEvent(data) {
             .then((metadata) => {
                 indexer.exists(metadata)
                     .then((d) => {
-                        // console.info('-- checksum %s already exists', metadata.get('checksum'), d.id);
-                        metadata.cleanData = d.data
+                        metadata.extendData().then(() => {
+                            metadata.cleanData = d.data
 
-                        // indexer.update(metadata, d.id)
-                        // .then(() => {
-                        //     console.info('-- updated');
-                        // }).catch((e) => {
-                        //     console.warn('-- failed to update', e);
-                        //     process.exit(-1);
-                        // }).finally(() => {
-                        cb()
-                        // });
+                            // if (Object.keys(metadata.dirty).length > 0) {
+                            //     // console.info('-- dirty', metadata.dirty)
+                            //     // process.exit(0)
+                            //     indexer._client.update({
+                            //         index: indexer._index,
+                            //         id: d.id,
+                            //         body: {
+                            //             doc: metadata.dirty
+                            //         }
+                            //     })
+                            //         .then(cb)
+                            //         .catch(cb)
+                            // } else {
+                            //     cb()
+                            // }
+                            cb()
+                        }).catch(() => {
+                            indexer.update(metadata, d.id)
+                                .finally(() => {
+                                    cb()
+                                })
+                        })
+
+                        // @todo Need to make sure no data is overwritten
                     })
                     .catch(() => {
-                        // console.info('-- %s does not exist', metadata.get('checksum'));
+                        // does not exist, maybe not a correct way of doing it...
                         metadata.extendData().then(() => {
                             indexer.index(metadata)
                                 .finally(() => {
@@ -78,6 +93,9 @@ function handleFileEvent(data) {
 }
 
 const indexer = new Indexer(config)
+if (config.mapping) {
+    config.mapping.forEach(m => indexer.addMapping(m))
+}
 
 for (let parser in config.parsers) {
     let P = require('./lib/parsers/' + parser)

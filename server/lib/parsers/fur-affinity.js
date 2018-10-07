@@ -16,8 +16,6 @@ class FurAffinityParser extends Parser {
                     let [code, title_author] = filename.split('.')
                     let [author, ...title] = title_author.split('_')
 
-                    author = _.capitalize(author)
-
                     if (Array.isArray(title)) {
                         title = title.join('_')
                     }

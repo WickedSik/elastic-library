@@ -1,5 +1,4 @@
 const events = require('events')
-const _ = require('lodash')
 const Client = require('../shared/client')
 
 class Indexer extends events.EventEmitter {
@@ -7,6 +6,7 @@ class Indexer extends events.EventEmitter {
         super()
 
         this._index = config.index
+        this._settings = config.settings || {}
         this._mapping = [
             { // always used
                 favorite: {
@@ -37,14 +37,15 @@ class Indexer extends events.EventEmitter {
             index: this._index,
             body: {
                 settings: {
-                    number_of_shards: 2
+                    number_of_shards: 2,
+                    ...this._settings
                 },
                 mappings: this.mapping
             }
         }).then(() => {
             console.info('-- index created')
-        }).catch(() => {
-            console.warn('-- index already exists')
+        }).catch((e) => {
+            console.warn('-- index already exists', e.Error.toString().indexOf('already exists') > -1 ? null : e)
         }).finally(() => {
             console.info('-- initiation')
 
@@ -154,7 +155,10 @@ class Indexer extends events.EventEmitter {
         this._mapping.forEach((m) => {
             Object.keys(m).forEach((key) => {
                 if (properties[key]) {
-                    properties[key] = _.extend(properties[key], m[key])
+                    properties[key] = {
+                        ...properties[key],
+                        ...m[key]
+                    }
                 } else {
                     properties[key] = m[key]
                 }

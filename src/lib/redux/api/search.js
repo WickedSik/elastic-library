@@ -7,6 +7,7 @@ const client = new elasticsearch.Client({
 
 export const search = (query) =>
     new Promise((resolve, reject) => {
+        console.info('-- search:json', JSON.stringify(query))
         client.search({
             ...query
         }).then(response => {

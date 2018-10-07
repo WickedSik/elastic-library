@@ -32,10 +32,10 @@ class StatsParser extends Parser {
                 type: 'object',
                 properties: {
                     created_at: {
-                        type: 'datetime'
+                        type: 'date'
                     },
                     updated_at: {
-                        type: 'datetime'
+                        type: 'date'
                     },
                     size: {
                         type: 'integer'

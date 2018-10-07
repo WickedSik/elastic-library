@@ -77,6 +77,8 @@ export default class CardList extends React.Component {
             return (
                 <MediaDialog
                     item={results[selected]}
+                    position={selected}
+                    total={total}
                     onRequestDelete={this.props.onRequestDelete}
                     onRequestOverlay={this.props.onRequestSwitchDialogType}
                     onRequestClose={this._deselect}

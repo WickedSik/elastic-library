@@ -26,7 +26,7 @@ export default class ImagePreloader {
             img.src = this.__urls.shift()
             img.onload = () => {
                 this.__loaded.push(img.src)
-                console.info('-- loaded', img.src)
+                // console.info('-- loaded', img.src)
             }
         }
 

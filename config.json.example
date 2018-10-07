@@ -17,24 +17,28 @@
         "exif": null,
         "deviant-art": null
     },
-    "mapping": {
-        "media": {
-            "properties": {
-                "keywords": {
-                    "type": "keyword",
-                    "eager_global_ordinals": true
-                },
-                "numbers": {
-                    "type": "keyword"
-                },
-                "checksum": {
-                    "type": "keyword"
-                },
-                "filedata": {
-                    "type": "binary",
-                    "store": true
-                }
+    "mapping": [
+        {
+            "keywords": {
+                "type": "keyword",
+                "eager_global_ordinals": true
+            }
+        },
+        {
+            "numbers": {
+                "type": "keyword"
+            }
+        },
+        {
+            "checksum": {
+                "type": "keyword"
+            }
+        },
+        {
+            "filedata": {
+                "type": "binary",
+                "store": true
             }
         }
-    }
+    ]
 }

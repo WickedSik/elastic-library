@@ -1,5 +1,6 @@
 const path = require('path')
 const Parser = require('./base/parser')
+const _ = require('lodash')
 
 class PathParser extends Parser {
     constructor(config) {
@@ -25,7 +26,7 @@ class PathParser extends Parser {
             metadata.set('file.filename', pathdata.name + pathdata.ext)
             metadata.set('file.path', metadata.getFilePath())
 
-            metadata.add('keywords', dirs)
+            metadata.add('keywords', _.uniq(dirs.map(d => d.toLowerCase())))
 
             resolve()
         })

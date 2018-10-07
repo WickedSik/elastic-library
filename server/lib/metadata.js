@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const flatten = require('../shared/extend').flatten
+const { flatten, unflatten } = require('../shared/extend')
 
 const parsers = []
 
@@ -97,6 +97,9 @@ class Metadata {
         // check data
         if (!this.has('keywords')) {
             this.set('keywords', [])
+        } else {
+            const keywords = this.get('keywords')
+            this.set('keywords', _.uniq(keywords))
         }
         if (!this.has('favorite')) {
             this.set('favorite', false)
@@ -117,13 +120,14 @@ class Metadata {
                 // own check
                 if (!_new[key].compare(_old[key])) {
                     dirty[key] = _new[key]
+                    // dirty[key] = _.uniq(_.merge(_new[key], _old[key]))
                 }
-            } else if (_new[key] !== _old[key]) {
+            } else if (_new[key] && _new[key] !== _old[key]) {
                 dirty[key] = _new[key]
             }
         }
 
-        return dirty
+        return unflatten(dirty)
     }
 
     isDirty() {

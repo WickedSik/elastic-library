@@ -19,7 +19,9 @@ export default class MediaDialog extends React.Component {
         onRequestOverlay: PropTypes.func.isRequired,
         onRequestNext: PropTypes.func.isRequired,
         onRequestPrev: PropTypes.func.isRequired,
-        item: PropTypes.object.isRequired
+        item: PropTypes.object.isRequired,
+        position: PropTypes.number.isRequired,
+        total: PropTypes.number.isRequired
     }
 
     static defaultProps = {
@@ -87,7 +89,7 @@ export default class MediaDialog extends React.Component {
     }
 
     render() {
-        const { item } = this.props
+        const { item, position, total } = this.props
 
         return ReactDOM.createPortal(
             <div className={classnames('media-dialog', 'lib-dialog', 'open')} onClick={this.props.onRequestClose}>
@@ -103,6 +105,10 @@ export default class MediaDialog extends React.Component {
                     <button className={'prev-button'} onClick={this.props.onRequestPrev}>
                         <FontAwesomeIcon icon={['fas', 'caret-left']} fixedWidth />
                     </button>
+
+                    <div className={'position'}>
+                        <span>{position} / {total}</span>
+                    </div>
 
                     <h1>{item.title}</h1>
                     <div className={'content'}>
@@ -135,9 +141,9 @@ export default class MediaDialog extends React.Component {
                                                 <tr><th>Tags</th>
                                                     <td>
                                                         <div className={'tags'}>
-                                                            {this.state.keywords.map(keyword => {
+                                                            {this.state.keywords.map((keyword, index) => {
                                                                 return (
-                                                                    <div className={'label'} key={keyword}>
+                                                                    <div className={'label'} key={`${index}-${keyword}`}>
                                                                         <FontAwesomeIcon icon={['fas', 'times']} onClick={() => {
                                                                             this._handleDeleteKeyword(keyword)
                                                                         }} />
@@ -249,6 +255,12 @@ export default class MediaDialog extends React.Component {
     }
 
     _checkBooru = () => {
+        if (this.props.item.attributes.keywords.indexOf('not_found_on_e621') > -1) {
+            NotificationManager.warning('Already checked on E621')
+
+            return
+        }
+
         fetch(`booru://e621/${this.props.item.attributes.checksum}`)
             .then(result => result.json())
             .then(result => {
@@ -264,7 +276,7 @@ export default class MediaDialog extends React.Component {
                     }
                 })(result.rating)
 
-                const keywords = [...this.props.item.attributes.keywords, ...result.tags.split(/\s+/g), 'E621']
+                const keywords = [...this.props.item.attributes.keywords, ...result.tags.split(/\s+/g), 'e621']
 
                 this.props.item.attributes.keywords = _.uniq(keywords)
                 this.props.item.update()
@@ -273,6 +285,10 @@ export default class MediaDialog extends React.Component {
             })
             .catch(err => {
                 console.warn('-- booru', err)
+
+                const keywords = [...this.props.item.attributes.keywords, 'not_found_on_e621']
+                this.props.item.attributes.keywords = _.uniq(keywords)
+                this.props.item.update()
 
                 NotificationManager.warning('Not found on E621')
             })

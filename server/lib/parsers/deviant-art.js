@@ -17,7 +17,7 @@ class DeviantArtParser extends Parser {
                         let [title, author] = filename.split('_by_')
                         author = author.split('-').shift()
 
-                        metadata.set('author', _.capitalize(author))
+                        metadata.set('author', author)
                         metadata.set('title', _.capitalize(title.replace(/_/g, ' ')))
                         metadata.add('keywords', [author])
                     }

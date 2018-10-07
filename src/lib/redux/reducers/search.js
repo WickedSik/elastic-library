@@ -2,7 +2,15 @@ import _ from 'lodash'
 
 import * as ActionTypes from '../ActionTypes'
 
-const search = (state, action) => {
+const initialState = {
+    errors: [],
+    results: [],
+    subjects: [],
+    total: 0,
+    document: null
+}
+
+const search = (state = initialState, action) => {
     switch (action.type) {
     case ActionTypes.SEARCH_REQUEST:
         return {
@@ -67,16 +75,6 @@ const search = (state, action) => {
         return {
             ...state,
             document: action.payload
-        }
-
-    case ActionTypes.DELETE_DOCUMENT_REQUEST:
-        return {
-            ...state
-        }
-
-    case ActionTypes.DELETE_DOCUMENT_FAILED:
-        return {
-            ...state
         }
 
     case ActionTypes.DELETE_DOCUMENT_SUCCESS:

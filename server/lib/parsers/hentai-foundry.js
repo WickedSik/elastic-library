@@ -17,8 +17,6 @@ class HentaiFoundryParser extends Parser {
                         let filename = metadata.get('file.name')
                         let [author, code, ...title] = filename.split('-')
 
-                        author = _.capitalize(author)
-
                         if (Array.isArray(title)) {
                             title = title.join('-')
                         }

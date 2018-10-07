@@ -91,6 +91,18 @@ $imported: () !default;
                     }
                 }
 
+                .position {
+                    position: absolute;
+                    left: 0;
+                    bottom: 0;
+
+                    span {
+                        display: block;
+                        font-size: .7em;
+                        padding: 1em 2em;
+                    }
+                }
+
                 .controls {
                     position: absolute;
                     bottom: 2em;

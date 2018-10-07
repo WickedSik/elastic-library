@@ -1,5 +1,6 @@
 const sharp = require('sharp')
 const Vibrant = require('node-vibrant')
+const _ = require('lodash')
 const Parser = require('./base/parser')
 
 class ImageParser extends Parser {
@@ -12,12 +13,14 @@ class ImageParser extends Parser {
         return Promise.all([
             this.getMetadata(metadata.getFilePath(), metadata),
             this.getPalette(metadata.getFilePath(), metadata),
-            this.getThumbnail(metadata.getFilePath(), metadata)
+            this.getThumbnail(metadata.getFilePath(), metadata),
+            this.getOtherData(metadata.getFilePath(), metadata)
         ]).then(v => {
             metadata.set('image', {
                 ...v[0],
                 ...v[1],
-                ...v[2]
+                ...v[2],
+                ...v[3]
             })
             return metadata
         })
@@ -74,6 +77,21 @@ class ImageParser extends Parser {
                     resolve()
                 })
         })
+    }
+
+    /**
+     * @param {string} path
+     * @param {Metadata} metadata
+     */
+    getOtherData(path, metadata) {
+        const ext = metadata.get('file.extension')
+        const data = {}
+
+        if (ext === '.gif') {
+            data.keywords = _.uniq(['animated', ...metadata.get('keywords')])
+        }
+
+        return data
     }
 
     get mapping() {
