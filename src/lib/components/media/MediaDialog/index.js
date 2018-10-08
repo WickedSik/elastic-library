@@ -268,7 +268,7 @@ export default class MediaDialog extends React.Component {
 
                 this.props.item.attributes.author = result.artist
                 this.props.item.attributes.source = result.source
-                this.props.item.attributes.rating = ((rating) => {
+                this.props.item.attributes.rating = (rating => {
                     switch (rating) {
                     case 'q': return 'questionable'
                     case 's': return 'safe'
