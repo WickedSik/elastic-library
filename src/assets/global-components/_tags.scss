@@ -1,0 +1,44 @@
+@import "../colors";
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+
+    .label {
+        margin: 5px;
+        padding: 0;
+        cursor: pointer;
+        display: flex;
+
+        .closer {
+            flex-grow: 0;
+            padding: 0.33333rem 0.5rem;
+
+            &:hover {
+                background-color: $text-color;
+                color: $background-color;
+            }
+        }
+
+        span {
+            flex-grow: 1;
+            padding: 0.33333rem 0.5rem;
+
+            &:hover {
+                background-color: $text-color;
+                color: $background-color;
+            }
+        }
+    }
+
+    input {
+        height: 25px;
+        line-height: 25px;
+        vertical-align: middle;
+
+        &:focus {
+            outline: none;
+        }
+    }
+}

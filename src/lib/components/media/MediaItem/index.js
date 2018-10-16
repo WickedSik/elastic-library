@@ -30,6 +30,14 @@ export default class MediaItem extends React.Component {
         }
     }
 
+    componentDidMount() {
+        this._mounted = true
+    }
+
+    componentWillUnmount() {
+        this._mounted = false
+    }
+
     render() {
         const { item, selected } = this.props
         const favoriteIcon = item.attributes.favorite
@@ -70,6 +78,11 @@ export default class MediaItem extends React.Component {
     }
 
     _forceRerender = () => {
+        if (!this._mounted) {
+            this.props.item && this.props.item.off && this.props.item.off('update', this._forceRerender)
+            return
+        }
+
         console.info('-- media-item:force-rerender')
 
         this.setState(state => ({

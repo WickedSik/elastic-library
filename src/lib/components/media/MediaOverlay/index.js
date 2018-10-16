@@ -40,9 +40,11 @@ export default class MediaOverlay extends React.Component {
 
     componentDidMount() {
         document.addEventListener('keydown', this._handleKeydown, false)
+        this._mounted = true
     }
 
     componentWillUnmount() {
+        this._mounted = false
         document.removeEventListener('keydown', this._handleKeydown, false)
         this._stopTimer()
     }
@@ -96,6 +98,11 @@ export default class MediaOverlay extends React.Component {
     }
 
     _forceRerender = () => {
+        if (!this._mounted) {
+            this.props.item && this.props.item.off && this.props.item.off('update', this._forceRerender)
+            return
+        }
+
         console.info('-- media-overyaly:force-rerender')
 
         this.setState(state => ({

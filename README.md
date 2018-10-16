@@ -1,6 +1,6 @@
 # To Do
 
-- [ ] Slideshow
+- [x] Slideshow
 - [x] Toggle for details or big image (for use in media dialog)
       This does probably mean I need to connect the media dialog to the store, as it's a global setting
       This works with a "local" store too, given that everything is focussed on one state (`<App />`'s state)
@@ -11,7 +11,7 @@
 - [ ] Autocompleting tags
 - [ ] Allow editing author
 - [ ] Scrolling for tags
-- [ ] Fix the below error:  
+- [x] Fix the below error:  
       ```
       Warning: Can't call setState (or forceUpdate) on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in the componentWillUnmount method.
       in MediaItem (at index.js:45)

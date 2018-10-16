@@ -5,7 +5,7 @@ import registerServiceWorker from './registerServiceWorker'
 
 const { webFrame } = window.require('electron')
 
-console.info('-- webframe', webFrame)
+// console.info('-- webframe', webFrame)
 
 webFrame.registerURLSchemeAsPrivileged('booru')
 

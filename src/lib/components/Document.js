@@ -80,9 +80,9 @@ export default class Document {
         this.exists = props.found || true
         this.original = props._source
         this.attributes = new Proxy(this.original, {
-            get(target, prop, receiver) {
-                return Reflect.get(...arguments)
-            },
+            // get(target, prop, receiver) {
+            //     return Reflect.get(...arguments)
+            // },
             set(target, prop, value) {
                 _.set(self.dirty, prop, value)
                 return Reflect.set(...arguments)

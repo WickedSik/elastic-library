@@ -64,31 +64,6 @@ $imported: () !default;
                             text-align: right;
                         }
                     }
-
-                    .tags {
-                        .label {
-                            margin: 5px;
-                            cursor: pointer;
-
-                            span {
-                                margin-left: 5px;
-                            }
-
-                            &:hover {
-                                background-color: darken($background-color, 65%);
-                            }
-                        }
-
-                        input {
-                            height: 25px;
-                            line-height: 25px;
-                            vertical-align: middle;
-
-                            &:focus {
-                                outline: none;
-                            }
-                        }
-                    }
                 }
 
                 .position {

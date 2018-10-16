@@ -19,6 +19,7 @@ export default class MediaDialog extends React.Component {
         onRequestOverlay: PropTypes.func.isRequired,
         onRequestNext: PropTypes.func.isRequired,
         onRequestPrev: PropTypes.func.isRequired,
+        onRequestSearch: PropTypes.func.isRequired,
         item: PropTypes.object.isRequired,
         position: PropTypes.number.isRequired,
         total: PropTypes.number.isRequired
@@ -29,7 +30,8 @@ export default class MediaDialog extends React.Component {
         onRequestClose: () => {},
         onRequestOverlay: () => {},
         onRequestNext: () => {},
-        onRequestPrev: () => {}
+        onRequestPrev: () => {},
+        onRequestSearch: () => {}
     }
 
     state = {
@@ -55,6 +57,8 @@ export default class MediaDialog extends React.Component {
         document.removeEventListener('keydown', this._closeIfEscape, false)
         document.body.removeChild(this.el)
 
+        this._mounted = false
+
         // if (this.props.item && this.props.item.off) {
         //     this.props.item.off('update', this._forceRerender)
         // }
@@ -62,6 +66,8 @@ export default class MediaDialog extends React.Component {
 
     componentDidMount() {
         document.addEventListener('keydown', this._closeIfEscape, false)
+
+        this._mounted = true
 
         this.setState({
             keywords: this.props.item.attributes.keywords
@@ -130,9 +136,7 @@ export default class MediaDialog extends React.Component {
                                                 <tr><th>Filename</th><td>{item.attributes.file.name}</td></tr>
                                                 <tr><th>Extension</th><td>{item.attributes.file.extension}</td></tr>
                                                 <tr><th>Size</th><td>{numeral(item.attributes.file.size).format('0.00b')}</td></tr>
-                                                {item.attributes.author && (
-                                                    <tr><th>Author</th><td>{item.attributes.author}</td></tr>
-                                                )}
+                                                <tr><th>Author</th><td><InlineEdit value={item.attributes.author} onUpdate={this._handleUpdateAuthor} /></td></tr>
                                                 {(item.attributes.checksum !== item.attributes.file.name) && (
                                                     <tr><th>Checksum</th><td>{item.attributes.checksum}</td></tr>
                                                 )}
@@ -144,10 +148,14 @@ export default class MediaDialog extends React.Component {
                                                             {this.state.keywords.map((keyword, index) => {
                                                                 return (
                                                                     <div className={'label'} key={`${index}-${keyword}`}>
-                                                                        <FontAwesomeIcon icon={['fas', 'times']} onClick={() => {
+                                                                        <div className={'closer'} onClick={() => {
                                                                             this._handleDeleteKeyword(keyword)
-                                                                        }} />
-                                                                        <span>{keyword}</span>
+                                                                        }}>
+                                                                            <FontAwesomeIcon icon={['fas', 'times']} />
+                                                                        </div>
+                                                                        <span onClick={() => {
+                                                                            this._handleClickKeyword(keyword)
+                                                                        }}>{keyword}</span>
                                                                     </div>
                                                                 )
                                                             })}
@@ -198,6 +206,11 @@ export default class MediaDialog extends React.Component {
     }
 
     _forceRerender = () => {
+        if (!this._mounted) {
+            this.props.item && this.props.item.off && this.props.item.off('update', this._forceRerender)
+            return
+        }
+
         console.info('-- media-dialog:force-rerender')
 
         this.setState(state => ({
@@ -242,8 +255,18 @@ export default class MediaDialog extends React.Component {
         })
     }
 
+    _handleClickKeyword = (keyword) => {
+        this.props.onRequestSearch(`keywords:${keyword}`)
+        this.props.onRequestClose()
+    }
+
     _handleUpdateTitle = (value) => {
         this.props.item.attributes.title = value
+        this.props.item.update()
+    }
+
+    _handleUpdateAuthor = (value) => {
+        this.props.item.attributes.author = value
         this.props.item.update()
     }
 

@@ -126,6 +126,7 @@ class App extends React.Component {
                                 onRequestSwitchDialogType={this._switchDialogType}
                                 onRequestMore={requestMore}
                                 onRequestDelete={this.props.delete}
+                                onRequestSearch={this._handleSearch}
                                 onRequestSelected={i => {
                                     if (bulkSelection.indexOf(i) === -1) {
                                         this._bulkSelect(i)

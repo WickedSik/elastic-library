@@ -15,6 +15,7 @@ export default class CardList extends React.Component {
         onRequestMore: PropTypes.func.isRequired,
         onRequestSwitchDialogType: PropTypes.func.isRequired,
         onRequestSelected: PropTypes.func.isRequired,
+        onRequestSearch: PropTypes.func.isRequired,
         results: PropTypes.array,
         bulkSelection: PropTypes.array,
         total: PropTypes.number,
@@ -25,7 +26,8 @@ export default class CardList extends React.Component {
         onRequestDelete: () => {},
         onRequestMore: () => {},
         onRequestSwitchDialogType: () => {},
-        onRequestSelected: () => {}
+        onRequestSelected: () => {},
+        onRequestSearch: () => {}
     }
 
     state = {
@@ -84,6 +86,7 @@ export default class CardList extends React.Component {
                     onRequestClose={this._deselect}
                     onRequestNext={this._next}
                     onRequestPrev={this._prev}
+                    onRequestSearch={this.props.onRequestSearch}
                 />
             )
         case 'overlay':
