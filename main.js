@@ -2,6 +2,8 @@
 const electron = require('electron')
 const Server = require('electron-rpc/server')
 const Raven = require('raven')
+const path = require('path')
+
 const ImageHandler = require('./lib/images')
 const BooruHandler = require('./lib/booru')
 // const Connector = require('./server/connector')
@@ -36,7 +38,8 @@ function createWindow() {
     // Initialize the window to our specified dimensions
     win = new BrowserWindow({
         width: 1000,
-        height: 600
+        height: 600,
+        icon: path.join(__dirname, 'src/assets/icons/1024x1024')
     })
 
     // Specify entry point
