@@ -142,15 +142,15 @@ export default class MediaOverlay extends React.Component {
 
     _handleKeydown = (event) => {
         switch (event.keyCode) {
-        case KeyCodes.ESCAPE:
-            this._requestClose()
-            break
-        case KeyCodes.ARROW_LEFT:
-            this._requestPrev()
-            break
-        case KeyCodes.ARROW_RIGHT:
-            this._requestNext()
-            break
+            case KeyCodes.ESCAPE:
+                this._requestClose()
+                break
+            case KeyCodes.ARROW_LEFT:
+                this._requestPrev()
+                break
+            case KeyCodes.ARROW_RIGHT:
+                this._requestNext()
+                break
         }
 
         if (KeyCodes.getCharacterFromCode(event.keyCode) === 'l') {

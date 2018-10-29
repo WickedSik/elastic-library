@@ -1,36 +1,36 @@
-const elastic = require('elasticsearch');
-const events = require('events');
-const _ = require('lodash');
+const elastic = require('elasticsearch')
+const events = require('events')
+const _ = require('lodash')
 
 class Client extends events.EventEmitter {
     constructor(config) {
-        super();
+        super()
 
-        this._index = config.index;
+        this._index = config.index
         this._mapping = [
             { // always used
                 favorite: {
                     type: 'boolean'
                 }
             }
-        ];
-        this._client = new elastic.Client(config.search);
+        ]
+        this._client = new elastic.Client(config.search)
     }
 
     ping(opt) {
-        return this._client.ping(opt);
+        return this._client.ping(opt)
     }
 
     get indices() {
-        return this._client.indices;
+        return this._client.indices
     }
 
     index(opt) {
-        return this._client.index(opt);
+        return this._client.index(opt)
     }
 
     update(opt) {
-        return this._client.update(opt);
+        return this._client.update(opt)
     }
 
     delete(id) {
@@ -42,14 +42,14 @@ class Client extends events.EventEmitter {
     }
 
     search(opt) {
-        return this._client.search(opt);
+        return this._client.search(opt)
     }
 
     scroll(opt) {
-        let documents = [];
-        const client = this._client;
+        let documents = []
+        const client = this._client
 
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             client.search({
                 index: this._index,
                 type: 'media',
@@ -57,19 +57,23 @@ class Client extends events.EventEmitter {
                 size: 250,
                 ...opt
             }, function untildone(error, response) {
-                documents = _.concat(documents, response.hits.hits);
+                if (error) {
+                    reject(error)
+                }
 
-                if(response.hits.total > documents.length) {
+                documents = _.concat(documents, response.hits.hits)
+
+                if (response.hits.total > documents.length) {
                     client.scroll({
                         scrollId: response._scroll_id,
                         scroll: '30s'
-                    }, untildone);
+                    }, untildone)
                 } else {
-                    resolve(documents);
+                    resolve(documents)
                 }
             })
         })
     }
 }
 
-module.exports = Client;
+module.exports = Client

@@ -1,5 +1,6 @@
 # To Do
 
+- [ ] Upgrade to latest react (>=16.4)
 - [x] Slideshow
 - [x] Toggle for details or big image (for use in media dialog)
       This does probably mean I need to connect the media dialog to the store, as it's a global setting

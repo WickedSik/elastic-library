@@ -75,32 +75,32 @@ export default class CardList extends React.Component {
         const { results, total, dialogType } = this.props
 
         switch (dialogType) {
-        case 'dialog':
-            return (
-                <MediaDialog
-                    item={results[selected]}
-                    position={selected}
-                    total={total}
-                    onRequestDelete={this.props.onRequestDelete}
-                    onRequestOverlay={this.props.onRequestSwitchDialogType}
-                    onRequestClose={this._deselect}
-                    onRequestNext={this._next}
-                    onRequestPrev={this._prev}
-                    onRequestSearch={this.props.onRequestSearch}
-                />
-            )
-        case 'overlay':
-            return (
-                <MediaOverlay
-                    title={`${selected + 1} / ${total}`}
-                    item={results[selected]}
-                    onRequestDelete={this.props.onRequestDelete}
-                    onRequestOpenDialog={this.props.onRequestSwitchDialogType}
-                    onRequestNext={this._next}
-                    onRequestPrev={this._prev}
-                    onRequestClose={this._deselect}
-                />
-            )
+            case 'dialog':
+                return (
+                    <MediaDialog
+                        item={results[selected]}
+                        position={selected}
+                        total={total}
+                        onRequestDelete={this.props.onRequestDelete}
+                        onRequestOverlay={this.props.onRequestSwitchDialogType}
+                        onRequestClose={this._deselect}
+                        onRequestNext={this._next}
+                        onRequestPrev={this._prev}
+                        onRequestSearch={this.props.onRequestSearch}
+                    />
+                )
+            case 'overlay':
+                return (
+                    <MediaOverlay
+                        title={`${selected + 1} / ${total}`}
+                        item={results[selected]}
+                        onRequestDelete={this.props.onRequestDelete}
+                        onRequestOpenDialog={this.props.onRequestSwitchDialogType}
+                        onRequestNext={this._next}
+                        onRequestPrev={this._prev}
+                        onRequestClose={this._deselect}
+                    />
+                )
         }
     }
 

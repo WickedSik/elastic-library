@@ -7,6 +7,11 @@
         "standard",
         "standard-react"
     ],
+    "settings": {
+        "react": {
+            "version": "16.2"
+        }
+    },
     "parser": "babel-eslint",
     "parserOptions": {
         "sourceType": "module",
@@ -17,7 +22,7 @@
         "__DEV__": true
     },
     "rules": {
-        "indent": [1, 4],
+        "indent": [1, 4, { "SwitchCase": 1 }],
         "no-class-assign": 0,
         "camelcase": [
             0,
