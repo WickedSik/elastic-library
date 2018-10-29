@@ -1,14 +1,16 @@
 // ./main.js
 const electron = require('electron')
 const Server = require('electron-rpc/server')
-const Raven = require('raven')
+// const Raven = require('raven')
 const path = require('path')
+const config = require('./config.json')
 
 const ImageHandler = require('./lib/images')
 const BooruHandler = require('./lib/booru')
+const ApiHandler = require('./lib/booru')
 // const Connector = require('./server/connector')
 
-Raven.config('https://40db1016f052405b8464d41bcaca698e@sentry.io/1248073').install()
+// Raven.config('https://40db1016f052405b8464d41bcaca698e@sentry.io/1248073').install()
 
 const { app, BrowserWindow } = electron
 const rpc = new Server()
@@ -25,15 +27,23 @@ const rpc = new Server()
 // })
 
 let win = null
+let handlers = []
 
-const images = new ImageHandler()
-const booru = new BooruHandler()
-electron.protocol.registerStandardSchemes([ImageHandler.PROTOCOL])
-electron.protocol.registerStandardSchemes([BooruHandler.PROTOCOL])
+;(config.handlers || []).forEach(h => {
+    // console.info('-- handler:%s', h)
+    const Handler = require('./lib/' + h)
+    const handler = new Handler()
+    electron.protocol.registerStandardSchemes([Handler.PROTOCOL])
+
+    handlers.push((protocol) => {
+        handler.register(protocol)
+    })
+})
 
 function createWindow() {
-    images.register(electron.protocol)
-    booru.register(electron.protocol)
+    handlers.forEach(handler => {
+        handler(electron.protocol)
+    })
 
     // Initialize the window to our specified dimensions
     win = new BrowserWindow({

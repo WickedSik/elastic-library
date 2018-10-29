@@ -11,6 +11,7 @@ const { webFrame } = window.require('electron')
 // console.info('-- webframe', webFrame)
 
 webFrame.registerURLSchemeAsPrivileged('booru')
+webFrame.registerURLSchemeAsPrivileged('api')
 
 ReactDOM.render(<App />, document.getElementById('root'))
 registerServiceWorker()
