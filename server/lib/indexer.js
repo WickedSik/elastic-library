@@ -45,7 +45,11 @@ class Indexer extends events.EventEmitter {
         }).then(() => {
             console.info('-- index created')
         }).catch((e) => {
-            console.warn('-- index already exists', e.Error.toString().indexOf('already exists') > -1 ? null : e)
+            if (e.toString().indexOf('already exists') > -1) {
+                console.warn('-- index already exists')
+            } else {
+                console.error('-- index failed to create', e)
+            }
         }).finally(() => {
             console.info('-- initiation')
 
