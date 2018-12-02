@@ -3,8 +3,22 @@ import classnames from 'classnames'
 import PropTypes from 'prop-types'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faHeart, faCheckSquare, faVideo } from '@fortawesome/free-solid-svg-icons'
+import {
+    faHeart as faRegularHeart,
+    faCheckSquare as faRegularCheckSquare
+} from '@fortawesome/free-regular-svg-icons'
 
 import './style.scss'
+
+library.add(
+    faHeart,
+    faRegularHeart,
+    faCheckSquare,
+    faRegularCheckSquare,
+    faVideo
+)
 
 export default class MediaItem extends React.Component {
     static propTypes = {

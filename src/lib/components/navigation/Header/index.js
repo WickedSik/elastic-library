@@ -1,9 +1,19 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import {
+    faCogs,
+    faAddressCard,
+    faImage,
+    faSortAmountDown,
+    faClock
+} from '@fortawesome/free-solid-svg-icons'
 
 import SearchBar from '../SearchBar'
 import './style.scss'
+
+library.add(faCogs, faAddressCard, faImage, faSortAmountDown, faClock)
 
 export default class Header extends React.Component {
     static propTypes = {

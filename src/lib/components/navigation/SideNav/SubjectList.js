@@ -4,6 +4,10 @@ import classnames from 'classnames'
 import PropTypes from 'prop-types'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faHeart, faGlobe, faTag } from '@fortawesome/free-solid-svg-icons'
+
+library.add(faHeart, faGlobe, faTag)
 
 class SubjectList extends React.Component {
     static propTypes = {

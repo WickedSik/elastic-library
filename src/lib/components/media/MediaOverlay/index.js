@@ -2,11 +2,35 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import {
+    faVolumeMute,
+    faCaretRight,
+    faCaretLeft,
+    faHeart,
+    faClock,
+    faAddressCard,
+    faTrash,
+    faTimes
+} from '@fortawesome/free-solid-svg-icons'
+import { faHeart as faRegularHeart } from '@fortawesome/free-regular-svg-icons'
 
 import KeyCodes from '../../../constants/KeyCodes'
 import Fullview from './Fullview'
 
 import './style.scss'
+
+library.add(
+    faVolumeMute,
+    faCaretLeft,
+    faCaretRight,
+    faHeart,
+    faRegularHeart,
+    faClock,
+    faAddressCard,
+    faTimes,
+    faTrash
+)
 
 export default class MediaOverlay extends React.Component {
     static propTypes = {

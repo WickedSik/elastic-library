@@ -1,8 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faVolumeMute, faPause } from '@fortawesome/free-solid-svg-icons'
 
 import KeyCodes from '../../../../constants/KeyCodes'
+
+library.add(faVolumeMute, faPause)
 
 export default class Video extends React.Component {
     static propTypes = {
@@ -30,7 +34,7 @@ export default class Video extends React.Component {
             <div className={'video'}>
                 {this.state.muted && (
                     <div className={'mute-icon'}>
-                        <FontAwesomeIcon icon={['fas', 'volume-off']} size={'4x'} />
+                        <FontAwesomeIcon icon={['fas', 'volume-mute']} size={'4x'} />
                     </div>
                 )}
                 {this.state.paused && (

@@ -7,11 +7,31 @@ import moment from 'moment'
 import _ from 'lodash'
 import { NotificationManager } from 'react-notifications'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import {
+    faCaretRight,
+    faCaretLeft,
+    faTimes,
+    faHeart,
+    faTrash,
+    faGlobe
+} from '@fortawesome/free-solid-svg-icons'
+import { faHeart as faRegularHeart } from '@fortawesome/free-regular-svg-icons'
 
 import InlineEdit from '../../partials/InlineEdit'
 import Preview from './Preview'
 
 import './style.scss'
+
+library.add(
+    faCaretLeft,
+    faCaretRight,
+    faTimes,
+    faHeart,
+    faRegularHeart,
+    faTrash,
+    faGlobe
+)
 
 export default class MediaDialog extends React.Component {
     static propTypes = {

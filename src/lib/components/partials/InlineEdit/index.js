@@ -1,8 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faEdit, faSave } from '@fortawesome/free-solid-svg-icons'
 
 import './style.scss'
+
+library.add(faEdit, faSave)
 
 export default class InlineEdit extends React.Component {
     static propTypes = {

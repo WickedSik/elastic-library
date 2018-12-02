@@ -3,10 +3,11 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
-        "@fortawesome/fontawesome": "^1.1.8",
-        "@fortawesome/fontawesome-free-regular": "^5.0.13",
-        "@fortawesome/fontawesome-free-solid": "^5.0.13",
-        "@fortawesome/fontawesome-svg-core": "^1.2.0",
+        "@fortawesome/fontawesome-free": "^5.5.0",
+        "@fortawesome/fontawesome-svg-core": "^1.2.8",
+        "@fortawesome/free-brands-svg-icons": "^5.5.0",
+        "@fortawesome/free-regular-svg-icons": "^5.5.0",
+        "@fortawesome/free-solid-svg-icons": "^5.5.0",
         "@fortawesome/react-fontawesome": "0.1.0-11",
         "axios": "^0.18.0",
         "booru": "^0.4.0",
@@ -25,6 +26,7 @@
         "jquery": "^3.3.1",
         "lodash": "^4.17.10",
         "moment": "^2.22.0",
+        "mz": "^2.7.0",
         "node-vibrant": "^3.0.0",
         "npm-run-parallel": "^0.6.0",
         "numeraljs": "^1.5.6",
@@ -46,7 +48,8 @@
         "eslint": "node node_modules/.bin/eslint src",
         "gui": "ELECTRON_DISABLE_SECURITY_WARNINGS=1 run-electron .",
         "server": "FORCE_COLOR=true node --harmony server/index.js",
-        "purge": "FORCE_COLOR=true node --harmony server/purge.js"
+        "purge": "FORCE_COLOR=true node --harmony server/purge.js",
+        "import": "FORCE_COLOR=true node --harmony test.js"
     },
     "main": "main.js",
     "devDependencies": {
