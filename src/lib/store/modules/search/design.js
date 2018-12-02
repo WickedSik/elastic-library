@@ -4,4 +4,4 @@
     case class Result(code: String, testName: String, resultValue: ResultValue, date: LocalDateTime, status: String, explanationText: String)
 */
 
-import PropTypes from 'prop-types'
+// import PropTypes from 'prop-types'
