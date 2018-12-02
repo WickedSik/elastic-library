@@ -9,6 +9,7 @@ import { NotificationManager } from 'react-notifications'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import InlineEdit from '../../partials/InlineEdit'
+import Preview from './Preview'
 
 import './style.scss'
 
@@ -124,21 +125,7 @@ export default class MediaDialog extends React.Component {
                     <div className={'content'}>
                         <div className={'grid-x'}>
                             <div className={'cell small-3 medium-3 large-4'}>
-                                {item.isVideo ? (
-                                    <div className={'video'}>
-                                        <video controls>
-                                            <source src={item.url} type={`video/${item.attributes.file.extension.substring(1)}`} />
-                                        </video>
-                                    </div>
-                                ) : (
-                                    <div className={'image'}>
-                                        <img onClick={this.props.onRequestOverlay}
-                                            className={'img'}
-                                            alt={item.title}
-                                            src={item.url}
-                                            onError={() => { this.src = item.thumb }} />
-                                    </div>
-                                )}
+                                <Preview item={item} onRequestOverlay={this.props.onRequestOverlay} />
                             </div>
                             <div className={'cell auto'}>
                                 <div className={'grid-x'}>

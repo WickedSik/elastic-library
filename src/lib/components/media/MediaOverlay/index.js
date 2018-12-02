@@ -4,6 +4,7 @@ import classnames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import KeyCodes from '../../../constants/KeyCodes'
+import Fullview from './Fullview'
 
 import './style.scss'
 
@@ -51,21 +52,10 @@ export default class MediaOverlay extends React.Component {
 
     render() {
         const { item, title } = this.props
-        const imageStyle = {
-            backgroundImage: `url("${item.url}")`
-        }
 
         return (
             <div className={classnames('media-item-overlay', 'open')}>
-                {item.isVideo ? (
-                    <div className={'video'}>
-                        <video controls autoPlay>
-                            <source src={item.url} type={`video/${item.attributes.file.extension.substring(1)}`} />
-                        </video>
-                    </div>
-                ) : (
-                    <div style={imageStyle} className={'image'} />
-                )}
+                <Fullview item={item} />
 
                 <button className={'next-button'} onClick={this._requestNext}>
                     <FontAwesomeIcon icon={['fas', 'caret-right']} fixedWidth />

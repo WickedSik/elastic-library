@@ -44,15 +44,23 @@ $imported: () !default;
                         max-height: 100%;
                     }
 
-                    .image, .video {
-                        width: 100%;
-                        height: 100%;
-                        overflow: hidden;
-                        text-align: center;
+                    .preview {
+                        height: calc(100vh - 12em - 75px);
 
-                        .img, video {
-                            max-height: 100%;
-                            cursor: pointer;
+                        .image, .video {
+                            width: 100%;
+                            height: 100%;
+                            overflow: hidden;
+                            text-align: center;
+
+                            .img, video {
+                                max-height: 100%;
+                                cursor: pointer;
+                            }
+
+                            video {
+                                max-width: 100%;
+                            }
                         }
                     }
 
