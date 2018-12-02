@@ -63,6 +63,12 @@ export default class MediaItem extends React.Component {
 
         return (
             <div className={'media-item'} onClick={this.props.onRequestOpen}>
+                {item.isVideo && (
+                    <div className={'is-video-icon'}>
+                        <FontAwesomeIcon icon={['fas', 'video']} />
+                    </div>
+                )}
+
                 <div className={'img'} style={{backgroundImage: `url("${item.thumb}")`}} />
                 <h4>{item.title}</h4>
 

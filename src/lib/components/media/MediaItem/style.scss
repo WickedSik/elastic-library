@@ -8,6 +8,13 @@
 
     cursor: pointer;
 
+    .is-video-icon {
+        color: white;
+        position: absolute;
+        left: 10px;
+        top: 5px;
+    }
+
     h4 {
         overflow: hidden;
         white-space: nowrap;

@@ -72,6 +72,9 @@ class Connector extends EventEmitter {
             },
             sort: '_doc'
         }).then(docs => {
+            if (docs.length === 0) {
+                return []
+            }
             return docs
                 .map(doc => ({ id: doc._id, checksum: doc._source.checksum }))
                 .reduce((prev, current) => ({
