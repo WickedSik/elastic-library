@@ -145,7 +145,7 @@ export default class MediaDialog extends React.Component {
                     <div className={'content'}>
                         <div className={'grid-x'}>
                             <div className={'cell small-3 medium-3 large-4'}>
-                                <Preview item={item} onRequestOverlay={this.props.onRequestOverlay} />
+                                <Preview key={item.id} item={item} onRequestOverlay={this.props.onRequestOverlay} />
                             </div>
                             <div className={'cell auto'}>
                                 <div className={'grid-x'}>

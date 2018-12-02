@@ -4,6 +4,7 @@ require('console-stamp')(console, { pattern: 'yyyy-mm-dd HH:MM:ss' })
 const checksum = require('checksum')
 const ProgressBar = require('progress')
 const ReadlineSync = require('readline-sync')
+const notifier = require('node-notifier')
 
 const Connector = require('./server/connector')
 const Metadata = require('./server/lib/metadata')
@@ -16,9 +17,27 @@ let bar, checksums
 connector.on('end', () => {
     bar.terminate()
     console.info('-- finished')
+    notifier.notify({
+        title: 'elastic library',
+        message: 'Finished import',
+        wait: true
+    })
     process.exit(0)
 })
-connector.on('success', () => { bar.tick() })
+
+connector.on('success', () => {
+    bar.tick()
+
+    if (bar.curr % Math.floor(bar.total / 10) === 0) {
+        const ratio = bar.curr / bar.total
+        const percent = Math.floor(ratio * 100)
+
+        notifier.notify({
+            title: 'elastic library',
+            message: `Progress (${bar.curr} / ${bar.total}) ${percent}%`
+        })
+    }
+})
 connector.on('file', (f) => {
     queue.push(cb => {
         checksum.file(`${f.dir}/${f.filename}`, { algorithm: 'md5' }, (err, sum) => {
@@ -59,6 +78,11 @@ connector.on('ready', () => {
         .then(sums => {
             checksums = sums
             queue.start()
+
+            notifier.notify({
+                title: 'elastic library',
+                message: 'Starting import'
+            })
         })
 })
 

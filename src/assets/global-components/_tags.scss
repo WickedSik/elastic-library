@@ -5,6 +5,9 @@
     flex-wrap: wrap;
     flex-direction: row;
 
+    max-height: 200px;
+    overflow: scroll;
+
     .label {
         margin: 5px;
         padding: 0;

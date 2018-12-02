@@ -79,7 +79,7 @@ export default class MediaOverlay extends React.Component {
 
         return (
             <div className={classnames('media-item-overlay', 'open')}>
-                <Fullview item={item} onRequestToggleTimer={this._toggleTimer} />
+                <Fullview key={item.id} item={item} onRequestToggleTimer={this._toggleTimer} />
 
                 <button className={'next-button'} onClick={this._requestNext}>
                     <FontAwesomeIcon icon={['fas', 'caret-right']} fixedWidth />
