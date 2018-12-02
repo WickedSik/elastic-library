@@ -13,6 +13,7 @@
         "checksum": "^0.1.1",
         "cheerio": "^1.0.0-rc.2",
         "classnames": "^2.2.6",
+        "console-stamp": "^0.2.7",
         "elasticsearch": "^15.1.1",
         "electron": "^2.0.8",
         "electron-rpc": "^2.0.1",
@@ -25,14 +26,17 @@
         "lodash": "^4.17.10",
         "moment": "^2.22.0",
         "node-vibrant": "^3.0.0",
+        "npm-run-parallel": "^0.6.0",
         "numeraljs": "^1.5.6",
         "queue": "^4.4.2",
         "raven": "^2.6.3",
         "react-notifications": "^1.4.3",
+        "readline-sync": "^1.4.9",
         "recursive-readdir": "^2.2.2",
         "request": "^2.88.0",
         "run-electron": "^0.1.0",
         "sharp": "^0.20.5",
+        "thumbsupply": "^0.3.1",
         "what-input": "^4.3.1"
     },
     "scripts": {
@@ -95,9 +99,9 @@
         "whatwg-fetch": "2.0.3"
     },
     "peerDependencies": {
+        "electron": "^2.0.5",
         "react": ">=0.14",
-        "react-dom": ">=0.14",
-        "electron": "^2.0.5"
+        "react-dom": ">=0.14"
     },
     "jest": {
         "collectCoverageFrom": [

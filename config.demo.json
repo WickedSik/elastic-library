@@ -8,6 +8,9 @@
             "/Users/jurriendokter/Pictures/SFW"
         ]
     },
+    "handlers": [
+        "booru", "images"
+    ],
     "parsers": {
         "checksum": null,
         "path": {
@@ -17,30 +20,67 @@
         },
         "stats": null,
         "number": null,
+        "title": null,
         "exif": null,
         "deviant-art": null,
         "fur-affinity": null,
         "hentai-foundry": null,
         "image": null
     },
-    "mapping": {
-        "media": {
-            "properties": {
-                "keywords": {
-                    "type": "keyword",
-                    "eager_global_ordinals": true
-                },
-                "numbers": {
-                    "type": "keyword"
-                },
-                "checksum": {
-                    "type": "keyword"
-                },
-                "filedata": {
-                    "type": "binary",
-                    "store": true
+    "settings": {
+        "analysis": {
+            "normalizer": {
+                "keyword_normalizer": {
+                    "type": "custom",
+                    "char_filter": [],
+                    "filter": ["lowercase", "asciifolding"]
+                }
+            },
+            "filter": {
+                "keyword_synonym_filter": {
+                    "type": "synonym",
+                    "synonyms": [
+                        "dickgirl,herm,futa,futanari,hermaphrodite => dickgirl",
+                        "cum_in_ass,cum_in_pussy,cum_in_mouth,cum_in_nose,cum_while_penetrated => cum_inside",
+                        "cum_on_balls,cum_on_butt,cum_on_perineum,cum_on_breasts,cum_on_face,cum_on_leg,cum_on_penis => cum_outside",
+                        "cum_inside,cum_outside,cum_leaking,cum_splatter,cum_string,cum_inflation,cum_on_ground,cum_from_nose => cum"
+                    ]
+                }
+            },
+            "analyzer": {
+                "keyword_synonym_analyzer": {
+                    "tokenizer": "standard",
+                    "filter": [
+                        "lowercase",
+                        "keyword_synonym_filter"
+                    ]
                 }
             }
         }
-    }
+    },
+    "mapping": [
+        {
+            "keywords": {
+                "type": "keyword",
+                "eager_global_ordinals": true,
+                "normalizer": "keyword_normalizer"
+            }
+        },
+        {
+            "numbers": {
+                "type": "keyword"
+            }
+        },
+        {
+            "checksum": {
+                "type": "keyword"
+            }
+        },
+        {
+            "filedata": {
+                "type": "binary",
+                "store": true
+            }
+        }
+    ]
 }

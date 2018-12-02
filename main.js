@@ -4,10 +4,6 @@ const Server = require('electron-rpc/server')
 // const Raven = require('raven')
 const path = require('path')
 const config = require('./config.json')
-
-const ImageHandler = require('./lib/images')
-const BooruHandler = require('./lib/booru')
-const ApiHandler = require('./lib/booru')
 // const Connector = require('./server/connector')
 
 // Raven.config('https://40db1016f052405b8464d41bcaca698e@sentry.io/1248073').install()
