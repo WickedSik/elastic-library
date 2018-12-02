@@ -18,6 +18,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { faHeart as faRegularHeart } from '@fortawesome/free-regular-svg-icons'
 
+import KeyCodes from '../../../constants/KeyCodes'
 import InlineEdit from '../../partials/InlineEdit'
 import Preview from './Preview'
 
@@ -75,7 +76,7 @@ export default class MediaDialog extends React.Component {
     }
 
     componentWillUnmount() {
-        document.removeEventListener('keydown', this._closeIfEscape, false)
+        document.removeEventListener('keydown', this._handleKeydown, false)
         document.body.removeChild(this.el)
 
         this._mounted = false
@@ -86,7 +87,7 @@ export default class MediaDialog extends React.Component {
     }
 
     componentDidMount() {
-        document.addEventListener('keydown', this._closeIfEscape, false)
+        document.addEventListener('keydown', this._handleKeydown, false)
 
         this._mounted = true
 
@@ -219,9 +220,21 @@ export default class MediaDialog extends React.Component {
         )
     }
 
-    _closeIfEscape = (event) => {
-        if (event.keyCode === 27) {
-            this.props.onRequestClose()
+    _handleKeydown = (event) => {
+        switch (event.keyCode) {
+            case KeyCodes.ESCAPE:
+                this.props.onRequestClose()
+                break
+            case KeyCodes.ARROW_LEFT:
+                this.props.onRequestPrev()
+                break
+            case KeyCodes.ARROW_RIGHT:
+                this.props.onRequestNext()
+                break
+        }
+
+        if (KeyCodes.getCharacterFromCode(event.keyCode) === 'l') {
+            this._setFavorite()
         }
     }
 
