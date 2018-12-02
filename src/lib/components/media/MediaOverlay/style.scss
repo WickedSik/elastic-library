@@ -18,6 +18,20 @@
     .fullview {
         width: 100%;
         height: 100%;
+
+        .video {
+            .mute-icon, .pause-icon {
+                position: absolute;
+                color: white;
+                top: 50px;
+            }
+            .mute-icon {
+                right: 200px;
+            }
+            .pause-icon {
+                right: 250px;
+            }
+        }
     }
 
     .image, .video {

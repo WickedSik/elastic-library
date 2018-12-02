@@ -7,18 +7,18 @@ import Video from './Video'
 export default class Preview extends React.Component {
     static propTypes = {
         item: PropTypes.object.isRequired,
-        onRequestOverlay: PropTypes.func.isRequired
+        onRequestToggleTimer: PropTypes.func.isRequired
     }
 
     render() {
-        const { item, onRequestOverlay } = this.props
+        const { item, onRequestToggleTimer } = this.props
 
         return (
             <div className={'fullview'}>
                 {item.isVideo ? (
-                    <Video item={item} onRequestOverlay={onRequestOverlay} />
+                    <Video item={item} onRequestToggleTimer={onRequestToggleTimer} />
                 ) : (
-                    <Image item={item} onRequestOverlay={onRequestOverlay} />
+                    <Image item={item} onRequestToggleTimer={onRequestToggleTimer} />
                 )}
             </div>
         )
