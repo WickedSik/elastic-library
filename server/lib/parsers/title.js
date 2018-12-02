@@ -41,10 +41,6 @@ class TitleParser extends Parser {
     accepts(file) {
         return true
     }
-
-    get runsForExistingItems() {
-        return true
-    }
 }
 
 module.exports = TitleParser

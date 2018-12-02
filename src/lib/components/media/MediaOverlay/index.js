@@ -57,7 +57,15 @@ export default class MediaOverlay extends React.Component {
 
         return (
             <div className={classnames('media-item-overlay', 'open')}>
-                <div style={imageStyle} className={'image'} />
+                {item.isVideo ? (
+                    <div className={'video'}>
+                        <video controls autoPlay>
+                            <source src={item.url} type={`video/${item.attributes.file.extension.substring(1)}`} />
+                        </video>
+                    </div>
+                ) : (
+                    <div style={imageStyle} className={'image'} />
+                )}
 
                 <button className={'next-button'} onClick={this._requestNext}>
                     <FontAwesomeIcon icon={['fas', 'caret-right']} fixedWidth />

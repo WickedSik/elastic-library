@@ -132,11 +132,21 @@ export default class Document {
         })
     }
 
+    get isVideo() {
+        return (
+            this.attributes.file.extension === '.webm' ||
+            this.attributes.file.extension === '.mpg' ||
+            this.attributes.file.extension === '.mp4'
+        )
+    }
+
     get url() {
+        const protocol = this.isVideo ? 'video:' : 'image:'
+
         const imageUrl = window.require
             ? url.format({
                 pathname: encodeURI(this.attributes.file.path),
-                protocol: 'image:',
+                protocol,
                 slashes: true
             })
             : url.format({

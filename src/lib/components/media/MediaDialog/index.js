@@ -97,6 +97,10 @@ export default class MediaDialog extends React.Component {
     render() {
         const { item, position, total } = this.props
 
+        const author = Array.isArray(item.attributes.author)
+            ? item.attributes.author.join('')
+            : item.attributes.author
+
         return ReactDOM.createPortal(
             <div className={classnames('media-dialog', 'lib-dialog', 'open')} onClick={this.props.onRequestClose}>
                 <div className={'media-dialog-content lib-dialog-content'} onClick={this._killPropagation}>
@@ -120,12 +124,21 @@ export default class MediaDialog extends React.Component {
                     <div className={'content'}>
                         <div className={'grid-x'}>
                             <div className={'cell small-3 medium-3 large-4'}>
-                                <div className={'image'}>
-                                    <img onClick={this.props.onRequestOverlay}
-                                        className={'img'}
-                                        alt={item.title}
-                                        src={item.url} />
-                                </div>
+                                {item.isVideo ? (
+                                    <div className={'video'}>
+                                        <video controls>
+                                            <source src={item.url} type={`video/${item.attributes.file.extension.substring(1)}`} />
+                                        </video>
+                                    </div>
+                                ) : (
+                                    <div className={'image'}>
+                                        <img onClick={this.props.onRequestOverlay}
+                                            className={'img'}
+                                            alt={item.title}
+                                            src={item.url}
+                                            onError={() => { this.src = item.thumb }} />
+                                    </div>
+                                )}
                             </div>
                             <div className={'cell auto'}>
                                 <div className={'grid-x'}>
@@ -136,7 +149,7 @@ export default class MediaDialog extends React.Component {
                                                 <tr><th>Filename</th><td>{item.attributes.file.name}</td></tr>
                                                 <tr><th>Extension</th><td>{item.attributes.file.extension}</td></tr>
                                                 <tr><th>Size</th><td>{numeral(item.attributes.file.size).format('0.00b')}</td></tr>
-                                                <tr><th>Author</th><td><InlineEdit value={item.attributes.author} onUpdate={this._handleUpdateAuthor} /></td></tr>
+                                                <tr><th>Author</th><td><InlineEdit value={author} onUpdate={this._handleUpdateAuthor} /></td></tr>
                                                 {(item.attributes.checksum !== item.attributes.file.name) && (
                                                     <tr><th>Checksum</th><td>{item.attributes.checksum}</td></tr>
                                                 )}

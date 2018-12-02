@@ -12,6 +12,8 @@ const { webFrame } = window.require('electron')
 
 webFrame.registerURLSchemeAsPrivileged('booru')
 webFrame.registerURLSchemeAsPrivileged('api')
+webFrame.registerURLSchemeAsPrivileged('image')
+webFrame.registerURLSchemeAsPrivileged('video')
 
 ReactDOM.render(<App />, document.getElementById('root'))
 registerServiceWorker()

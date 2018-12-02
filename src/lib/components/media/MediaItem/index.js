@@ -52,7 +52,7 @@ export default class MediaItem extends React.Component {
                 <div className={'img'} style={{backgroundImage: `url("${item.thumb}")`}} />
                 <h4>{item.title}</h4>
 
-                {item.attributes.image && (
+                {item.attributes.image && item.attributes.image.palette && (
                     <ul className={'palette'}>
                         {Object.keys(item.attributes.image.palette).map(key => (
                             <li key={key} title={`${key} (${item.attributes.image.palette[key]})`} style={{backgroundColor: item.attributes.image.palette[key]}} />

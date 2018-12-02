@@ -1,7 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { createStore, applyMiddleware } from 'redux'
-import createSagaMiddleware from 'redux-saga'
 import { Provider, connect } from 'react-redux'
 import _ from 'lodash'
 import $ from 'jquery'
@@ -15,9 +13,8 @@ import 'react-notifications/lib/notifications.css'
 
 import './app.scss'
 
-import reducer from '../lib/redux/reducers'
-import mySaga from '../lib/redux/sagas'
-import actions from '../lib/redux/actions'
+import configureStore from '../lib/store'
+import * as actions from '../lib/store/modules/search/actions'
 
 import Header from '../lib/components/navigation/Header'
 import CardList from '../lib/components/media/CardList'
@@ -33,21 +30,7 @@ fontawesome.library.add(regular, solid)
 
 // const fs = electron.remote.require('fs')
 const Client = window.require('electron-rpc/client')
-
-// create the saga middleware
-const sagaMiddleware = createSagaMiddleware()
-// mount it on the Store
-
-/* eslint-disable no-underscore-dangle */
-const store = createStore(
-    reducer,
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
-    applyMiddleware(sagaMiddleware)
-)
-/* eslint-enable */
-
-// then run the saga
-sagaMiddleware.run(mySaga)
+const store = configureStore()
 
 const rpc = new Client()
 

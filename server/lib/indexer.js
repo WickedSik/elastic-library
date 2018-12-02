@@ -149,6 +149,20 @@ class Indexer extends events.EventEmitter {
         })
     }
 
+    scroll(query) {
+        return new Promise((resolve, reject) => {
+            this._client.scroll({
+                index: this._index,
+                type: 'media',
+                body: query
+            }).then(data => {
+                resolve(data)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    }
+
     addMapping(mapping) {
         this._mapping.push(mapping)
     }

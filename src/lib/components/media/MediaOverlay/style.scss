@@ -15,13 +15,18 @@
         display: block;
     }
 
-    .image {
+    .image, .video {
         width: 100%;
         height: 100%;
 
         background-position: center;
         background-size: contain;
         background-repeat: no-repeat;
+
+        video {
+            max-height: 100%;
+            max-width: 100%;
+        }
     }
 
     .controls {

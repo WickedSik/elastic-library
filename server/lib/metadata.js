@@ -45,7 +45,7 @@ class Metadata {
             // normal parsers
             let parselist = []
             for (const parser of parsers) {
-                if (parser.accepts(this.file)) {
+                if (parser.accepts(this.file) && !parser.runsForExistingItems) {
                     parselist.push(parser.parse(this))
                 }
             }
