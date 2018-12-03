@@ -31,6 +31,23 @@
             .pause-icon {
                 right: 270px;
             }
+            .playbar {
+                background-color: black;
+                position: absolute;
+                bottom: 50px;
+                left: 20px;
+                right: 20px;
+                height: 2px;
+                
+                .bar {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    
+                    background-color: white;
+                    height: 2px;
+                }
+            }
         }
     }
 

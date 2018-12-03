@@ -16,7 +16,8 @@ export default class Video extends React.Component {
 
     state = {
         muted: true,
-        paused: false
+        paused: false,
+        percentage: 0
     }
 
     componentDidMount() {
@@ -42,11 +43,22 @@ export default class Video extends React.Component {
                         <FontAwesomeIcon icon={['fas', 'pause']} size={'4x'} />
                     </div>
                 )}
-                <video autoPlay loop ref={r => { this._ref = r }} muted={this.state.muted}>
+                <video autoPlay loop ref={r => { this._ref = r }} muted={this.state.muted} onTimeUpdate={this._updateProgress}>
                     <source src={item.url} type={`video/${item.attributes.file.extension.substring(1)}`} />
                 </video>
+                <div className={'playbar'}>
+                    <div className={'bar'} style={{width: `${this.state.percentage}%`}} />
+                </div>
             </div>
         )
+    }
+
+    _updateProgress = (event) => {
+        const percentage = Math.round((this._ref.currentTime / this._ref.duration) * 100)
+
+        this.setState({
+            percentage
+        })
     }
 
     _handleKeydown = (event) => {

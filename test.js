@@ -14,12 +14,14 @@ const connector = new Connector(config, null)
 const queue = connector.queue(false)
 let bar, checksums
 
+const APP_NAME = 'elastic library'
+
 connector.on('end', () => {
     bar.terminate()
     console.info('-- finished')
     notifier.notify({
-        title: 'elastic library',
-        message: 'Finished import',
+        title: 'Finished import',
+        message: APP_NAME,
         wait: true
     })
     process.exit(0)
@@ -33,8 +35,8 @@ connector.on('success', () => {
         const percent = Math.floor(ratio * 100)
 
         notifier.notify({
-            title: 'elastic library',
-            message: `Progress (${bar.curr} / ${bar.total}) ${percent}%`
+            title: `Progress (${bar.curr} / ${bar.total}) ${percent}%`,
+            message: APP_NAME
         })
     }
 })
@@ -80,8 +82,8 @@ connector.on('ready', () => {
             queue.start()
 
             notifier.notify({
-                title: 'elastic library',
-                message: 'Starting import'
+                title: 'Starting import',
+                message: APP_NAME
             })
         })
 })
