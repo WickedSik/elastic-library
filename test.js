@@ -8,7 +8,15 @@ const notifier = require('node-notifier')
 
 const Connector = require('./server/connector')
 const Metadata = require('./server/lib/metadata')
-const config = require('./config.json')
+const getopts = require('getopts')
+
+const options = getopts(process.argv.slice(2), {
+    alias: {
+        c: 'config'
+    }
+})
+
+const config = require(`./${options.config || 'config.json'}`)
 
 const connector = new Connector(config, null)
 const queue = connector.queue(false)
@@ -41,6 +49,8 @@ connector.on('success', () => {
     }
 })
 connector.on('file', (f) => {
+    console.info('-- file : %s/%s', f.dir, f.filename)
+
     queue.push(cb => {
         checksum.file(`${f.dir}/${f.filename}`, { algorithm: 'md5' }, (err, sum) => {
             if (err) {
@@ -59,7 +69,13 @@ connector.on('file', (f) => {
                             .index(metadata)
                             .finally(cb)
                     })
-                cb()
+                    .catch(e => {
+                        console.error(`-- error [${bar.curr}/${bar.total}]`, e)
+                        bar.interrupt('')
+
+                        ReadlineSync.question('Continue...')
+                        cb()
+                    })
             } else {
                 cb()
             }
