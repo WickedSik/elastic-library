@@ -49,8 +49,6 @@ connector.on('success', () => {
     }
 })
 connector.on('file', (f) => {
-    console.info('-- file : %s/%s', f.dir, f.filename)
-
     queue.push(cb => {
         checksum.file(`${f.dir}/${f.filename}`, { algorithm: 'md5' }, (err, sum) => {
             if (err) {

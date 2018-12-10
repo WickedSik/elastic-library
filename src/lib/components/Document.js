@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import url from 'url'
-import SearchApi from '../redux/api/search'
+import SearchApi from '../store/modules/search/api'
 
 const removeFromArray = function(arr, ...arg) {
     let L = arg.length

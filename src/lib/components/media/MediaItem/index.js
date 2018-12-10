@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faHeart, faCheckSquare, faVideo } from '@fortawesome/free-solid-svg-icons'
+import { faHeart, faCheckSquare, faVideo, faFilm } from '@fortawesome/free-solid-svg-icons'
 import {
     faHeart as faRegularHeart,
     faCheckSquare as faRegularCheckSquare
@@ -17,7 +17,8 @@ library.add(
     faRegularHeart,
     faCheckSquare,
     faRegularCheckSquare,
-    faVideo
+    faVideo,
+    faFilm
 )
 
 export default class MediaItem extends React.Component {
@@ -66,6 +67,11 @@ export default class MediaItem extends React.Component {
                 {item.isVideo && (
                     <div className={'is-video-icon'}>
                         <FontAwesomeIcon icon={['fas', 'video']} />
+                    </div>
+                )}
+                {item.attributes.file.extension === '.gif' && (
+                    <div className={'is-gif-icon'}>
+                        <FontAwesomeIcon icon={['fas', 'film']} />
                     </div>
                 )}
 

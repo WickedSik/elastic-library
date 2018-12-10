@@ -19,7 +19,7 @@ class VideoThumbParser extends Parser {
                     resolve()
                 })
             }).catch(e => {
-                console.error('-- failed to create video thumbnail (generate)', e)
+                // console.error('-- failed to create video thumbnail (generate)', e)
                 resolve()
             })
         })

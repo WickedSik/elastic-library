@@ -7,7 +7,6 @@ declare global {
          * @returns A Promise for the completion of which ever callback is executed.
          */
         finally<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
-
     }
 
     interface Array<T> {
@@ -15,7 +14,7 @@ declare global {
         remove(...value): void;
     }
 
-    interface Metadata {
+    class Metadata {
         static addParser(parser): void;
         read(): void;
         has(key:String): boolean;

@@ -1,21 +1,29 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faVolumeMute, faPause } from '@fortawesome/free-solid-svg-icons'
 
 import KeyCodes from '../../../../constants/KeyCodes'
 
+import { toggleMute } from '../../../../store/modules/player/actions'
+
 library.add(faVolumeMute, faPause)
 
-export default class Video extends React.Component {
+class Video extends React.Component {
     static propTypes = {
         item: PropTypes.object.isRequired,
-        onRequestToggleTimer: PropTypes.func.isRequired
+        muted: PropTypes.bool.isRequired,
+        onRequestToggleTimer: PropTypes.func.isRequired,
+        toggleMute: PropTypes.func.isRequired
+    }
+
+    static defaultProps = {
+        muted: true
     }
 
     state = {
-        muted: true,
         paused: false,
         percentage: 0
     }
@@ -33,7 +41,7 @@ export default class Video extends React.Component {
 
         return (
             <div className={'video'}>
-                {this.state.muted && (
+                {this.props.muted && (
                     <div className={'mute-icon'}>
                         <FontAwesomeIcon icon={['fas', 'volume-mute']} size={'4x'} />
                     </div>
@@ -43,7 +51,7 @@ export default class Video extends React.Component {
                         <FontAwesomeIcon icon={['fas', 'pause']} size={'4x'} />
                     </div>
                 )}
-                <video autoPlay loop ref={r => { this._ref = r }} muted={this.state.muted} onTimeUpdate={this._updateProgress}>
+                <video autoPlay loop ref={r => { this._ref = r }} muted={this.props.muted} onTimeUpdate={this._updateProgress}>
                     <source src={item.url} type={`video/${item.attributes.file.extension.substring(1)}`} />
                 </video>
                 <div className={'playbar'}>
@@ -53,7 +61,7 @@ export default class Video extends React.Component {
         )
     }
 
-    _updateProgress = (event) => {
+    _updateProgress = () => {
         const percentage = Math.round((this._ref.currentTime / this._ref.duration) * 100)
 
         this.setState({
@@ -91,9 +99,18 @@ export default class Video extends React.Component {
     }
 
     _toggleMute = () => {
-        this.setState(state => ({
-            ...state,
-            muted: !state.muted
-        }))
+        this.props.toggleMute()
     }
 }
+
+const mapStateToProps = (state, props) => {
+    return {
+        ...state.player
+    }
+}
+
+const mapDispatchToProps = {
+    toggleMute
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Video)

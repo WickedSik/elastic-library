@@ -1,16 +1,19 @@
 import { all } from 'redux-saga/effects'
 
 import { saga as searchSaga, default as searchReducer } from './search'
+import { saga as playerSaga, default as playerReducer } from './player'
 
 export const reducers = {
-    search: searchReducer
+    search: searchReducer,
+    player: playerReducer
 }
 
 export default reducers
 
 export function* rootSaga() {
     yield all([
-        ...searchSaga
+        ...searchSaga,
+        ...playerSaga
     ])
 }
 

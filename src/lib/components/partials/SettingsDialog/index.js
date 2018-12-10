@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 
-import { renameKeyword } from '../../../redux/api/search'
+import { renameKeyword } from '../../../store/modules/search/api'
 
 import './style.scss'
 
