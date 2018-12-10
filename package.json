@@ -46,7 +46,7 @@
         "start": "BROWSER=false node scripts/start.js",
         "build": "node scripts/build.js",
         "test": "node scripts/test.js --env=jsdom",
-        "eslint": "node node_modules/.bin/eslint src",
+        "lint": "eslint src",
         "gui": "ELECTRON_DISABLE_SECURITY_WARNINGS=1 run-electron .",
         "server": "FORCE_COLOR=true node --harmony server/index.js",
         "purge": "FORCE_COLOR=true node --harmony server/purge.js",
