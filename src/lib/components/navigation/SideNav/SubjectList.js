@@ -50,7 +50,7 @@ class SubjectList extends React.Component {
         this.setState({
             term: subject.key
         }, () => {
-            this.props.onSearch(`keywords:${subject.key}`)
+            this.props.onSearch(`keywords.keyword:${subject.key}`)
         })
     }
 

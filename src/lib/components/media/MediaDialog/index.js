@@ -1,6 +1,4 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
-import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import numeral from 'numeraljs'
 import moment from 'moment'
@@ -20,7 +18,11 @@ import { faHeart as faRegularHeart } from '@fortawesome/free-regular-svg-icons'
 
 import KeyCodes from '../../../constants/KeyCodes'
 import InlineEdit from '../../partials/InlineEdit'
+import Dialog from '../../partials/Dialog'
+import PopupMenu from '../../partials/PopupMenu'
 import Preview from './Preview'
+
+import e621NetLogo from '../../../../assets/e621-net-logo.png'
 
 import './style.scss'
 
@@ -123,101 +125,103 @@ export default class MediaDialog extends React.Component {
             ? item.attributes.author.join('')
             : item.attributes.author
 
-        return ReactDOM.createPortal(
-            <div className={classnames('media-dialog', 'lib-dialog', 'open')} onClick={this.props.onRequestClose}>
-                <div className={'media-dialog-content lib-dialog-content'} onClick={this._killPropagation}>
-                    <button className={'close-button'} onClick={this.props.onRequestClose}>
-                        <span aria-hidden={'true'}>&times;</span>
-                    </button>
+        return <Dialog
+            className={'media-dialog'}
+            title={item.title}
+            onRequestClose={this.props.onRequestClose}
+            killPropagation
+            other={<React.Fragment>
+                <button className={'next-button'} onClick={this.props.onRequestNext}>
+                    <FontAwesomeIcon icon={['fas', 'caret-right']} fixedWidth />
+                </button>
+                <button className={'prev-button'} onClick={this.props.onRequestPrev}>
+                    <FontAwesomeIcon icon={['fas', 'caret-left']} fixedWidth />
+                </button>
 
-                    <button className={'next-button'} onClick={this.props.onRequestNext}>
-                        <FontAwesomeIcon icon={['fas', 'caret-right']} fixedWidth />
-                    </button>
+                <div className={'position'}>
+                    <span>{position} / {total}</span>
+                </div>
+            </React.Fragment>}
+            footer={<div className={'grid-x button-group'}>
+                <button className={'button clear cell auto'} onClick={this._setFavorite}>
+                    <FontAwesomeIcon icon={[item.attributes.favorite ? 'fas' : 'far', 'heart']} />
+                </button>
+                <button className={'button clear cell auto'} onClick={() => { this.props.onRequestDelete(item.id) }}>
+                    <FontAwesomeIcon icon={['fas', 'trash']} />
+                </button>
 
-                    <button className={'prev-button'} onClick={this.props.onRequestPrev}>
-                        <FontAwesomeIcon icon={['fas', 'caret-left']} fixedWidth />
-                    </button>
-
-                    <div className={'position'}>
-                        <span>{position} / {total}</span>
-                    </div>
-
-                    <h1>{item.title}</h1>
-                    <div className={'content'}>
-                        <div className={'grid-x'}>
-                            <div className={'cell small-3 medium-3 large-4'}>
-                                <Preview key={item.id} item={item} onRequestOverlay={this.props.onRequestOverlay} />
-                            </div>
-                            <div className={'cell auto'}>
-                                <div className={'grid-x'}>
-                                    <div className={'cell small-12'}>
-                                        <table className={'table'}>
-                                            <tbody>
-                                                <tr><th>Title</th><td><InlineEdit value={item.title} onUpdate={this._handleUpdateTitle} /></td></tr>
-                                                <tr><th>Filename</th><td>{item.attributes.file.name}</td></tr>
-                                                <tr><th>Extension</th><td>{item.attributes.file.extension}</td></tr>
-                                                <tr><th>Size</th><td>{numeral(item.attributes.file.size).format('0.00b')}</td></tr>
-                                                <tr><th>Author</th><td><InlineEdit value={author} onUpdate={this._handleUpdateAuthor} /></td></tr>
-                                                {(item.attributes.checksum !== item.attributes.file.name) && (
-                                                    <tr><th>Checksum</th><td>{item.attributes.checksum}</td></tr>
-                                                )}
-                                                <tr><th>Created</th><td>{moment(item.attributes.file.created_at).format('D MMMM YYYY')}</td></tr>
-                                                <tr><th>Updated</th><td>{moment(item.attributes.file.updated_at).format('D MMMM YYYY')}</td></tr>
-                                                <tr><th>Tags</th>
-                                                    <td>
-                                                        <div className={'tags'}>
-                                                            {this.state.keywords.map((keyword, index) => {
-                                                                return (
-                                                                    <div className={'label'} key={`${index}-${keyword}`}>
-                                                                        <div className={'closer'} onClick={() => {
-                                                                            this._handleDeleteKeyword(keyword)
-                                                                        }}>
-                                                                            <FontAwesomeIcon icon={['fas', 'times']} />
-                                                                        </div>
-                                                                        <span onClick={() => {
-                                                                            this._handleClickKeyword(keyword)
-                                                                        }}>{keyword}</span>
-                                                                    </div>
-                                                                )
-                                                            })}
-                                                            <input value={this.state.newKeyword}
-                                                                placeholder={'Add (+ enter)'}
-                                                                onChange={(event) => {
-                                                                    this.setState({ newKeyword: event.target.value })
-                                                                }}
-                                                                onKeyPress={event => {
-                                                                    if (event.key === 'Enter') {
-                                                                        this._addNewKeyword()
-                                                                    }
-                                                                }}
-                                                            />
+                <PopupMenu
+                    className={'clear cell auto'}
+                    buttonClassName={'clear cell auto'}
+                    label={<FontAwesomeIcon icon={['fas', 'globe']} />}
+                    options={[
+                        {
+                            content: <img src={e621NetLogo} />,
+                            onClick: this._checkBooru,
+                            disabled: this.props.item.attributes.keywords.indexOf('not_found_on_e621') > -1
+                        }
+                    ]}
+                />
+            </div>}
+        >
+            <div className={'grid-x'}>
+                <div className={'cell small-3 medium-3 large-4'}>
+                    <Preview key={item.id} item={item} onRequestOverlay={this.props.onRequestOverlay} />
+                </div>
+                <div className={'cell auto'}>
+                    <div className={'grid-x'}>
+                        <div className={'cell small-12'}>
+                            <table className={'table'}>
+                                <tbody>
+                                    <tr><th>Title</th><td><InlineEdit value={item.title} onUpdate={this._handleUpdateTitle} /></td></tr>
+                                    <tr><th>Filename</th><td>{item.attributes.file.name}</td></tr>
+                                    <tr><th>Extension</th><td>{item.attributes.file.extension}</td></tr>
+                                    <tr><th>Size</th><td>{numeral(item.attributes.file.size).format('0.00b')}</td></tr>
+                                    <tr><th>Author</th><td><InlineEdit value={author} onUpdate={this._handleUpdateAuthor} /></td></tr>
+                                    {(item.attributes.checksum !== item.attributes.file.name) && (
+                                        <tr><th>Checksum</th><td>{item.attributes.checksum}</td></tr>
+                                    )}
+                                    <tr><th>Created</th><td>{moment(item.attributes.file.created_at).format('D MMMM YYYY')}</td></tr>
+                                    <tr><th>Updated</th><td>{moment(item.attributes.file.updated_at).format('D MMMM YYYY')}</td></tr>
+                                    <tr><th>Tags</th>
+                                        <td>
+                                            <div className={'tags'}>
+                                                {this.state.keywords.map((keyword, index) => {
+                                                    return (
+                                                        <div className={'label'} key={`${index}-${keyword}`}>
+                                                            <div className={'closer'} onClick={() => {
+                                                                this._handleDeleteKeyword(keyword)
+                                                            }}>
+                                                                <FontAwesomeIcon icon={['fas', 'times']} />
+                                                            </div>
+                                                            <span onClick={() => {
+                                                                this._handleClickKeyword(keyword)
+                                                            }}>{keyword}</span>
                                                         </div>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className={'controls'}>
-                        <div className={'grid-x'}>
-                            <button className={'button clear cell auto'} onClick={this._setFavorite}>
-                                <FontAwesomeIcon icon={[item.attributes.favorite ? 'fas' : 'far', 'heart']} />
-                            </button>
-                            <button className={'button clear cell auto'} onClick={() => { this.props.onRequestDelete(item.id) }}>
-                                <FontAwesomeIcon icon={['fas', 'trash']} />
-                            </button>
-                            <button className={'button clear cell auto'} onClick={this._checkBooru}>
-                                <FontAwesomeIcon icon={['fas', 'globe']} />
-                            </button>
+                                                    )
+                                                })}
+                                                <input value={this.state.newKeyword}
+                                                    placeholder={'Add (+ enter)'}
+                                                    onChange={(event) => {
+                                                        this.setState({ newKeyword: event.target.value })
+                                                    }}
+                                                    onKeyPress={event => {
+                                                        if (event.key === 'Enter') {
+                                                            this._addNewKeyword()
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
-            , this.el
-        )
+
+        </Dialog>
     }
 
     _handleKeydown = (event) => {
@@ -289,7 +293,7 @@ export default class MediaDialog extends React.Component {
     }
 
     _handleClickKeyword = (keyword) => {
-        this.props.onRequestSearch(`keywords:${keyword}`)
+        this.props.onRequestSearch(`keywords.keyword:${keyword}`)
         this.props.onRequestClose()
     }
 
@@ -301,13 +305,6 @@ export default class MediaDialog extends React.Component {
     _handleUpdateAuthor = (value) => {
         this.props.item.attributes.author = value
         this.props.item.update()
-    }
-
-    _killPropagation = (eve) => {
-        eve.stopPropagation()
-        eve.preventDefault()
-
-        return false
     }
 
     _checkBooru = () => {

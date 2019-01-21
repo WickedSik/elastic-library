@@ -27,7 +27,7 @@ class NumberParser extends Parser {
     get mapping() {
         return {
             numbers: {
-                type: 'integer'
+                type: 'keyword'
             }
         }
     }

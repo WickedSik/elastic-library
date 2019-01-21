@@ -1,0 +1,39 @@
+@import '../../../../assets/colors';
+
+.popup-menu {
+    .popup-menu-options {
+        display: flex;
+        position: absolute;
+        bottom: 40px;
+        margin: 0;
+        padding: 0;
+        height: 0;
+        overflow: hidden;
+
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: start;
+        align-items: flex-start;
+        align-content: flex-start;
+
+        transition: height .5s;
+
+        .item {
+            display: flex;
+            flex-grow: 0;
+
+            .no-padding {
+                padding: 0;
+            }
+
+            img {
+                max-width: 50px;
+                max-height: 40px;
+            }
+        }
+
+        &.active {
+            height: 40px;
+        }
+    }
+}

@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const { flatten, unflatten } = require('../shared/extend')
+const { flatten, unflatten } = require('../../server/shared/extend')
 
 const parsers = []
 

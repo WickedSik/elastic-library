@@ -1,4 +1,77 @@
 @import '../../../../assets/colors';
-@import '../../../../assets/lib';
 
-@include lib-dialog();
+.media-dialog {
+    .media-dialog-content {
+        .position {
+            position: absolute;
+            left: 0;
+            bottom: 50px;
+
+            span {
+                display: block;
+                font-size: .7em;
+                padding: 1em 2em;
+            }
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 2em;
+            right: 2em;
+
+            .button {
+                margin-bottom: 0;
+            }
+        }
+
+        .next-button, .prev-button {
+            font-size: 2em;
+            padding: 15px 10px;
+            background-color: darken($background-color, 25%);
+            box-shadow: 0px 0px 5px darken($background-color, 25%);
+
+            position: absolute;
+
+            top: calc(50% - 20px);
+            cursor: pointer;
+        }
+
+        .next-button {
+            right: -20px;
+        }
+
+        .prev-button {
+            left: -20px;
+        }
+
+        .content {            
+            .preview {
+                height: calc(100vh - 12em - 75px);
+
+                .image, .video {
+                    width: 100%;
+                    height: 100%;
+                    overflow: hidden;
+                    text-align: center;
+
+                    .img, video {
+                        max-height: 100%;
+                        cursor: pointer;
+                    }
+
+                    video {
+                        max-width: 100%;
+                    }
+                }
+            }
+        }
+
+        &.has-footer {
+            .content {
+                .preview {
+                    height: calc(100vh - 12em - 125px);
+                }
+            }
+        }
+    }
+}

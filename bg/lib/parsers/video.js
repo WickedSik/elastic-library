@@ -64,7 +64,7 @@ class VideoParser extends Parser {
                 properties: {
                     width: { type: 'integer' },
                     height: { type: 'integer' },
-                    title: { type: 'integer' },
+                    title: { type: 'text' },
                     aspect: { type: 'text' },
                     framerate: { type: 'text' },
                     encoder: { type: 'text' },

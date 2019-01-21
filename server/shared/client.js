@@ -61,6 +61,8 @@ class Client extends events.EventEmitter {
                     reject(error)
                 }
 
+                // console.info('-- response', response)
+
                 documents = _.concat(documents, response.hits.hits)
 
                 if (response.hits.total > documents.length) {

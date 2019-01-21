@@ -4,7 +4,7 @@ import { Provider, connect } from 'react-redux'
 import _ from 'lodash'
 import $ from 'jquery'
 import 'foundation-sites'
-import { NotificationContainer } from 'react-notifications'
+import { NotificationContainer, NotificationManager } from 'react-notifications'
 import 'react-notifications/lib/notifications.css'
 
 import './app.scss'
@@ -24,6 +24,7 @@ import Config from '../config'
 
 // const fs = electron.remote.require('fs')
 const Client = window.require('electron-rpc/client')
+const { ipcRenderer } = window.require('electron')
 const store = configureStore()
 
 const rpc = new Client()
@@ -40,6 +41,14 @@ const loader = new ImagePreloader()
 Document.globalOn('loaded', doc => {
     // console.info('-- doc:loaded', doc.attributes.image)
     loader.add(doc.url)
+})
+
+ipcRenderer.on('message', (event, message) => {
+    console.info('-- message', message.data && message.data.source, message, event)
+
+    if (message.event !== 'ping') {
+        NotificationManager.info(message.event, 'Background Process', 10000)
+    }
 })
 
 class App extends React.Component {
@@ -63,6 +72,7 @@ class App extends React.Component {
         $(document).foundation()
 
         rpc.request('loaded')
+        // ipcRenderer.send('message', { event: 'import' })
     }
 
     componentWillMount() {

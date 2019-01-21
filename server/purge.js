@@ -4,9 +4,9 @@ const queue = require('queue')
 const fs = require('fs')
 const ProgressBar = require('progress')
 
-const Watcher = require('./lib/watcher')
-const Metadata = require('./lib/metadata')
-const Indexer = require('./lib/indexer')
+const Watcher = require('../bg/lib/watcher')
+const Metadata = require('../bg/lib/metadata')
+const Indexer = require('../bg/lib/indexer')
 
 const getopts = require('getopts')
 
@@ -41,7 +41,7 @@ q.on('end', (error) => {
 // no need to run all parsers
 const parsers = ['path', 'checksum']
 parsers.forEach(function(parser) {
-    let P = require('./lib/parsers/' + parser)
+    let P = require('../bg/lib/parsers/' + parser)
     let c = config.parsers[parser]
     let prsr = new P(c)
 

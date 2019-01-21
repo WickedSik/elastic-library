@@ -1,5 +1,5 @@
 const events = require('events')
-const Client = require('../shared/client')
+const Client = require('../../server/shared/client')
 
 class Indexer extends events.EventEmitter {
     constructor(config) {
@@ -72,7 +72,7 @@ class Indexer extends events.EventEmitter {
                 // console.info('-- indexed', metadata.get('file.name'));
                 resolve(metadata)
             }).catch((e) => {
-                console.error('-- not indexed', metadata.search, e)
+                console.error('-- not indexed', e)
 
                 reject(e)
                 process.exit(-1)

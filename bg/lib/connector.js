@@ -1,12 +1,12 @@
-require('./shared/extend/promises')
+require('../../server/shared/extend/promises')
 
 const EventEmitter = require('events').EventEmitter
 const queue = require('queue')
 const fs = require('fs')
 
-const Watcher = require('./lib/watcher')
-const Metadata = require('./lib/metadata')
-const Indexer = require('./lib/indexer')
+const Watcher = require('./watcher')
+const Metadata = require('./metadata')
+const Indexer = require('./indexer')
 
 class Connector extends EventEmitter {
     constructor(config, rpc) {
@@ -18,7 +18,7 @@ class Connector extends EventEmitter {
         this.connected = false
 
         for (let parser in this.__config.parsers) {
-            let P = require('./lib/parsers/' + parser)
+            let P = require(`./parsers/${parser}`)
             let c = this.__config.parsers[parser]
             let prsr = new P(c)
 
