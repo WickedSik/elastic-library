@@ -240,6 +240,10 @@ export default class MediaDialog extends React.Component {
         if (KeyCodes.getCharacterFromCode(event.keyCode) === 'l') {
             this._setFavorite()
         }
+
+        if (KeyCodes.getCharacterFromCode(event.keyCode) === 'b') {
+            this.props.item.attributes.keywords.indexOf('not_found_on_e621') === -1 && this._checkBooru()
+        }
     }
 
     _forceRerender = () => {
@@ -319,31 +323,30 @@ export default class MediaDialog extends React.Component {
             .then(result => {
                 console.table(result)
 
-                this.props.item.attributes.author = result.artist
-                this.props.item.attributes.source = result.source
-                this.props.item.attributes.rating = (rating => {
-                    switch (rating) {
-                        case 'q': return 'questionable'
-                        case 's': return 'safe'
-                        case 'e': return 'explicit'
-                    }
-                })(result.rating)
+                if (!result.id) {
+                    const keywords = [...this.props.item.attributes.keywords, 'not_found_on_e621']
+                    this.props.item.attributes.keywords = _.uniq(keywords)
+                    this.props.item.update()
 
-                const keywords = [...this.props.item.attributes.keywords, ...result.tags.split(/\s+/g), 'e621']
+                    NotificationManager.warning('Not found on E621')
+                } else {
+                    this.props.item.attributes.author = result.artist
+                    this.props.item.attributes.source = result.source
+                    this.props.item.attributes.rating = (rating => {
+                        switch (rating) {
+                            case 'q': return 'questionable'
+                            case 's': return 'safe'
+                            case 'e': return 'explicit'
+                        }
+                    })(result.rating)
 
-                this.props.item.attributes.keywords = _.uniq(keywords)
-                this.props.item.update()
+                    const keywords = [...this.props.item.attributes.keywords, ...result.tags.split(/\s+/g), 'e621']
 
-                NotificationManager.success('E621 successfully checked')
-            })
-            .catch(err => {
-                console.warn('-- booru', err)
+                    this.props.item.attributes.keywords = _.uniq(keywords)
+                    this.props.item.update()
 
-                const keywords = [...this.props.item.attributes.keywords, 'not_found_on_e621']
-                this.props.item.attributes.keywords = _.uniq(keywords)
-                this.props.item.update()
-
-                NotificationManager.warning('Not found on E621')
+                    NotificationManager.success('E621 successfully checked')
+                }
             })
     }
 }
