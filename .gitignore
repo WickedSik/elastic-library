@@ -10,6 +10,7 @@ backups/**
 
 # production
 /build
+/bg
 
 # misc
 config.json

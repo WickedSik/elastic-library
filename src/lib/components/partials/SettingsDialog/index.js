@@ -4,6 +4,7 @@ import _ from 'lodash'
 
 import Dialog from '../Dialog'
 import { renameKeyword, getSummary, update } from '../../../store/modules/search/api'
+import { CHECKED_ON_BOORU } from '../../../store/modules/search/actiontypes'
 
 import './style.scss'
 
@@ -11,8 +12,6 @@ const promiseSerial = funcs =>
     funcs.reduce((promise, func) =>
         promise.then(result => func().then(Array.prototype.concat.bind(result))),
     Promise.resolve([]))
-
-const CHECKED_ON_BOORU = 'checked_on_e621'
 
 export default class SettingsDialog extends React.Component {
     static propTypes = {
@@ -77,7 +76,14 @@ export default class SettingsDialog extends React.Component {
 
     // queue docs for checking with booru
     _queueDocs = () => {
-        getSummary(['checksum', 'keywords']).then(sums => {
+        const exclude = {
+            query_string: {
+                default_field: 'keywords',
+                query: '-checked_on_e621'
+            }
+        }
+
+        getSummary(['checksum', 'keywords'], exclude).then(sums => {
             console.info('-- checksums:result', sums, sums.length)
 
             this.setState({

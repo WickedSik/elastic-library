@@ -22,8 +22,6 @@ import Dialog from '../../partials/Dialog'
 import PopupMenu from '../../partials/PopupMenu'
 import Preview from './Preview'
 
-import e621NetLogo from '../../../../assets/e621-net-logo.png'
-
 import './style.scss'
 
 library.add(
@@ -154,13 +152,7 @@ export default class MediaDialog extends React.Component {
                     className={'clear cell auto'}
                     buttonClassName={'clear cell auto'}
                     label={<FontAwesomeIcon icon={['fas', 'globe']} />}
-                    options={[
-                        {
-                            content: <img src={e621NetLogo} />,
-                            onClick: this._checkBooru,
-                            disabled: this.props.item.attributes.keywords.indexOf('not_found_on_e621') > -1
-                        }
-                    ]}
+                    options={[]}
                 />
             </div>}
         >
@@ -239,10 +231,6 @@ export default class MediaDialog extends React.Component {
 
         if (KeyCodes.getCharacterFromCode(event.keyCode) === 'l') {
             this._setFavorite()
-        }
-
-        if (KeyCodes.getCharacterFromCode(event.keyCode) === 'b') {
-            this.props.item.attributes.keywords.indexOf('not_found_on_e621') === -1 && this._checkBooru()
         }
     }
 

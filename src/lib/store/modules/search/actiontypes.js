@@ -16,3 +16,6 @@ export const FETCH_DOCUMENT_SUCCESS = action('search', 'FETCH_DOCUMENT_SUCCESS')
 export const DELETE_DOCUMENT_REQUEST = action('search', 'DELETE_DOCUMENT_REQUEST')
 export const DELETE_DOCUMENT_FAILED = action('search', 'DELETE_DOCUMENT_FAILED')
 export const DELETE_DOCUMENT_SUCCESS = action('search', 'DELETE_DOCUMENT_SUCCESS')
+
+export const CHECKED_ON_BOORU = 'checked_on_e621'
+export const NOT_FOUND_ON_BOORU = 'not_found_on_e621'

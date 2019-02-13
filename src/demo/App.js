@@ -19,6 +19,7 @@ import SideNav from '../lib/components/navigation/SideNav'
 import SettingsDialog from '../lib/components/partials/SettingsDialog'
 import Document from '../lib/components/Document'
 import ImagePreloader from '../lib/components/loaders/ImagePreloader'
+import KeyCodes from '../lib/constants/KeyCodes'
 
 import Config from '../config'
 
@@ -69,6 +70,8 @@ class App extends React.Component {
     }
 
     componentDidMount() {
+        document.addEventListener('keydown', this._handleKeydown, false)
+
         $(document).foundation()
 
         rpc.request('loaded')
@@ -78,6 +81,10 @@ class App extends React.Component {
     componentWillMount() {
         this.props.subjectList()
         this._handleSearch(Config.search.defaultSearch)
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this._handleKeydown, false)
     }
 
     render() {
@@ -196,6 +203,12 @@ class App extends React.Component {
         this.setState(state => ({
             bulkSelection: state.bulkSelection.filter(r => r !== id)
         }))
+    }
+
+    _handleKeydown = (event) => {
+        if (KeyCodes.getCharacterFromCode(event.keyCode) === 'f') {
+            this._switchDialogType()
+        }
     }
 }
 

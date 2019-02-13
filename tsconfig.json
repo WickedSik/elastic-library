@@ -1,0 +1,14 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": { "*": ["types/*"] },
+        "outDir": "bg",
+        "allowJs": false,
+        "allowUnusedLabels": false,
+        "alwaysStrict": true,
+        "lib": ["es7", "dom"],
+        "esModuleInterop": true
+    },
+    "include": ["bg_ts"]
+}

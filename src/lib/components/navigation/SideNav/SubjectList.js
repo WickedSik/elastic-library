@@ -6,6 +6,7 @@ import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faHeart, faGlobe, faTag } from '@fortawesome/free-solid-svg-icons'
+import { CHECKED_ON_BOORU, NOT_FOUND_ON_BOORU } from '../../../store/modules/search/actiontypes'
 
 library.add(faHeart, faGlobe, faTag)
 
@@ -23,6 +24,8 @@ class SubjectList extends React.Component {
         const { subjects } = this.props
         const { term } = this.state
 
+        const subjectCheck = s => s.key !== NOT_FOUND_ON_BOORU && s.key !== CHECKED_ON_BOORU
+
         return (
             <div className={'subject-list'}>
                 <ul className='menu vertical icons icon-left'>
@@ -34,7 +37,7 @@ class SubjectList extends React.Component {
                         <FontAwesomeIcon icon={['fas', 'globe']} />
                         <span>Everything</span>
                     </li>
-                    { subjects.map(subject =>
+                    { subjects.filter(subjectCheck).map(subject =>
                         <li key={subject.key} onClick={() => { this._handleClick(subject) }} className={classnames(subject.key === term && 'active')}>
                             <FontAwesomeIcon icon={['fas', 'tag']} />
                             <span>{subject.key} ({subject.doc_count})</span>

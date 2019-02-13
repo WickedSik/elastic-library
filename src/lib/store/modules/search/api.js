@@ -93,19 +93,26 @@ export const scroll = (query) =>
         })
     })
 
-export const getSummary = (includes = ['checksum']) =>
-    scroll({
+export const getSummary = (includes = ['checksum'], excludeQuery = false) => {
+    const query = {
         _source: {
             includes
         },
         sort: '_doc'
-    }).then(docs => {
+    }
+
+    if (excludeQuery) {
+        query.query = excludeQuery
+    }
+
+    return scroll(query).then(docs => {
         if (docs.length === 0) {
             return []
         }
         return docs
             .map(doc => ({ id: doc._id, ...doc._source }))
     })
+}
 
 export default {
     search,
