@@ -1,12 +1,11 @@
-import { Task, OutputStream } from '../process'
+import { Task } from '../process'
 import Elastic from './lib/elastic'
 import Storage, { StoredFile } from './lib/storage'
-import * as checksum from 'checksum'
+import checksum from 'checksum'
 import { sprintf } from 'sprintf-js'
 import Parser from './lib/parser'
 import ProgressBar from 'progress'
-import { totalmem } from 'os';
-import Cacher from './lib/cacher';
+import Cacher from './lib/cacher'
 
 interface Checksum {
     id:string
@@ -24,11 +23,10 @@ export default class Import implements Task {
     name:string
     client:Elastic
     filesystem:Storage
-    output:OutputStream
     progressbar:ProgressBar
     cacher:Cacher
 
-    constructor(output:OutputStream) {
+    constructor() {
         this.cacher = new Cacher()
         this.client = new Elastic()
         this.filesystem = new Storage([
@@ -36,7 +34,6 @@ export default class Import implements Task {
             '/Volumes/BIGCAKES/Sets',
             '/Volumes/BIGCAKES/Videos'
         ])
-        this.output = output
         this.name = 'import'
     }
 
