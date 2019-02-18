@@ -9,7 +9,9 @@ export default class ExifParser implements ParserModule {
                 const metadata = new Metadata()
 
                 if(error) {
-                    return reject(error)
+                    // we ignore errors, because exif is less important
+                    // than the actual file
+                    return resolve(metadata)
                 }
 
                 metadata.set('exif', this.validate(data))

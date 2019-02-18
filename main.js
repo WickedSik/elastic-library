@@ -2,7 +2,7 @@
 const electron = require('electron')
 const Server = require('electron-rpc/server')
 const path = require('path')
-// const child_process = require('child_process')
+const child_process = require('child_process')
 const config = require('./config.json')
 const {
     default: installExtension,
@@ -65,22 +65,51 @@ function createWindow() {
 
     // Show dev tools
     // Remove this line before distributing
-    win.webContents.openDevTools()
+    // win.webContents.openDevTools()
 
     // Remove window once app is closed
     win.on('closed', function() {
         win = null
     })
 
-    // electron.ipcMain.on('message', (_, message) => {
-    //     console.info('>> main (window):', message)
-    //     const { event } = message
+    electron.ipcMain.on('command', ({ sender }, message) => {
+        console.info('>> main (window):', message)
+        const { command, args } = message
 
-    //     switch (event) {
-    //         default:
-    //             bgSendMessage(event, message)
-    //     }
-    // })
+        runCommand(command, args, sender)
+    })
+}
+
+function runCommand(exec, args = [], sender) {
+    let p = child_process.spawn('/usr/local/bin/node', ['bg/process.js', exec, ...args], { 
+        env: {
+            ...process.env,
+            FORCE_COLOR: 0
+        }
+    })
+    p.unref()
+
+    p.stderr.on('data', chunk => {
+        sender.send('command', { event: 'process:error', chunk: chunk.toString() })
+    })
+    p.stdout.on('data', chunk => {
+        sender.send('command', { event: 'process:message', chunk: chunk.toString() })
+    })
+
+    p.on('error', error => {
+        console.error('-- process:', error)
+    })
+
+    p.on('message', message => {
+        console.info('-- process:', message)
+    })
+
+    p.on('close', () => {
+        console.info('-- process:close')
+        sender.send('command', { event: 'process:ended', command: exec })
+    })
+
+    sender.send('command', { event: 'process:started' })
 }
 
 app.on('ready', function() {
@@ -97,53 +126,6 @@ app.on('window-all-closed', function() {
     app.quit()
 })
 
-// let webpack
-// if (process.env.NODE_ENVIRONMENT !== 'production') {
-//     webpack = child_process.spawn('/usr/local/bin/node', ['scripts/start.js'], {
-//         env: {
-//             BROWSER: 'false'
-//         }
-//     })
-
-//     webpack.on('error', error => {
-//         console.error('-- webpack:', error)
-//     })
-
-//     webpack.on('message', message => {
-//         console.info('-- webpack:', message)
-//     })
-
-//     webpack.on('close', () => {
-//         console.info('-- webpack:close')
-//         app.quit()
-//     })
-// }
-
-// const bg = child_process.fork('bg/process.js', [], { silent: false })
-// const bgSendMessage = function(event, payload) {
-//     console.info('main >>:', event)
-//     bg.send(JSON.stringify({ event, payload }))
-// }
-
-// bg.on('exit', () => {
-//     console.info('bg died')
-// })
-
-// bg.on('message', message => {
-//     console.info('>> main:', message)
-//     const { event } = message
-
-//     switch (event) {
-//         case 'init':
-//             win[load.loader](load.APP_URL)
-//             break
-//         default:
-//             win.webContents.send('message', message)
-//     }
-// })
-
 app.on('before-quit', () => {
     console.info('-- app:before-quit')
-    // webpack && !webpack.killed && webpack.kill()
-    // bg && !bg.killed && bg.kill()
 })

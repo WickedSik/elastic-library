@@ -34,14 +34,13 @@ export default class Storage {
         })
     }
 
-    readAll():Promise<StoredFile[]> {
-        return Promise.all(this.directories.map(directory => {
-            return this.read(directory)
-        })).then((allFiles:StoredFile[][]) => {
-            return allFiles.reduce((prev = [], data) => {
-                return prev.concat(data)
-            }).filter((value, index, array) => array.indexOf(value) === index)
-        })
+    async readAll():Promise<StoredFile[]> {
+        const allFiles = await Promise.all(this.directories.map(directory => {
+            return this.read(directory);
+        }));
+        return allFiles.reduce((prev = [], data) => {
+            return prev.concat(data);
+        }).filter((value, index, array) => array.indexOf(value) === index);
     }
 
     recursive(directory:string):string[] {

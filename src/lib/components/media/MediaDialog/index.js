@@ -21,7 +21,10 @@ import InlineEdit from '../../partials/InlineEdit'
 import Dialog from '../../partials/Dialog'
 import PopupMenu from '../../partials/PopupMenu'
 import Preview from './Preview'
+import { CHECKED_ON_BOORU } from '../../../store/modules/search/actiontypes'
 
+import e621NetLogo from '../../../../assets/e621-net-logo.png'
+import danBooruLogo from '../../../../assets/danbooru-logo.jpeg'
 import './style.scss'
 
 library.add(
@@ -33,6 +36,15 @@ library.add(
     faTrash,
     faGlobe
 )
+
+const SITES = [
+    'danbooru',
+    'e621',
+    'paheal',
+    'rule34'
+]
+
+const { ipcRenderer } = window.require('electron')
 
 export default class MediaDialog extends React.Component {
     static propTypes = {
@@ -152,7 +164,20 @@ export default class MediaDialog extends React.Component {
                     className={'clear cell auto'}
                     buttonClassName={'clear cell auto'}
                     label={<FontAwesomeIcon icon={['fas', 'globe']} />}
-                    options={[]}
+                    options={[
+                        {
+                            content: <img src={e621NetLogo} />,
+                            onClick: () => { this._checkSite('e621') }
+                        },
+                        {
+                            content: <img src={danBooruLogo} />,
+                            onClick: () => { this._checkSite('danbooru') }
+                        },
+                        {
+                            content: 'C',
+                            onClick: () => { this._runCommand() }
+                        }
+                    ]}
                 />
             </div>}
         >
@@ -168,6 +193,7 @@ export default class MediaDialog extends React.Component {
                                     <tr><th>Title</th><td><InlineEdit value={item.title} onUpdate={this._handleUpdateTitle} /></td></tr>
                                     <tr><th>Filename</th><td>{item.attributes.file.name}</td></tr>
                                     <tr><th>Extension</th><td>{item.attributes.file.extension}</td></tr>
+                                    <tr><th>Path</th><td>{item.attributes.file.path}</td></tr>
                                     <tr><th>Size</th><td>{numeral(item.attributes.file.size).format('0.00b')}</td></tr>
                                     <tr><th>Author</th><td><InlineEdit value={author} onUpdate={this._handleUpdateAuthor} /></td></tr>
                                     {(item.attributes.checksum !== item.attributes.file.name) && (
@@ -299,24 +325,24 @@ export default class MediaDialog extends React.Component {
         this.props.item.update()
     }
 
-    _checkBooru = () => {
-        if (this.props.item.attributes.keywords.indexOf('not_found_on_e621') > -1) {
-            NotificationManager.warning('Already checked on E621')
-
+    _checkSite = (site) => {
+        if (SITES.indexOf(site) === -1) {
+            NotificationManager.warning(`Wrong site: ${site}`)
             return
         }
 
-        fetch(`booru://e621/${this.props.item.attributes.checksum}`)
+        fetch(`booru://${site}/${this.props.item.attributes.checksum}`)
+            .then(result => { console.info('-- booru:result', result); return result })
             .then(result => result.json())
             .then(result => {
                 console.table(result)
 
                 if (!result.id) {
-                    const keywords = [...this.props.item.attributes.keywords, 'not_found_on_e621']
+                    const keywords = [...this.props.item.attributes.keywords, CHECKED_ON_BOORU]
                     this.props.item.attributes.keywords = _.uniq(keywords)
                     this.props.item.update()
 
-                    NotificationManager.warning('Not found on E621')
+                    NotificationManager.warning(`Not found on ${site.toUpperCase()}`)
                 } else {
                     this.props.item.attributes.author = result.artist
                     this.props.item.attributes.source = result.source
@@ -328,13 +354,23 @@ export default class MediaDialog extends React.Component {
                         }
                     })(result.rating)
 
-                    const keywords = [...this.props.item.attributes.keywords, ...result.tags.split(/\s+/g), 'e621']
+                    const tags = (result.tags || result.tag_string_general).split(/\s+/g)
+                    const keywords = [...this.props.item.attributes.keywords, ...tags, site, CHECKED_ON_BOORU]
 
                     this.props.item.attributes.keywords = _.uniq(keywords)
                     this.props.item.update()
 
-                    NotificationManager.success('E621 successfully checked')
+                    NotificationManager.success(`${site.toUpperCase()} successfully checked`)
                 }
             })
+    }
+
+    _runCommand = () => {
+        ipcRenderer.send('command', {
+            command: 'remote',
+            args: [
+                this.props.item.attributes.file.path
+            ]
+        })
     }
 }

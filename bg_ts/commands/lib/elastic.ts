@@ -1,4 +1,14 @@
-import { Client, SearchResponse, DeleteDocumentResponse } from 'elasticsearch'
+import { Client, SearchResponse, DeleteDocumentResponse, ShardsResponse } from 'elasticsearch'
+
+export interface IndexResult { 
+    _index:string
+    _type:string
+    _id:string
+    _version:number
+    result:string
+    _shards:ShardsResponse
+    created:boolean
+}
 
 export default class Elastic {
     client:Client
@@ -9,10 +19,38 @@ export default class Elastic {
         })
     }
 
-    index(data:object):Promise<object> {
+    find(checksum:string):Promise<SearchResponse<object>> {
+        return this.client.search({
+            index: 'media',
+            type: 'media',
+            body: {
+                query: {
+                    bool: {
+                        must: [
+                            { term: { checksum } }
+                        ]
+                    }
+                }
+            }
+        })
+    }
+
+    index(data:any):Promise<IndexResult> {
+        if(!data.checksum) {
+            throw 'No checksum'
+        }
         return this.client.index({
             index: 'media',
             type: 'media',
+            body: data
+        })
+    }
+
+    update(id:string, data:object):Promise<IndexResult> {
+        return this.client.index({
+            index: 'media',
+            type: 'media',
+            id: id,
             body: data
         })
     }

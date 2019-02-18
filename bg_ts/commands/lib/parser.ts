@@ -33,6 +33,8 @@ export class Metadata {
                 } else {
                     this.set(key, value)
                 }
+            } else {
+                break
             }
         }
         
@@ -53,6 +55,8 @@ export class Metadata {
             if(entry && entry.value) {
                 const [key, value] = entry.value
                 _set(map, key, value)
+            } else {
+                break
             }
         }
 
@@ -87,6 +91,10 @@ export class Metadata {
             this.set(key, value)
         }
     }
+
+    size():number {
+        return this.data.size
+    }
 }
 
 export interface ParserModule {
@@ -97,22 +105,26 @@ export interface ParserModule {
 export default class Parser implements ParserModule {
     modules:ParserModule[]
 
-    constructor() {
-        this.modules = [
-            new PathParser({
-                ignored: ['Volumes', 'SMALLCAKES', 'Personal', 'Images', 'BIGCAKES', 'Sets']
-            }),
-            new StatsParser(),
-            new NumberParser(),
-            new TitleParser(),
-            new ExifParser(),
-            new DeviantArtParser(),
-            new FurAffinityParser(),
-            new HentaiFoundryParser(),
-            new ImageParser(),
-            new VideoParser(),
-            new VideoThumbParser()
-        ]
+    constructor(modules:ParserModule[] = []) {
+        if(modules.length > 0) {
+            this.modules = modules
+        } else {
+            this.modules = [
+                new PathParser({
+                    ignored: ['Volumes', 'SMALLCAKES', 'Personal', 'Images', 'BIGCAKES', 'Sets']
+                }),
+                new StatsParser(),
+                new NumberParser(),
+                new TitleParser(),
+                new ExifParser(),
+                new DeviantArtParser(),
+                new FurAffinityParser(),
+                new HentaiFoundryParser(),
+                new ImageParser(),
+                new VideoParser(),
+                new VideoThumbParser()
+            ]
+        }
     }
 
     async run(file:StoredFile):Promise<Metadata> {

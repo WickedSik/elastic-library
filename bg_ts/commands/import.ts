@@ -2,6 +2,7 @@ import { Task } from '../process'
 import Elastic from './lib/elastic'
 import Storage, { StoredFile } from './lib/storage'
 import checksum from 'checksum'
+import chalk from 'chalk'
 import { sprintf } from 'sprintf-js'
 import Parser from './lib/parser'
 import ProgressBar from 'progress'
@@ -20,47 +21,52 @@ interface SearchResultHit {
 }
 
 export default class Import implements Task {
-    name:string
+    name:string = 'import'
+    description:string = 'Imports source directories into Elastic Library'
+
     client:Elastic
     filesystem:Storage
     progressbar:ProgressBar
     cacher:Cacher
 
     constructor() {
-        this.cacher = new Cacher()
+        this.cacher = new Cacher('checksum')
         this.client = new Elastic()
         this.filesystem = new Storage([
             '/Volumes/BIGCAKES/Images',
             '/Volumes/BIGCAKES/Sets',
             '/Volumes/BIGCAKES/Videos'
         ])
-        this.name = 'import'
     }
 
     async run(parameters:any[]) {
-        console.info('-- [%s] import starting', this.timestamp())
+        console.info(chalk`-- {magenta [%s]} creating cache directory`, this.timestamp())
+        await this.cacher.initCacheDirectory()
+
+        console.info(chalk`-- {magenta [%s]} import starting`, this.timestamp())
 
         const checksums = await this.checksums()
-        console.info('-- [%s] %d checksums', this.timestamp(), checksums.length)
+        console.info(chalk`-- {magenta [%s]} %d checksums`, this.timestamp(), checksums.length)
 
         const files = await this.files()
-        console.info('-- [%s] %d files', this.timestamp(), files.length)
+        console.info(chalk`-- {magenta [%s]} %d files`, this.timestamp(), files.length)
 
         this.createProgressbar('calculating checksums', files.length)
 
         const fileChecksums = await this.fileChecksum(files)
-        console.info('-- [%s] %d file checksums', this.timestamp(), fileChecksums.length)
+        console.info(chalk`-- {magenta [%s]} %d file checksums`, this.timestamp(), fileChecksums.length)
+        await this.cacher.save()
 
         const simpleChecksums:string[] = checksums.map(sum => sum.checksum)
         const newFiles = fileChecksums.filter(file => simpleChecksums.indexOf(file.checksum) === -1)
         
         const simpleFileChecksums:string[] = fileChecksums.map(sum => sum.checksum)
         const oldDocs = checksums.filter(sum => simpleFileChecksums.indexOf(sum.checksum) === -1)
-        console.info('-- [%s] %d new files, %d docs not found as file', this.timestamp(), newFiles.length, oldDocs.length)
+        console.info(chalk`-- {magenta [%s]} %d new files, %d docs not found as file`, this.timestamp(), newFiles.length, oldDocs.length)
 
         const duplicateChecksums = this.duplicates(checksums)
         const duplicateFiles = this.duplicates(fileChecksums.map(file => ({ id: `${file.directory}/${file.filename}`, checksum: file.checksum })))
-        console.info('-- [%s] %d duplicate checksums, %d duplicate files', this.timestamp(), duplicateChecksums.length, duplicateFiles.length)
+        console.info(chalk`-- {magenta [%s]} %d duplicate checksums, %d duplicate files`, this.timestamp(), duplicateChecksums.length, duplicateFiles.length)
 
         if(oldDocs.length > 0) {
             this.createProgressbar('removing old docs', oldDocs.length)
@@ -70,26 +76,29 @@ export default class Import implements Task {
                 return this.client.delete(doc.id)
             }))
                 .then(() => {
-                    console.info('-- [%s] %d docs removed', this.timestamp(), oldDocs.length)
+                    console.info(chalk`-- {magenta [%s]} %d docs removed`, this.timestamp(), oldDocs.length)
+                })
+                .catch(error => {
+                    console.error(chalk`-- {magenta [%s]} {red error while removing docs: %s}`, this.timestamp(), error.message)
                 })
         }
 
         if(newFiles.length) {
             this.createProgressbar('indexing files', newFiles.length)
 
-            await Promise.all(newFiles.map(doc => {
-                this.tick()
-                return this.index(doc)
+            await Promise.all(newFiles.map(async doc => {
+                await this.index(doc);
+                this.tick();
             }))
                 .then(() => {
-                    console.info('-- [%s] %d docs inserted', this.timestamp(), newFiles.length)
+                    console.info(chalk`-- {magenta [%s]} %d docs inserted`, this.timestamp(), newFiles.length)
                 })
                 .catch(error => {
-                    console.error('-- [%s] error while indexing: %s', this.timestamp(), error.message)
+                    console.error(chalk`-- {magenta [%s]} {red error while indexing: %s}`, this.timestamp(), error.message)
                 })
         }
 
-        console.info('-- [%s] import finished', this.timestamp())
+        console.info(chalk`-- {magenta [%s]} import finished`, this.timestamp())
     }
 
     async checksums():Promise<Checksum[]> {
@@ -117,11 +126,18 @@ export default class Import implements Task {
     async fileChecksum(files:StoredFile[]):Promise<StoredFile[]> {
         const promises = files.map((file:StoredFile):Promise<StoredFile> => {
             return new Promise((resolve, reject) => {
+                if(this.cacher.has(`${file.directory}/${file.filename}`)) {
+                    file.checksum = this.cacher.get(`${file.directory}/${file.filename}`)
+                    this.tick()
+                    return resolve(file)
+                }
+
                 checksum.file(`${file.directory}/${file.filename}`, { algorithm: 'md5' }, (err, hash) => {
                     if(err) {
                         return reject(err)
                     }
 
+                    this.cacher.set(`${file.directory}/${file.filename}`, hash)
                     file.checksum = hash
                     this.tick()
                     return resolve(file)
@@ -137,9 +153,11 @@ export default class Import implements Task {
 
         try {
             const metadata = await parser.run(document)
+            metadata.set('checksum', document.checksum)
+
             return this.client.index(metadata.getAsTree())
         } catch(e) {
-            throw e
+            // no error
         }
     }
 
@@ -176,7 +194,7 @@ export default class Import implements Task {
             this.progressbar.update(1)
         }
 
-        this.progressbar = new ProgressBar(`-- [${this.timestamp()}] ${label} [:bar] :percent :etas (:rate/s)`, {
+        this.progressbar = new ProgressBar(chalk`-- {magenta [${this.timestamp()}]} ${label} [:bar] :percent :etas (:rate/s)`, {
             complete: '=',
             incomplete: ' ',
             width: 120,

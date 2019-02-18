@@ -8,7 +8,8 @@
         "allowUnusedLabels": false,
         "alwaysStrict": true,
         "lib": ["es7", "dom"],
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "downlevelIteration": true
     },
     "include": ["bg_ts"]
 }

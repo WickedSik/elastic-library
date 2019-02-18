@@ -5,7 +5,7 @@ export default class FurAffinityParser implements ParserModule {
     run(file: StoredFile): Promise<Metadata> {
         const metadata = new Metadata()
 
-        let [code, title_author] = file.filename.split('.')
+        let [code, title_author, ext] = file.filename.split('.')
         let [author, ...title] = title_author.split('_')
 
         const finalTitle = title.join('-')
@@ -18,6 +18,6 @@ export default class FurAffinityParser implements ParserModule {
     }
 
     accepts(file:StoredFile):boolean {
-        return true
+        return /(.+[_].+)(\.[a-z]{3,})/.test(file.filename)
     }
 }

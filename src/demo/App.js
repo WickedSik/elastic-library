@@ -24,19 +24,8 @@ import KeyCodes from '../lib/constants/KeyCodes'
 import Config from '../config'
 
 // const fs = electron.remote.require('fs')
-const Client = window.require('electron-rpc/client')
 const { ipcRenderer } = window.require('electron')
 const store = configureStore()
-
-const rpc = new Client()
-
-rpc.on('imported', (err, data) => {
-    console.info('-- imported', err, data)
-})
-
-rpc.on('import-total', (err, data) => {
-    console.info('-- rpc:total', err, data)
-})
 
 const loader = new ImagePreloader()
 Document.globalOn('loaded', doc => {
@@ -44,11 +33,23 @@ Document.globalOn('loaded', doc => {
     loader.add(doc.url)
 })
 
-ipcRenderer.on('message', (event, message) => {
-    console.info('-- message', message.data && message.data.source, message, event)
+window.__ipc__ = ipcRenderer
 
-    if (message.event !== 'ping') {
-        NotificationManager.info(message.event, 'Background Process', 10000)
+let log = ''
+ipcRenderer.on('command', (_, message) => {
+    const { event, chunk, command } = message
+
+    if (event === 'process:ended') {
+        console.info('-- process', log)
+        NotificationManager.info(`Process ${command} ended:\n${log}`, 'Finished')
+    }
+
+    if (event === 'process.message') {
+        log += chunk.toString()
+    }
+
+    if (event === 'process.started') {
+        log = ''
     }
 })
 
@@ -74,7 +75,6 @@ class App extends React.Component {
 
         $(document).foundation()
 
-        rpc.request('loaded')
         // ipcRenderer.send('message', { event: 'import' })
     }
 
