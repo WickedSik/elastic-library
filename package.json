@@ -10,7 +10,6 @@
     "check:all": "npm run check:renderer && npm run check:main",
     "check:main": "tsc --noEmit -p ./src/main",
     "check:renderer": "tsc --noEmit -p ./src/renderer",
-    "lint": "echo \"No linting configured\"",
     "make": "electron-forge make",
     "package": "electron-forge package",
     "publish": "electron-forge publish",
@@ -62,7 +61,9 @@
     }
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "react": "^16.8.2",
+    "react-dom": "^16.8.2"
   },
   "devDependencies": {
     "@electron-forge/cli": "6.0.0-beta.32",
@@ -71,12 +72,23 @@
     "@electron-forge/maker-squirrel": "6.0.0-beta.32",
     "@electron-forge/maker-zip": "6.0.0-beta.32",
     "@electron-forge/plugin-webpack": "^6.0.0-beta.22",
+    "@types/jquery": "^3.3.29",
+    "@types/lodash": "^4.14.121",
+    "@types/node": "^11.9.4",
+    "@types/react": "^16.8.3",
+    "@types/react-dom": "^16.8.2",
+    "@types/react-redux": "^7.0.1",
     "@types/webpack": "^4.4.24",
     "copy-webpack-plugin": "^4.6.0",
     "electron": "4.0.4",
     "file-loader": "^3.0.1",
+    "jquery": "^3.3.1",
+    "react-notifications": "^1.4.3",
+    "react-redux": "^6.0.0",
+    "redux": "^4.0.1",
     "ts-loader": "^5.3.3",
     "typescript": "^3.3.1",
+    "webpack": "^4.29.5",
     "webpack-merge": "^4.2.1"
   },
   "productName": "electron-forge-webpack-ts-starter"
