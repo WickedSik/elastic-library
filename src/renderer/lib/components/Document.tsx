@@ -2,7 +2,7 @@ import _ from 'lodash'
 import url from 'url'
 import SearchApi from '../store/modules/search/api'
 
-const removeFromArray = function(arr, ...arg) {
+const removeFromArray = function<T>(arr:T[], ...arg:T[]):T[] {
     let L = arg.length
     let ax
     while (L && arr.length) {
@@ -50,27 +50,53 @@ const removeFromArray = function(arr, ...arg) {
     }
  */
 
+interface DocumentAttributes extends ProxyHandler<any> {
+    [key:string]: any
+}
+
+interface DocumentPropTypes {
+    _index:string
+    _type:string
+    _id:string
+    _version:string
+    found:boolean
+    _source:DocumentAttributes
+}
+
 export default class Document {
+    index:string
+    type:string
+    id:string
+    version:string
+    exists:boolean
+    original:any
+    attributes:DocumentAttributes
+    dirty:any
+
+    __on:{
+        [key:string]: Function[]
+    }
+
+    static globalOn(event:string, callback:Function) {
+        if (event in Document.__global_listeners) {
+            Document.__global_listeners[event].push(callback)
+        }
+    }
+
+    static globalTrigger(event:string, data:any) {
+        if (event in Document.__global_listeners) {
+            // eslint-disable-next-line standard/no-callback-literal
+            Document.__global_listeners[event].forEach((callback:Function) => callback(this, data))
+        }
+    }
+
     static __global_listeners = {
         update: [],
         create: [],
         loaded: []
     }
 
-    static globalOn(event, callback) {
-        if (event in Document.__global_listeners) {
-            Document.__global_listeners[event].push(callback)
-        }
-    }
-
-    static globalTrigger(event, data) {
-        if (event in Document.__global_listeners) {
-            // eslint-disable-next-line standard/no-callback-literal
-            Document.__global_listeners[event].forEach(callback => callback(this, data))
-        }
-    }
-
-    constructor(props) {
+    constructor(props:DocumentPropTypes) {
         const self = this
 
         this.index = props._index
@@ -85,7 +111,7 @@ export default class Document {
             // },
             set(target, prop, value) {
                 _.set(self.dirty, prop, value)
-                return Reflect.set(...arguments)
+                return Reflect.set(target, prop, value)
             }
         })
         this.dirty = {}
@@ -93,14 +119,13 @@ export default class Document {
         this.__on = {
             update: [],
             create: [],
-            loaded: [],
-            ...Document.__global_listeners
+            loaded: []
         }
 
         this.trigger('loaded')
     }
 
-    set(deepProp, value) {
+    set(deepProp:string, value:any) {
         // doc.set('file.path', value)
         const [firstPart, ...remainingParts] = deepProp.split('.')
 
@@ -118,7 +143,7 @@ export default class Document {
             type: this.type,
             id: this.id,
             body: { doc: this.dirty }
-        }).then(results => {
+        }).then((results:any) => {
             this.original = {
                 ...this.original,
                 ...this.dirty
@@ -186,19 +211,19 @@ export default class Document {
     }
 
     /* Update Handlers */
-    on(event, callback) {
+    on(event:string, callback:Function) {
         if (event in this.__on) {
             this.__on[event].push(callback)
         }
     }
 
-    off(event, callback) {
+    off(event:string, callback:Function) {
         if (event in this.__on) {
             removeFromArray(this.__on[event], callback)
         }
     }
 
-    trigger(event, data = null) {
+    trigger(event:string, data:any = null) {
         if (event in this.__on) {
             // eslint-disable-next-line standard/no-callback-literal
             this.__on[event].forEach(callback => callback(this, data))

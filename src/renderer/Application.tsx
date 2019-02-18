@@ -7,7 +7,7 @@ import 'foundation-sites'
 import { NotificationContainer, NotificationManager } from 'react-notifications'
 import 'react-notifications/lib/notifications.css'
 
-import './app.scss'
+import '../assets/app.scss'
 
 import configureStore from '../lib/store'
 import * as actions from '../lib/store/modules/search/actions'
@@ -17,7 +17,7 @@ import CardList from '../lib/components/media/CardList'
 import BulkActionBar from '../lib/components/media/CardList/BulkActionBar'
 import SideNav from '../lib/components/navigation/SideNav'
 import SettingsDialog from '../lib/components/partials/SettingsDialog'
-import Document from '../lib/components/Document'
+import Document from './lib/components/Document'
 import ImagePreloader from '../lib/components/loaders/ImagePreloader'
 import KeyCodes from '../lib/constants/KeyCodes'
 
@@ -28,15 +28,13 @@ const { ipcRenderer } = window.require('electron')
 const store = configureStore()
 
 const loader = new ImagePreloader()
-Document.globalOn('loaded', doc => {
+Document.globalOn('loaded', (doc:Document) => {
     // console.info('-- doc:loaded', doc.attributes.image)
     loader.add(doc.url)
 })
 
-window.__ipc__ = ipcRenderer
-
 let log = ''
-ipcRenderer.on('command', (_, message) => {
+ipcRenderer.on('command', (_, message:any) => {
     const { event, chunk, command } = message
 
     if (event === 'process:ended') {
@@ -53,16 +51,24 @@ ipcRenderer.on('command', (_, message) => {
     }
 })
 
-class App extends React.Component {
-    static propTypes = {
-        subjectList: PropTypes.func.isRequired,
-        search: PropTypes.func.isRequired,
-        delete: PropTypes.func.isRequired,
-        results: PropTypes.array,
-        total: PropTypes.number
-    }
+interface AppPropTypes {
+    subjectList: Function
+    search: Function
+    delete: Function
+    results: Document[]
+    total: number
+}
 
-    state = {
+interface AppState {
+    bulkSelection: string[]
+    settingsOpen: boolean
+    dialogType: string
+    searchterm: string
+    sort: string
+}
+
+class App extends React.Component<AppPropTypes, AppState> {
+    state:AppState = {
         bulkSelection: [],
         settingsOpen: false,
         dialogType: 'dialog',
@@ -121,7 +127,7 @@ class App extends React.Component {
                                 onRequestMore={requestMore}
                                 onRequestDelete={this.props.delete}
                                 onRequestSearch={this._handleSearch}
-                                onRequestSelected={i => {
+                                onRequestSelected={(i:string) => {
                                     if (bulkSelection.indexOf(i) === -1) {
                                         this._bulkSelect(i)
                                     } else {
@@ -145,7 +151,7 @@ class App extends React.Component {
         )
     }
 
-    _handleSearch = (term) => {
+    _handleSearch = (term:string) => {
         this.setState({
             bulkSelection: [],
             searchterm: term
@@ -157,11 +163,11 @@ class App extends React.Component {
     }
 
     _handleRequestMore = () => {
-        this.props.search(this.state.searchterm, this.props.results.length, this.sort, true)
+        this.props.search(this.state.searchterm, this.props.results.length, this.state.sort, true)
     }
 
     _switchDialogType = () => {
-        this.setState(state => {
+        this.setState((state) => {
             return {
                 dialogType: state.dialogType === 'dialog' ? 'overlay' : 'dialog'
             }
@@ -169,7 +175,7 @@ class App extends React.Component {
     }
 
     _switchSort = () => {
-        this.setState(state => {
+        this.setState((state) => {
             return {
                 bulkSelection: [],
                 sort: state.sort === 'yes' ? 'no' : 'yes'
@@ -193,26 +199,26 @@ class App extends React.Component {
         })
     }
 
-    _bulkSelect = (id) => {
+    _bulkSelect = (id:string) => {
         this.setState(state => ({
             bulkSelection: [...state.bulkSelection, id]
         }))
     }
 
-    _bulkDeselect = (id) => {
+    _bulkDeselect = (id:string) => {
         this.setState(state => ({
             bulkSelection: state.bulkSelection.filter(r => r !== id)
         }))
     }
 
-    _handleKeydown = (event) => {
+    _handleKeydown = (event:KeyboardEvent) => {
         if (KeyCodes.getCharacterFromCode(event.keyCode) === 'f') {
             this._switchDialogType()
         }
     }
 }
 
-App = connect(
+const ConnectedApp = connect(
     (state) => {
         return {
             total: state.search ? state.search.total : 0,
@@ -221,7 +227,7 @@ App = connect(
     },
     dispatch => {
         return {
-            search(terms, position, sort, more) {
+            search(terms:string, position:number, sort:any, more:boolean) {
                 const query = {
                     index: Config.search.index,
                     type: Config.search.type,
@@ -244,7 +250,7 @@ App = connect(
             subjectList() {
                 dispatch(actions.subjectList())
             },
-            delete(id) {
+            delete(id:string) {
                 dispatch(actions.deleteDocument(id))
             }
         }
@@ -255,7 +261,7 @@ export default class Wrapper extends React.Component {
     render() {
         return (
             <Provider store={store}>
-                <App />
+                <ConnectedApp />
             </Provider>
         )
     }
