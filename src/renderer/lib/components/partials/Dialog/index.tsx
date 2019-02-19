@@ -1,28 +1,31 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 
 import './style.scss'
 
-export default class SettingsDialog extends React.Component {
-    static propTypes = {
-        onRequestClose: PropTypes.func.isRequired,
-        className: PropTypes.string.isRequired,
-        title: PropTypes.string.isRequired,
-        killPropagation: PropTypes.bool.isRequired,
-        children: PropTypes.node,
-        footer: PropTypes.node,
-        other: PropTypes.node
-    }
+export interface DialogProps {
+    onRequestClose: () => void
+    className: string
+    title: string
+    killPropagation: boolean
+    children?: ReactNode
+    footer?: ReactNode
+    other?: ReactNode
+}
 
-    static defaultProps = {
+export default class Dialog extends React.Component<DialogProps> {
+    static defaultProps:DialogProps = {
         onRequestClose: () => {},
         className: 'dialog',
-        killPropagation: false
+        killPropagation: false,
+        title: 'Dialog'
     }
 
-    constructor(props) {
+    el:HTMLElement
+
+    constructor(props:DialogProps) {
         super(props)
 
         this.el = document.createElement('div')
@@ -69,18 +72,23 @@ export default class SettingsDialog extends React.Component {
         )
     }
 
-    _closeIfEscape = (event) => {
-        if (event.keyCode === 27) {
+    _requestClose = ():void => {
+        this.props.onRequestClose()
+    }
+
+    _closeIfEscape = ():void => {
+        if ((event as KeyboardEvent).keyCode === 27) {
             this.props.onRequestClose()
         }
     }
 
-    _killPropagation = (eve) => {
+    _killPropagation = (eve:React.MouseEvent):boolean => {
         if (this.props.killPropagation) {
             eve.stopPropagation()
             eve.preventDefault()
 
             return false
         }
+        return true
     }
 }

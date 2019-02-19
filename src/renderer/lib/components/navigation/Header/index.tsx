@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
@@ -15,22 +14,22 @@ import './style.scss'
 
 library.add(faCogs, faAddressCard, faImage, faSortAmountDown, faClock)
 
-export default class Header extends React.Component {
-    static propTypes = {
-        onRequestOpenSettings: PropTypes.func.isRequired,
-        onRequestSwitchDialogType: PropTypes.func.isRequired,
-        onRequestSwitchSort: PropTypes.func.isRequired,
-        onSearch: PropTypes.func.isRequired,
-        dialogType: PropTypes.string.isRequired,
-        sort: PropTypes.object.isRequired,
-        term: PropTypes.string.isRequired
-    }
+export interface HeaderProps {
+    onRequestOpenSettings: () => void
+    onRequestSwitchDialogType: () => void
+    onRequestSwitchSort: () => void
+    onSearch: (term:string) => void
+    dialogType?: string
+    sort?: any
+    term?: string
+}
 
-    static defaultProps = {
+export default class Header extends React.Component<HeaderProps> {
+    static defaultProps:HeaderProps = {
         onRequestOpenSettings: () => {},
         onRequestSwitchDialogType: () => {},
         onRequestSwitchSort: () => {},
-        onSearch: () => {}
+        onSearch: (term:string) => {}
     }
 
     render() {
@@ -47,7 +46,7 @@ export default class Header extends React.Component {
                     <div className={'top-bar-right'}>
                         <div className={'grid-x'}>
                             <div className={'cell auto'}>
-                                <SearchBar term={this.props.term} handleSearch={x => {
+                                <SearchBar term={this.props.term} handleSearch={(x:string) => {
                                     this.props.onSearch(x)
                                 }} />
                             </div>

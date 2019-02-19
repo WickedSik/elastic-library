@@ -1,24 +1,28 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 
 import './style.scss'
 
-export default class PopupMenu extends React.Component {
-    static propTypes = {
-        label: PropTypes.oneOfType([
-            PropTypes.node,
-            PropTypes.string
-        ]).isRequired,
-        options: PropTypes.arrayOf(PropTypes.shape({
-            content: PropTypes.node.isRequired,
-            onClick: PropTypes.func.isRequired
-        })).isRequired,
-        buttonClassName: PropTypes.string,
-        className: PropTypes.string
-    }
+type OptionShape = {
+    disabled?: boolean
+    content: ReactNode
+    onClick: () => void
+}
 
-    state = {
+export interface PopupMenuProps {
+    label: ReactNode | string
+    options: OptionShape[]
+    buttonClassName?:string
+    className?:string
+}
+
+export interface PopupMenuState {
+    active: boolean
+}
+
+export default class PopupMenu extends React.Component<PopupMenuProps, PopupMenuState> {
+    state:PopupMenuState = {
         active: false
     }
 
@@ -42,7 +46,7 @@ export default class PopupMenu extends React.Component {
         )
     }
 
-    _toggleMenu = (event) => {
+    _toggleMenu = (event:React.MouseEvent) => {
         if (event) {
             event.preventDefault()
             event.stopPropagation()

@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Provider, connect } from 'react-redux'
 import _ from 'lodash'
 import $ from 'jquery'
@@ -9,17 +8,18 @@ import 'react-notifications/lib/notifications.css'
 
 import '../assets/app.scss'
 
-import configureStore from '../lib/store'
-import * as actions from '../lib/store/modules/search/actions'
+import configureStore from './lib/store'
+import * as actions from './lib/store/modules/search/actions'
 
-import Header from '../lib/components/navigation/Header'
-import CardList from '../lib/components/media/CardList'
-import BulkActionBar from '../lib/components/media/CardList/BulkActionBar'
-import SideNav from '../lib/components/navigation/SideNav'
-import SettingsDialog from '../lib/components/partials/SettingsDialog'
+import Header from './lib/components/navigation/Header'
+import CardList from './lib/components/media/CardList'
+import BulkActionBar from './lib/components/media/CardList/BulkActionBar'
+import SideNav from './lib/components/navigation/SideNav'
+import SettingsDialog from './lib/components/partials/SettingsDialog'
 import Document from './lib/components/Document'
-import ImagePreloader from '../lib/components/loaders/ImagePreloader'
-import KeyCodes from '../lib/constants/KeyCodes'
+import ImagePreloader from './lib/components/loaders/ImagePreloader'
+import KeyCodes from './lib/constants/KeyCodes'
+import { RootState } from './lib/store/modules'
 
 import Config from '../config'
 
@@ -34,7 +34,7 @@ Document.globalOn('loaded', (doc:Document) => {
 })
 
 let log = ''
-ipcRenderer.on('command', (_, message:any) => {
+ipcRenderer.on('command', (_:any, message:any) => {
     const { event, chunk, command } = message
 
     if (event === 'process:ended') {
@@ -219,7 +219,7 @@ class App extends React.Component<AppPropTypes, AppState> {
 }
 
 const ConnectedApp = connect(
-    (state) => {
+    (state:RootState) => {
         return {
             total: state.search ? state.search.total : 0,
             results: state.search ? state.search.results : []

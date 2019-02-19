@@ -1,6 +1,6 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import _ from 'lodash'
+import Document from '../../Document'
 
 import Dialog from '../Dialog'
 import { renameKeyword, getSummary, update } from '../../../store/modules/search/api'
@@ -8,7 +8,7 @@ import { CHECKED_ON_BOORU } from '../../../store/modules/search/actiontypes'
 
 import './style.scss'
 
-const promiseSerial = funcs =>
+const promiseSerial = (funcs:Function[]) =>
     funcs.reduce((promise, func) =>
         promise.then(result => func().then(Array.prototype.concat.bind(result))),
     Promise.resolve([]))
@@ -20,16 +20,24 @@ const SITES = [
     'rule34'
 ]
 
-export default class SettingsDialog extends React.Component {
-    static propTypes = {
-        onRequestClose: PropTypes.func.isRequired
-    }
+export interface SettingsDialogProperties {
+    onRequestClose:() => void
+}
 
-    static defaultProps = {
+export interface SettingsDialogState {
+    pending: boolean
+    success: boolean
+    error: any
+    count: number
+    total: number
+}
+
+export default class SettingsDialog extends React.Component<SettingsDialogProperties, SettingsDialogState> {
+    static defaultProps:SettingsDialogProperties = {
         onRequestClose: () => {}
     }
 
-    state = {
+    state:SettingsDialogState = {
         pending: false,
         success: false,
         error: null,
@@ -65,7 +73,7 @@ export default class SettingsDialog extends React.Component {
         )
     }
 
-    _renameTag = (oldTag, newTag) => {
+    _renameTag = (oldTag:string, newTag:string) => {
         renameKeyword(oldTag, newTag)
             .then(() => {
                 this.setState({
@@ -97,7 +105,7 @@ export default class SettingsDialog extends React.Component {
                 total: sums.length * 3
             })
 
-            const funcs = SITES.map(site => sums.map((data, index) => {
+            const funcs = SITES.map(site => sums.map((data:any, index:number) => {
                 return () => {
                     return this._checkBooru(site, {
                         keywords: [],
@@ -119,19 +127,7 @@ export default class SettingsDialog extends React.Component {
     }
 
     // check booru, I know.. it's cheap
-    _checkBooru = (site, item) => new Promise(resolve => {
-        // if (item.keywords.indexOf(CHECKED_ON_BOORU) > -1) {
-        //     this.setState(state => {
-        //         console.info('-- state:n', state.total, state.count, state.count / state.total)
-        //         return {
-        //             count: state.count + 1
-        //         }
-        //     }, () => {
-        //         resolve(item)
-        //     })
-        //     return
-        // }
-
+    _checkBooru = (site:string, item:any) => new Promise(resolve => {
         setTimeout(() => {
             fetch(`booru://${site}/${item.checksum}`)
                 .then(result => result.json())
@@ -144,11 +140,13 @@ export default class SettingsDialog extends React.Component {
                     } else {
                         item.author = result.artist
                         item.source = result.source
-                        item.rating = (rating => {
+                        item.rating = ((rating:string) => {
                             switch (rating) {
                                 case 'q': return 'questionable'
                                 case 's': return 'safe'
                                 case 'e': return 'explicit'
+                                default:
+                                    return rating
                             }
                         })(result.rating)
 
@@ -162,7 +160,7 @@ export default class SettingsDialog extends React.Component {
         }, 2000)
     })
 
-    _update = (site, id, data) => new Promise(resolve => {
+    _update = (site:string, id:string, data:any) => new Promise(resolve => {
         const query = {
             id,
             index: 'media',

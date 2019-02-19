@@ -1,8 +1,20 @@
 import { all } from 'redux-saga/effects'
 import { AnyAction } from 'redux'
 
-import { saga as searchSaga, default as searchReducer } from './search'
-import { saga as playerSaga, default as playerReducer } from './player'
+import { saga as searchSaga, default as searchReducer, SearchState } from './search'
+import { saga as playerSaga, default as playerReducer, PlayerState } from './player'
+
+export interface RootState {
+    search:SearchState
+    player:PlayerState
+}
+
+export interface HandledError {
+    status: string
+    response?: Response
+    original?: any
+    messages: any[]
+}
 
 export const reducers = {
     search: searchReducer,
@@ -32,13 +44,13 @@ export function dispatchAction(type:string, payload?:any):AnyAction {
     }
 }
 
-export const handleError = (err:any) => {
+export const handleError = (err:any):HandledError => {
     console.info('-- handle:error', err)
 
     if (err.message && !err.response) {
         return {
             status: 'error',
-            message: err.message
+            messages: [ err.message ]
         }
     } else if (err.response.status === 422) {
         const errors = err.body.errors

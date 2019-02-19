@@ -3,13 +3,16 @@ import PropTypes from 'prop-types'
 
 import './style.scss'
 
-export default class SearchBar extends React.Component {
-    static propTypes = {
-        handleSearch: PropTypes.func,
-        term: PropTypes.string
-    }
+export interface SearchBarProps {
+    handleSearch: (term:string) => void
+    term?: string
+}
+export interface SearchBarState {
+    value: string
+}
 
-    state = {
+export default class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
+    state:SearchBarState = {
         value: ''
     }
 
@@ -21,14 +24,14 @@ export default class SearchBar extends React.Component {
         }
     }
 
-    componentWillReceiveProps(props) {
+    componentWillReceiveProps(props:SearchBarProps) {
         if (this.props.term === this.state.value) {
             this.setState({
-                value: props.term
+                value: props.term as string
             })
         } else {
             this.setState({
-                value: this.state.value || props.term
+                value: this.state.value || props.term as string
             })
         }
     }

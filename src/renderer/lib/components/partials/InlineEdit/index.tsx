@@ -8,13 +8,17 @@ import './style.scss'
 
 library.add(faEdit, faSave)
 
-export default class InlineEdit extends React.Component {
-    static propTypes = {
-        onUpdate: PropTypes.func.isRequired,
-        value: PropTypes.string
-    }
+export interface InlineEditProps {
+    onUpdate: Function
+    value: string
+}
+export interface InlineEditState {
+    isEditing: boolean
+    value: string
+}
 
-    state = {
+export default class InlineEdit extends React.Component<InlineEditProps, InlineEditState> {
+    state:InlineEditState = {
         isEditing: false,
         value: ''
     }
@@ -27,7 +31,7 @@ export default class InlineEdit extends React.Component {
         }
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps:InlineEditProps) {
         if (this.props.value !== prevProps.value) {
             this.setState({ // eslint-disable-line react/no-did-update-set-state
                 value: this.props.value

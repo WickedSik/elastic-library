@@ -97,7 +97,7 @@ export const scroll = async (query:any):Promise<any[]> =>
         })
     })
 
-export const getSummary = async (includes = ['checksum'], excludeQuery = false) => {
+export const getSummary = async (includes:string[] = ['checksum'], excludeQuery?:any):Promise<any> => {
     const query:any = {
         _source: {
             includes

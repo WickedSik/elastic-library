@@ -14,14 +14,21 @@ import {
     FETCH_DOCUMENT_FAILED,
     DELETE_DOCUMENT_SUCCESS
 } from './actiontypes'
-import { Action, AnyAction } from 'redux';
+import { AnyAction } from 'redux';
 
-const initialState = {
+export interface SearchState {
+    errors: any[]
+    results: any[]
+    subjects: any[]
+    total: number
+    document?: any
+}
+
+const initialState:SearchState = {
     errors: [],
     results: [],
     subjects: [],
-    total: 0,
-    document: null
+    total: 0
 }
 
 export default (state = initialState, action:AnyAction) => {

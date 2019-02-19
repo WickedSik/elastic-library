@@ -1,4 +1,8 @@
 export default class ImagePreloader {
+    private __urls:string[]
+    private __loaded:string[]
+    private __token?:number
+
     constructor() {
         this.__urls = []
         this.__loaded = []
@@ -9,11 +13,11 @@ export default class ImagePreloader {
     }
 
     destroy() {
-        window.cancelAnimationFrame(this.__token)
-        this.__token = null
+        window.cancelAnimationFrame(this.__token as number)
+        this.__token = undefined
     }
 
-    add(url) {
+    add(url:string) {
         if (this.__urls.indexOf(url) === -1 && this.__loaded.indexOf(url) === -1) {
             this.__urls.push(url)
             this.load()
@@ -23,7 +27,7 @@ export default class ImagePreloader {
     load() {
         if (this.__urls.length > 0) {
             const img = new Image()
-            img.src = this.__urls.shift()
+            img.src = this.__urls.shift() as string
             img.onload = () => {
                 this.__loaded.push(img.src)
                 // console.info('-- loaded', img.src)
