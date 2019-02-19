@@ -14,6 +14,7 @@ import {
     FETCH_DOCUMENT_FAILED,
     DELETE_DOCUMENT_SUCCESS
 } from './actiontypes'
+import { Action, AnyAction } from 'redux';
 
 const initialState = {
     errors: [],
@@ -23,7 +24,7 @@ const initialState = {
     document: null
 }
 
-export default (state = initialState, action) => {
+export default (state = initialState, action:AnyAction) => {
     console.info('-- reduce', action.type)
     console.groupEnd()
     switch (action.type) {
@@ -95,7 +96,7 @@ export default (state = initialState, action) => {
         case DELETE_DOCUMENT_SUCCESS:
             return {
                 ...state,
-                results: state.results ? state.results.filter(doc => doc.id !== action.payload) : []
+                results: state.results ? state.results.filter((doc:any) => doc.id !== action.payload) : []
             }
 
         default:

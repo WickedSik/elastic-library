@@ -5,12 +5,15 @@ import { reducers, rootSaga } from './modules'
 
 export default function configureStore() {
     const sagaMiddleware = createSagaMiddleware()
-    const composeCreateStore = () => compose(
-        applyMiddleware(sagaMiddleware),
-        window.__REDUX_DEVTOOLS_EXTENSION__ ? window.__REDUX_DEVTOOLS_EXTENSION__() : fn => fn
-    )(createStore)
 
-    const finalCreateStore = composeCreateStore()
+    function composeCreateStore():(reducers:any) => any {
+        return compose<any, any>(
+            applyMiddleware(sagaMiddleware),
+            window.__REDUX_DEVTOOLS_EXTENSION__ ? window.__REDUX_DEVTOOLS_EXTENSION__() : (fn:Function) => fn
+        )
+    }
+
+    const finalCreateStore = composeCreateStore()(createStore)
 
     const store = finalCreateStore(combineReducers({ ...reducers }))
 

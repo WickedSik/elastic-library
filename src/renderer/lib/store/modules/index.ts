@@ -1,4 +1,5 @@
 import { all } from 'redux-saga/effects'
+import { AnyAction } from 'redux'
 
 import { saga as searchSaga, default as searchReducer } from './search'
 import { saga as playerSaga, default as playerReducer } from './player'
@@ -17,12 +18,12 @@ export function* rootSaga() {
     ])
 }
 
-export function action(module, name) {
+export function action(module:string, name:string):string {
     console.info('-- action', `es-lib/${module}/${name}`)
     return `es-lib/${module}/${name}`
 }
 
-export function dispatchAction(type, payload) {
+export function dispatchAction(type:string, payload?:any):AnyAction {
     console.group('-- dispatch', type)
     console.info('-- dispatch', type, { payload })
     return {
@@ -31,7 +32,7 @@ export function dispatchAction(type, payload) {
     }
 }
 
-export const handleError = err => {
+export const handleError = (err:any) => {
     console.info('-- handle:error', err)
 
     if (err.message && !err.response) {
@@ -41,9 +42,9 @@ export const handleError = err => {
         }
     } else if (err.response.status === 422) {
         const errors = err.body.errors
-        const messages = []
+        const messages:string[] = []
 
-        Object.keys(errors).forEach(x => errors[x].forEach(y => messages.push(y)))
+        Object.keys(errors).forEach(x => errors[x].forEach((y:string) => messages.push(y)))
 
         return {
             status: 'error',

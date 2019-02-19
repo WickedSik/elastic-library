@@ -27,19 +27,19 @@ export const ARROW_UP = 38
 export const ARROW_RIGHT = 39
 export const ARROW_DOWN = 40
 
-export function isCharacterKey(keycode) {
+export function isCharacterKey(keycode:number) {
     return (keycode >= 65 && keycode <= 90)
 }
 
-export function isFunctionKey(keycode) {
+export function isFunctionKey(keycode:number) {
     return keycode >= 112 && keycode <= 124
 }
 
-export function isNumberKey(keycode) {
+export function isNumberKey(keycode:number) {
     return keycode >= 48 && keycode <= 57
 }
 
-export function getCharacterFromCode(keycode) {
+export function getCharacterFromCode(keycode:number) {
     if (isCharacterKey(keycode)) {
         return String.fromCharCode(keycode + 32)
     }

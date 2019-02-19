@@ -1,6 +1,7 @@
 import { call, put, takeLatest, takeEvery } from 'redux-saga/effects'
-import searchApi from './api'
+import { AnyAction } from 'redux'
 
+import searchApi from './api'
 import {
     SEARCH_REQUEST,
     SEARCH_SUCCESS,
@@ -20,7 +21,7 @@ import { dispatchAction } from '../index'
 
 import Document from '../../../components/Document'
 
-function* search(actionObject) {
+function* search(actionObject:AnyAction) {
     try {
         const query = actionObject.payload.query
 
@@ -36,7 +37,7 @@ function* search(actionObject) {
 
         const data = {
             total: results.hits.total,
-            rows: results.hits.hits.map(hit => new Document(hit))
+            rows: results.hits.hits.map((hit:any) => new Document(hit))
         }
 
         if (actionObject.payload.add) {
@@ -49,11 +50,11 @@ function* search(actionObject) {
     }
 }
 
-function* subjectList(actionObject) {
+function* subjectList(actionObject:AnyAction) {
     try {
         const results = yield call(searchApi.search, actionObject.payload)
 
-        yield put(dispatchAction(SUBJECT_LIST_SUCCESS, results.aggregations.keywords.buckets.filter(bucket => {
+        yield put(dispatchAction(SUBJECT_LIST_SUCCESS, results.aggregations.keywords.buckets.filter((bucket:any) => {
             return bucket.doc_count > 1
         })))
     } catch (e) {
@@ -61,7 +62,7 @@ function* subjectList(actionObject) {
     }
 }
 
-function* fetch(actionObject) {
+function* fetch(actionObject:AnyAction) {
     try {
         const document = yield call(searchApi.fetch, actionObject.payload)
 
@@ -71,7 +72,7 @@ function* fetch(actionObject) {
     }
 }
 
-function* deleteDocument(actionObject) {
+function* deleteDocument(actionObject:AnyAction) {
     try {
         yield call(searchApi.deleteDocument, actionObject.payload)
 

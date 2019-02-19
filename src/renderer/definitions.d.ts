@@ -67,3 +67,7 @@ declare module 'url' {
 interface JQuery<TElement = HTMLElement> extends Iterable<TElement> {
     foundation():JQuery<TElement>
 }
+
+interface Window {
+    __REDUX_DEVTOOLS_EXTENSION__?:any
+}

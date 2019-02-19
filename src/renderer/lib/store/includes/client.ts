@@ -1,8 +1,12 @@
-import elastic from 'elasticsearch'
+import elastic, { PingParams, IndexDocumentParams, UpdateDocumentParams, SearchParams } from 'elasticsearch'
 import _ from 'lodash'
 
 export default class Client {
-    constructor(config) {
+    _index:string
+    _mapping:any[]
+    _client:elastic.Client
+
+    constructor(config:any) {
         this._index = config.index
         this._mapping = [
             { // always used
@@ -14,7 +18,7 @@ export default class Client {
         this._client = new elastic.Client(config.search)
     }
 
-    ping(opt) {
+    ping(opt:PingParams) {
         return this._client.ping(opt)
     }
 
@@ -22,15 +26,15 @@ export default class Client {
         return this._client.indices
     }
 
-    index(opt) {
+    index(opt:IndexDocumentParams<any>) {
         return this._client.index(opt)
     }
 
-    update(opt) {
+    update(opt:UpdateDocumentParams) {
         return this._client.update(opt)
     }
 
-    delete(id) {
+    delete(id:string) {
         return this._client.delete({
             index: this._index,
             type: 'media',
@@ -38,12 +42,12 @@ export default class Client {
         })
     }
 
-    search(opt) {
+    search(opt:SearchParams) {
         return this._client.search(opt)
     }
 
-    scroll(opt) {
-        let documents = []
+    scroll(opt:any):Promise<any[]> {
+        let documents:any[] = []
         const client = this._client
 
         return new Promise((resolve, reject) => {
@@ -64,7 +68,7 @@ export default class Client {
 
                 if (response.hits.total > documents.length) {
                     client.scroll({
-                        scrollId: response._scroll_id,
+                        scrollId: response._scroll_id as string,
                         scroll: '30s'
                     }, untildone)
                 } else {

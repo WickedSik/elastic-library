@@ -1,5 +1,5 @@
 import { handleError } from '../index'
-import elasticsearch from 'elasticsearch'
+import elasticsearch, { GetParams, DeleteDocumentParams } from 'elasticsearch'
 import Client from '../../includes/client'
 
 const client = new elasticsearch.Client({
@@ -13,7 +13,7 @@ const ownClient = new Client({
     }
 })
 
-export const search = (query) =>
+export const search = (query:any) =>
     new Promise((resolve, reject) => {
         console.info('-- search:json', JSON.stringify(query))
         client.search({
@@ -25,7 +25,7 @@ export const search = (query) =>
         })
     })
 
-export const update = (params) =>
+export const update = (params:any) =>
     new Promise((resolve, reject) => {
         client.update(params).then(response => {
             resolve(response)
@@ -34,7 +34,7 @@ export const update = (params) =>
         })
     })
 
-export const fetch = (id) =>
+export const fetch = (id:GetParams) =>
     new Promise((resolve, reject) => {
         client.get(id).then(response => {
             resolve(response)
@@ -43,7 +43,7 @@ export const fetch = (id) =>
         })
     })
 
-export const deleteDocument = (id) =>
+export const deleteDocument = (id:DeleteDocumentParams) =>
     new Promise((resolve, reject) => {
         client.delete(id).then(response => {
             resolve(response)
@@ -52,49 +52,53 @@ export const deleteDocument = (id) =>
         })
     })
 
-export const renameKeyword = (oldKeyword, newKeyword) =>
+export const renameKeyword = (oldKeyword:string, newKeyword:string) =>
     new Promise((resolve, reject) => {
         client.updateByQuery({
-            query: {
-                term: {
-                    'keywords.keyword': oldKeyword
-                }
-            },
-            script: {
-                source: `
-                    ctx._source.keywords.remove(
-                        ctx._source.keywords.indexOf(params.oldKeyword)
-                    );
-                    ctx._source.keywords.add(params.newKeyword)
-                `,
-                params: {
-                    oldKeyword,
-                    newKeyword
+            index: 'media',
+            type: 'media',
+            body: {
+                query: {
+                    term: {
+                        'keywords.keyword': oldKeyword
+                    }
                 },
-                lang: 'painless'
+                script: {
+                    source: `
+                        ctx._source.keywords.remove(
+                            ctx._source.keywords.indexOf(params.oldKeyword)
+                        );
+                        ctx._source.keywords.add(params.newKeyword)
+                    `,
+                    params: {
+                        oldKeyword,
+                        newKeyword
+                    },
+                    lang: 'painless'
+                }
             }
-        }).then(response => {
+        }).then((response:any) => {
             resolve(response)
-        }).catch(error => {
+        }).catch((error:any) => {
             reject(handleError(error))
         })
     })
 
-export const scroll = (query) =>
+export const scroll = async (query:any):Promise<any[]> =>
     new Promise((resolve, reject) => {
         ownClient.scroll({
-            index: this._index,
+            index: 'media',
             type: 'media',
             body: query
-        }).then(data => {
+        }).then((data:any[]) => {
             resolve(data)
-        }).catch(error => {
+        }).catch((error:any) => {
             reject(error)
         })
     })
 
-export const getSummary = (includes = ['checksum'], excludeQuery = false) => {
-    const query = {
+export const getSummary = async (includes = ['checksum'], excludeQuery = false) => {
+    const query:any = {
         _source: {
             includes
         },
@@ -105,13 +109,11 @@ export const getSummary = (includes = ['checksum'], excludeQuery = false) => {
         query.query = excludeQuery
     }
 
-    return scroll(query).then(docs => {
-        if (docs.length === 0) {
-            return []
-        }
-        return docs
-            .map(doc => ({ id: doc._id, ...doc._source }))
-    })
+    const docs:any[] = await scroll(query);
+    if (docs.length === 0) {
+        return [];
+    }
+    return docs.map(doc => ({ id: doc._id, ...doc._source }));
 }
 
 export default {
