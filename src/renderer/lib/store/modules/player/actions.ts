@@ -1,5 +1,17 @@
-import { dispatchAction } from '../index'
-import { TOGGLE_MUTE_REQUEST } from './actiontypes'
-import { action } from 'typesafe-actions'
+import { Action } from 'redux'
 
-export const toggleMute = () => action(TOGGLE_MUTE_REQUEST)
+export interface IActionPlayerToggleMuteRequest extends Action {
+    type: 'eslib/player/TOGGLE_MUTE_REQUEST'
+    payload: {
+        muted: boolean
+    }
+}
+
+export interface IActionPlayerToggleMuteSuccess extends Action {
+    type: 'eslib/player/TOGGLE_MUTE_SUCCESS'
+    payload: {
+        muted: boolean
+    }
+}
+
+export type PlayerActions = IActionPlayerToggleMuteRequest | IActionPlayerToggleMuteSuccess

@@ -1,15 +1,12 @@
-import { put, takeEvery } from 'redux-saga/effects'
+import { call, put, take } from 'redux-saga/effects'
 
-import {
-    TOGGLE_MUTE_REQUEST,
-    TOGGLE_MUTE_SUCCESS
-} from './actiontypes'
-import { dispatchAction } from '../index'
-
-function* toggleMute() {
-    yield put(dispatchAction(TOGGLE_MUTE_SUCCESS))
+export function* toggleMute() {
+    yield put({ type: 'eslib/player/TOGGLE_MUTE_REQUEST' })
 }
 
-export default [
-    takeEvery(TOGGLE_MUTE_REQUEST, toggleMute)
-]
+export function* playerWatcher() {
+    while(true) {
+        yield take('eslib/player/TOGGLE_MUTE_REQUEST')
+        yield call(toggleMute)
+    }
+}

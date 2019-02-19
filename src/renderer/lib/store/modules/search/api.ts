@@ -1,4 +1,3 @@
-import { handleError } from '../index'
 import elasticsearch, { GetParams, DeleteDocumentParams } from 'elasticsearch'
 import Client from '../../includes/client'
 
@@ -21,7 +20,7 @@ export const search = (query:any) =>
         }).then(response => {
             resolve(response)
         }).catch(error => {
-            reject(handleError(error))
+            reject(error)
         })
     })
 
@@ -30,7 +29,7 @@ export const update = (params:any) =>
         client.update(params).then(response => {
             resolve(response)
         }).catch(error => {
-            reject(handleError(error))
+            reject(error)
         })
     })
 
@@ -39,7 +38,7 @@ export const fetch = (id:GetParams) =>
         client.get(id).then(response => {
             resolve(response)
         }).catch(error => {
-            reject(handleError(error))
+            reject(error)
         })
     })
 
@@ -48,7 +47,7 @@ export const deleteDocument = (id:DeleteDocumentParams) =>
         client.delete(id).then(response => {
             resolve(response)
         }).catch(error => {
-            reject(handleError(error))
+            reject(error)
         })
     })
 
@@ -80,7 +79,7 @@ export const renameKeyword = (oldKeyword:string, newKeyword:string) =>
         }).then((response:any) => {
             resolve(response)
         }).catch((error:any) => {
-            reject(handleError(error))
+            reject(error)
         })
     })
 

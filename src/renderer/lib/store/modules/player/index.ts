@@ -1,33 +1,18 @@
-import saga from './saga'
-import { Action } from 'redux'
-
-import {
-    TOGGLE_MUTE_SUCCESS
-} from './actiontypes'
-
-export type PlayerState = {
-    readonly muted: boolean
-}
+import { PlayerActions } from './actions'
+import { PlayerState } from './design'
 
 export const initialState:PlayerState = {
     muted: true
 }
 
-export default (state:PlayerState = initialState, action:Action) => {
-    console.info('-- reduce', action.type)
-    console.groupEnd()
-    switch (action.type) {
-        case TOGGLE_MUTE_SUCCESS:
-            return {
-                ...state,
-                muted: !state.muted
-            }
+export type PlayerState = PlayerState
 
-        default:
-            return {
-                ...state
-            }
+export function playerReducer(state: PlayerState = initialState, action: PlayerActions):PlayerState {
+    if(action.type === 'eslib/player/TOGGLE_MUTE_SUCCESS') {
+        return {
+            muted: action.payload.muted
+        }
     }
-}
 
-export { saga }
+    return state
+}

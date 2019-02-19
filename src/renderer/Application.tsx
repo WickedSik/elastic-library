@@ -8,7 +8,7 @@ import 'react-notifications/lib/notifications.css'
 
 import '../assets/app.scss'
 
-import configureStore from './lib/store'
+import store from './lib/store'
 import * as actions from './lib/store/modules/search/actions'
 
 import Header from './lib/components/navigation/Header'
@@ -25,7 +25,6 @@ import Config from '../config'
 
 // const fs = electron.remote.require('fs')
 const { ipcRenderer } = window.require('electron')
-const store = configureStore()
 
 const loader = new ImagePreloader()
 Document.globalOn('loaded', (doc:Document) => {
