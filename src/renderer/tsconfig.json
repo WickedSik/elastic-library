@@ -8,5 +8,6 @@
       "es2017.object",
       "es2017.string"
     ]
-  }
+  },
+  "exclude": ["node_modules"]
 }

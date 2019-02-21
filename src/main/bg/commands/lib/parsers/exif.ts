@@ -5,7 +5,7 @@ import Exif from 'exif'
 export default class ExifParser implements ParserModule {
     run(file: StoredFile): Promise<Metadata> {
         return new Promise((resolve, reject) => {
-            new Exif(`${file.directory}/${file.filename}`, (error, data) => {
+            Exif(`${file.directory}/${file.filename}`, (error:any, data:any) => {
                 const metadata = new Metadata()
 
                 if(error) {

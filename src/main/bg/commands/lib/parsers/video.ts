@@ -49,7 +49,9 @@ export default class VideoParser implements ParserModule {
 
                 data.filter(d => d && ACCEPTED_PROPERTIES.indexOf(d.key) > -1)
                     .map(d => {
-                        metadata.set(`video.${d.key}`, d.value)
+                        if(d && d.value && d.key) {
+                            metadata.set(`video.${d.key}`, d.value)
+                        }
                     })
 
                 resolve(metadata)

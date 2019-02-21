@@ -1,7 +1,7 @@
 import { Parser } from 'xml2js'
 import sites, { Site } from './sites'
-import fetch from 'cross-fetch'
-import promisify from './promisify';
+import fetch, { Response } from 'cross-fetch'
+import promisify from './promisify'
 
 export interface SearchOptions {
     limit:number
@@ -43,11 +43,11 @@ export default class Booru {
         return new Promise((resolve, reject) => {
         // If it's an object, assume it's already jsonfied
             if (typeof images !== 'object') {
-                this.parser.parseString(images, (err, res) => {
+                this.parser.parseString(images, (err:any, res:any) => {
                     if (err) { return reject(err) }
 
                     if (res.posts.post !== undefined) {
-                        resolve(res.posts.post.map(val => val.$))
+                        resolve(res.posts.post.map((val:any) => val.$))
                     } else {
                         resolve([])
                     }
@@ -81,13 +81,18 @@ export default class Booru {
         return new Promise((resolve, reject) => {
             const finalImages = []
             for (let i = 0; i < images.length; i++) {
+                const tag_rating:RegExpExecArray|null = /(safe|suggestive|questionable|explicit)/i.exec(images[i].tags as string)
+                const tags = ((images[i].tags !== undefined) 
+                    ? (images[i].tags as string).split(' ')
+                    : images[i].tag_string.split(' ')).map((v:string) => v.replace(/,/g, '').replace(/ /g, '_'))
+
                 images[i].common = {
                     file_url: images[i].file_url || images[i].image,
                     id: images[i].id.toString(),
-                    tags: ((images[i].tags !== undefined) ? (images[i].tags as string).split(' ') : images[i].tag_string.split(' ')).map(v => v.replace(/,/g, '').replace(/ /g, '_')),
+                    tags,
                     score: parseInt(images[i].score as string),
                     source: images[i].source,
-                    rating: images[i].rating || /(safe|suggestive|questionable|explicit)/i.exec(images[i].tags as string)[0]
+                    rating: images[i].rating || (tag_rating && tag_rating[0] as string) as string
                 }
 
                 if (images[i].common.rating === 'suggestive') {
@@ -140,8 +145,8 @@ export default class Booru {
     /**
      * Check if `site` is a supported site (and check if it's an alias and return the sites's true name)
      */
-    resolveSite(siteToResolve: string):string {
-        if (typeof siteToResolve !== 'string') { return null }
+    resolveSite(siteToResolve: string):string|undefined {
+        if (typeof siteToResolve !== 'string') { return undefined }
 
         siteToResolve = siteToResolve.toLowerCase()
 
@@ -151,7 +156,7 @@ export default class Booru {
             }
         }
 
-        return null
+        return undefined
     }
 
     /**
@@ -207,7 +212,7 @@ export default class Booru {
         }
 
         try {
-            const result:Response = await fetch(uri, options)
+            const result = await fetch(uri, options)
             if(sites[site].xml) {
                 const xml:string = await result.text()
                 const data = await promisify(this.parser.parseString, xml)
@@ -252,9 +257,9 @@ export default class Booru {
             }
 
             fetch(uri, options)
-                .then(result => result.json())
+                .then((result:any) => result.json())
                 .then(resolve)
-                .catch(err => reject(new BooruError((err.error && err.error.message) || err.error || err)))
+                .catch((err:any) => reject(new BooruError((err.error && err.error.message) || err.error || err)))
         })
     }
 }

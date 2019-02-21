@@ -1,5 +1,5 @@
 import { Task } from '../process'
-import Parser from './lib/parser'
+import Parser, { ParserModule } from './lib/parser'
 import checksum from 'checksum'
 import { StoredFile } from './lib/storage'
 import Elastic, { IndexResult } from './lib/elastic'
@@ -24,7 +24,7 @@ export default class Meta implements Task {
         const document:StoredFile = { directory: directory.reverse().join('/'), filename }
         
         const sum:string = await new Promise<string>((resolve, reject) => {
-            checksum.file(parameters[0], { algorithm: 'md5' }, (err, hash) => {
+            checksum.file(parameters[0], { algorithm: 'md5' }, (err:any, hash:string) => {
                 if(err) {
                     return reject(err)
                 }
@@ -40,7 +40,7 @@ export default class Meta implements Task {
         const parser = new Parser()
 
         const moduleMap = {}
-        parser.modules.forEach((module:Parser) => {
+        parser.modules.forEach((module:ParserModule) => {
             moduleMap[module.constructor.name] = module.accepts(document)
         })
 

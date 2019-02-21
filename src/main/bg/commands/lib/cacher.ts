@@ -13,7 +13,7 @@ export default class Cacher {
 
     async initCacheDirectory():Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
-            const home:string = process.env.HOME
+            const home:string = process.env.HOME || '.'
             const cachePath:string = pathJoin(home, this.cacheDirectory)
 
             fs.exists(cachePath, (exists) => {
@@ -35,7 +35,7 @@ export default class Cacher {
     }
 
     get(name:string):string {
-        return this.cache.get(name)
+        return this.cache.get(name) as string
     }
 
     async set(name:string, value:string) {
@@ -71,7 +71,7 @@ export default class Cacher {
 
     private async store():Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
-            const home:string = process.env.HOME
+            const home:string = process.env.HOME || '.'
             const filename = `cache-${this.name}.json`
             const cacheFile = pathJoin(home, this.cacheDirectory, filename)
 
@@ -86,7 +86,7 @@ export default class Cacher {
 
     private async read():Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
-            const home:string = process.env.HOME
+            const home:string = process.env.HOME || '.'
             const filename = `cache-${this.name}.json`
             const cacheFile = pathJoin(home, this.cacheDirectory, filename)
 

@@ -34,7 +34,7 @@ export default class Remote implements Task {
         const document:StoredFileExtra = { directory: directory.reverse().join('/'), filename }
         
         const sum:string = await new Promise<string>((resolve, reject) => {
-            checksum.file(parameters[0], { algorithm: 'md5' }, (err, hash) => {
+            checksum.file(parameters[0], { algorithm: 'md5' }, (err:any, hash:string) => {
                 if(err) {
                     return reject(err)
                 }

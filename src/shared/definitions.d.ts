@@ -1,5 +1,3 @@
-import { ReactNode } from 'react'
-
 /**
  * Global constant injected by `@electron-forge/plugin-webpack`.
  */

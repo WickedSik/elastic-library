@@ -7,7 +7,7 @@ export default class DeviantArtParser implements ParserModule {
 
         let [ext, ...filename] = file.filename.split('.').reverse()
         let [title, author] = filename.reverse().join('').split('_by_')
-        author = author.split('-').shift()
+        author = author.split('-').shift() as string
 
         metadata.set('author', author)
         metadata.set('title', title.replace(/_/g, ' '))

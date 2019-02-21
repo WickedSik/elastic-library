@@ -2,6 +2,7 @@ import { ParserModule, Metadata } from '../parser'
 import { StoredFile } from '../storage'
 import { default as sharp } from 'sharp'
 import Vibrant from 'node-vibrant'
+import { Swatch } from '@vibrant/color';
 
 export default class ImageParser implements ParserModule {
     run(file: StoredFile): Promise<Metadata> {
@@ -74,7 +75,8 @@ export default class ImageParser implements ParserModule {
                     const out = {}
                     for (const swatch in palette) {
                         if (palette.hasOwnProperty(swatch) && palette[swatch]) {
-                            out[swatch] = palette[swatch].getHex()
+                            const s:Swatch = palette[swatch] as Swatch
+                            out[swatch] = s.getHex()
                         }
                     }
 
@@ -87,7 +89,7 @@ export default class ImageParser implements ParserModule {
 
     getOtherData(path:string) {
         const ext = path.substr(path.lastIndexOf('.'))
-        const data = {
+        const data:{ keywords:string[] } = {
             keywords: []
         }
 

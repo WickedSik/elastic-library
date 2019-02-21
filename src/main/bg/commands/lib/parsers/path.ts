@@ -3,7 +3,7 @@ import { StoredFile } from '../storage'
 import * as path from 'path'
 
 interface PathParserConfig {
-    ignored?: string[]
+    ignored: string[]
 }
 
 export default class PathParser implements ParserModule {
@@ -12,7 +12,10 @@ export default class PathParser implements ParserModule {
     }
 
     constructor(config:PathParserConfig) {
-        this.config = config
+        this.config = {
+            ...this.config,
+            ...config
+        }
     }
 
     run(file: StoredFile): Promise<Metadata> {

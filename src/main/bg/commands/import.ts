@@ -26,7 +26,7 @@ export default class Import implements Task {
 
     client:Elastic
     filesystem:Storage
-    progressbar:ProgressBar
+    progressbar?:ProgressBar
     cacher:Cacher
 
     constructor() {
@@ -58,14 +58,14 @@ export default class Import implements Task {
         await this.cacher.save()
 
         const simpleChecksums:string[] = checksums.map(sum => sum.checksum)
-        const newFiles = fileChecksums.filter(file => simpleChecksums.indexOf(file.checksum) === -1)
+        const newFiles = fileChecksums.filter(file => simpleChecksums.indexOf(file.checksum as string) === -1)
         
-        const simpleFileChecksums:string[] = fileChecksums.map(sum => sum.checksum)
+        const simpleFileChecksums:string[] = fileChecksums.map(sum => sum.checksum as string)
         const oldDocs = checksums.filter(sum => simpleFileChecksums.indexOf(sum.checksum) === -1)
         console.info(chalk`-- {magenta [%s]} %d new files, %d docs not found as file`, this.timestamp(), newFiles.length, oldDocs.length)
 
         const duplicateChecksums = this.duplicates(checksums)
-        const duplicateFiles = this.duplicates(fileChecksums.map(file => ({ id: `${file.directory}/${file.filename}`, checksum: file.checksum })))
+        const duplicateFiles = this.duplicates(fileChecksums.map(file => ({ id: `${file.directory}/${file.filename}`, checksum: file.checksum as string })))
         console.info(chalk`-- {magenta [%s]} %d duplicate checksums, %d duplicate files`, this.timestamp(), duplicateChecksums.length, duplicateFiles.length)
 
         if(oldDocs.length > 0) {
@@ -107,7 +107,7 @@ export default class Import implements Task {
                 includes: ['checksum']
             },
             sort: '_doc'
-        }).then(documents => {
+        }).then((documents:SearchResultHit[]) => {
             return documents.map((doc:SearchResultHit) => {
                 return {
                     id: doc._id,
@@ -148,7 +148,7 @@ export default class Import implements Task {
         return Promise.all(promises)
     }
 
-    async index(document:StoredFile):Promise<object> {
+    async index(document:StoredFile):Promise<any> {
         const parser = new Parser()
 
         try {
@@ -165,7 +165,7 @@ export default class Import implements Task {
         const duplicateChecksums = new Map<string, string[]>()
         for(const sum of checksums) {
             if(duplicateChecksums.has(sum.checksum)) {
-                const list = duplicateChecksums.get(sum.checksum)
+                const list:string[] = duplicateChecksums.get(sum.checksum as string) as string[]
                 list.push(sum.id)
                 duplicateChecksums.set(sum.checksum, list)
             } else {
@@ -174,12 +174,15 @@ export default class Import implements Task {
         }
 
         const duplicates = Array.from(duplicateChecksums.keys())
-            .filter(hash => duplicateChecksums.get(hash).length > 1)
+            .filter(hash => {
+                const dupe = duplicateChecksums.get(hash)
+                return dupe && dupe.length > 1
+            })
             .map(hash => {
                 return duplicateChecksums.get(hash)
             })
 
-        return duplicates
+        return (duplicates as string[][])
     }
 
     timestamp():string {
@@ -200,7 +203,7 @@ export default class Import implements Task {
             width: 120,
             total: total,
             callback: () => {
-                this.progressbar = null
+                this.progressbar = undefined
             }
         })
     }

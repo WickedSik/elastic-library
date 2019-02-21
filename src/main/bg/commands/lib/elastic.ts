@@ -77,8 +77,8 @@ export default class Elastic {
         })
     }
 
-    scroll(query:object):Promise<object[]> {
-        const documents:object[] = []
+    scroll(query:object):Promise<any[]> {
+        const documents:any[] = []
         const client:Client = this.client
 
         return new Promise((resolve, reject) => {
@@ -99,7 +99,7 @@ export default class Elastic {
 
                 if(response.hits.total > documents.length) {
                     client.scroll({
-                        scrollId: response._scroll_id,
+                        scrollId: response._scroll_id as string,
                         scroll: '30s'
                     }, untilldone)
                 } else {

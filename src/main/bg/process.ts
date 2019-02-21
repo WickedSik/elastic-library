@@ -25,7 +25,7 @@ export default class Process {
     }
 
     run(command:string, parameters:any[] = []):void {
-        const task:Task = this.commands.find(c => c.name === command)
+        const task = this.commands.find(c => c.name === command)
 
         if(task) {
             task.run(parameters).then(() => {
