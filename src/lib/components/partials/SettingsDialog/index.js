@@ -16,7 +16,7 @@ const promiseSerial = funcs =>
 const SITES = [
     'e621',
     'danbooru',
-    'pahael',
+    'paheal',
     'rule34'
 ]
 
@@ -97,7 +97,7 @@ export default class SettingsDialog extends React.Component {
                 total: sums.length * 3
             })
 
-            const funcs = SITES.map(site => sums.map((data, index) => {
+            const funcs = sums.map(data => SITES.map(site => {
                 return () => {
                     return this._checkBooru(site, {
                         keywords: [],
@@ -159,7 +159,19 @@ export default class SettingsDialog extends React.Component {
                         resolve(this._update(site, item.id, item))
                     }
                 })
-        }, 2000)
+                .catch(error => {
+                    console.error('-- booru', error)
+
+                    this.setState(state => {
+                        console.error(`-- state:${site.toLowerCase()}:f`, state.total, state.count, state.count / state.total)
+                        return {
+                            count: state.count + 1
+                        }
+                    }, () => {
+                        resolve(null)
+                    })
+                })
+        }, 1500)
     })
 
     _update = (site, id, data) => new Promise(resolve => {

@@ -71,31 +71,35 @@ export default class Import implements Task {
         if(oldDocs.length > 0) {
             this.createProgressbar('removing old docs', oldDocs.length)
 
-            await Promise.all(oldDocs.map(doc => {
-                this.tick()
-                return this.client.delete(doc.id)
-            }))
-                .then(() => {
-                    console.info(chalk`-- {magenta [%s]} %d docs removed`, this.timestamp(), oldDocs.length)
-                })
-                .catch(error => {
-                    console.error(chalk`-- {magenta [%s]} {red error while removing docs: %s}`, this.timestamp(), error.message)
-                })
+            try {
+                for(let i = 0; i < oldDocs.length; i++) {
+                    await this.client.delete(oldDocs[i].id)
+                    this.tick()
+                }
+
+                console.info(chalk`-- {magenta [%s]} %d docs removed`, this.timestamp(), oldDocs.length)
+            } catch(error) {
+                console.error(chalk`-- {magenta [%s]} {red error while removing docs: %s}`, this.timestamp(), error)
+            }
+        } else {
+            console.info(chalk`-- {magenta [%s]} %d docs removed`, this.timestamp(), oldDocs.length)
         }
 
         if(newFiles.length) {
             this.createProgressbar('indexing files', newFiles.length)
 
-            await Promise.all(newFiles.map(async doc => {
-                await this.index(doc);
-                this.tick();
-            }))
-                .then(() => {
-                    console.info(chalk`-- {magenta [%s]} %d docs inserted`, this.timestamp(), newFiles.length)
-                })
-                .catch(error => {
-                    console.error(chalk`-- {magenta [%s]} {red error while indexing: %s}`, this.timestamp(), error.message)
-                })
+            try {
+                for(let i = 0; i < newFiles.length; i++) {
+                    await this.index(newFiles[i])
+                    this.tick()
+                }
+
+                console.info(chalk`-- {magenta [%s]} %d docs inserted`, this.timestamp(), newFiles.length)
+            } catch (error) {
+                console.error(chalk`-- {magenta [%s]} {red error while indexing: %s}`, this.timestamp(), error)
+            }
+        } else {
+            console.info(chalk`-- {magenta [%s]} %d docs inserted`, this.timestamp(), newFiles.length)
         }
 
         console.info(chalk`-- {magenta [%s]} import finished`, this.timestamp())
