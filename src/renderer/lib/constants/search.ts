@@ -8,3 +8,5 @@ export default {
         yes: {'_score': 'desc'}
     }
 }
+
+export const CHECKED_ON_BOORU = 'checked_on_booru'

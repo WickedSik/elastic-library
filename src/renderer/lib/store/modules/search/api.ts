@@ -84,16 +84,10 @@ export const renameKeyword = (oldKeyword:string, newKeyword:string) =>
     })
 
 export const scroll = async (query:any):Promise<any[]> =>
-    new Promise((resolve, reject) => {
-        ownClient.scroll({
-            index: 'media',
-            type: 'media',
-            body: query
-        }).then((data:any[]) => {
-            resolve(data)
-        }).catch((error:any) => {
-            reject(error)
-        })
+    ownClient.scroll({
+        index: 'media',
+        type: 'media',
+        body: query
     })
 
 export const getSummary = async (includes:string[] = ['checksum'], excludeQuery?:any):Promise<any> => {

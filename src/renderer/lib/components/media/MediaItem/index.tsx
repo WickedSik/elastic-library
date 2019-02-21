@@ -11,6 +11,7 @@ import {
 } from '@fortawesome/free-regular-svg-icons'
 
 import './style.scss'
+import Document from '../../Document'
 
 library.add(
     faHeart,
@@ -21,13 +22,19 @@ library.add(
     faFilm
 )
 
-export default class MediaItem extends React.Component {
-    static propTypes = {
-        onRequestOpen: PropTypes.func.isRequired,
-        onRequestSelected: PropTypes.func.isRequired,
-        selected: PropTypes.bool.isRequired,
-        item: PropTypes.object.isRequired
-    }
+interface MediaItemProps {
+    onRequestOpen: () => void,
+    onRequestSelected: () => void,
+    selected: boolean,
+    item: Document
+}
+
+interface MediaItemState {
+    forceUpdate: boolean
+}
+
+export default class MediaItem extends React.Component<MediaItemProps, MediaItemState> {
+    _mounted:boolean = false
 
     static defaultProps = {
         onRequestOpen: () => {},

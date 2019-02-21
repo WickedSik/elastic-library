@@ -19,6 +19,7 @@ import KeyCodes from '../../../constants/KeyCodes'
 import Fullview from './Fullview'
 
 import './style.scss'
+import Document from '../../Document'
 
 library.add(
     faVolumeMute,
@@ -32,17 +33,20 @@ library.add(
     faTrash
 )
 
-export default class MediaOverlay extends React.Component {
-    static propTypes = {
-        onRequestOpenDialog: PropTypes.func.isRequired,
-        onRequestClose: PropTypes.func.isRequired,
-        onRequestDelete: PropTypes.func.isRequired,
-        onRequestNext: PropTypes.func.isRequired,
-        onRequestPrev: PropTypes.func.isRequired,
-        title: PropTypes.string,
-        item: PropTypes.object
-    }
+interface MediaOverlayProps {
+    onRequestOpenDialog: () => void,
+    onRequestClose: () => void,
+    onRequestDelete: (id:string) => void,
+    onRequestNext: () => void,
+    onRequestPrev: () => void,
+    title: string,
+    item: Document
+}
+interface MediaOverlayState {
+    forceUpdate: boolean
+}
 
+export default class MediaOverlay extends React.Component<MediaOverlayProps, MediaOverlayState> {
     static defaultProps = {
         onRequestOpenDialog: () => {},
         onRequestClose: () => {},
@@ -51,7 +55,8 @@ export default class MediaOverlay extends React.Component {
         onRequestPrev: () => {}
     }
 
-    __timer = null
+    private __timer:number = -1
+    private _mounted: boolean = false
 
     state = {
         forceUpdate: false
@@ -162,7 +167,7 @@ export default class MediaOverlay extends React.Component {
         })
     }
 
-    _handleKeydown = (event) => {
+    _handleKeydown = (event: KeyboardEvent) => {
         switch (event.keyCode) {
             case KeyCodes.ESCAPE:
                 this._requestClose()
@@ -192,7 +197,7 @@ export default class MediaOverlay extends React.Component {
     }
 
     _startTimer = () => {
-        if (!this.__timer) {
+        if (this.__timer === -1) {
             this.__timer = setInterval(this.props.onRequestNext, 5000)
         }
     }
@@ -200,7 +205,7 @@ export default class MediaOverlay extends React.Component {
     _stopTimer = () => {
         if (this.__timer) {
             clearInterval(this.__timer)
-            this.__timer = null
+            this.__timer = -1
         }
     }
 }

@@ -5,14 +5,15 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faTrash, faTh } from '@fortawesome/free-solid-svg-icons'
 
 import './style.scss'
+import Document from '../../../Document';
 
 library.add(faTrash, faTh)
 
-export default class BulkActionBar extends React.Component {
-    static propTypes = {
-        bulkSelection: PropTypes.array.isRequired
-    }
+interface BulkActionBarProps {
+    bulkSelection:Document[]
+}
 
+export default class BulkActionBar extends React.Component<BulkActionBarProps> {
     static defaultProps = {
         bulkSelection: []
     }

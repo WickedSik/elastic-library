@@ -30,11 +30,28 @@ declare module '*.jpg' {
 }
 
 /**
+ * Module for `.jpeg` files
+ */
+declare module '*.jpeg' {
+    const fileName: string;
+    export default fileName;
+}
+
+/**
  * Module for `.svg` files
  */
 declare module '*.svg' {
     const fileName: string;
     export default fileName;
+}
+declare module 'numeraljs' {
+ export default function numeraljs(val:any): numeraljs.Formatter
+
+ export namespace numeraljs {
+   export type Formatter = {
+     format: (val:any) => any
+   }
+ }
 }
 
 declare module 'react-notifications' {

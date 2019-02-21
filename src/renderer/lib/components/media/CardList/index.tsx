@@ -1,10 +1,10 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faSync } from '@fortawesome/free-solid-svg-icons'
 
+import Document from '../../Document'
 import MediaItem from '../MediaItem'
 import MediaDialog from '../MediaDialog'
 import MediaOverlay from '../MediaOverlay'
@@ -13,30 +13,38 @@ import './style.scss'
 
 library.add(faSync)
 
-export default class CardList extends React.Component {
-    static propTypes = {
-        onRequestDelete: PropTypes.func.isRequired,
-        onRequestMore: PropTypes.func.isRequired,
-        onRequestSwitchDialogType: PropTypes.func.isRequired,
-        onRequestSelected: PropTypes.func.isRequired,
-        onRequestSearch: PropTypes.func.isRequired,
-        results: PropTypes.array,
-        bulkSelection: PropTypes.array,
-        total: PropTypes.number,
-        dialogType: PropTypes.string
-    }
+interface CardListProps {
+    onRequestDelete: (id:string) => void
+    onRequestMore: () => void
+    onRequestSwitchDialogType: () => void
+    onRequestSelected: (index:number) => void
+    onRequestSearch: (term:string) => void
+    results: Document[]
+    bulkSelection: number[]
+    total: number
+    dialogType: 'dialog' | 'overlay'
+}
 
+interface CardListState {
+    bulkSelection: number[]
+    selected?: number
+}
+
+export default class CardList extends React.Component<CardListProps, CardListState> {
     static defaultProps = {
         onRequestDelete: () => {},
         onRequestMore: () => {},
         onRequestSwitchDialogType: () => {},
         onRequestSelected: () => {},
-        onRequestSearch: () => {}
+        onRequestSearch: () => {},
+        total: 0,
+        bulkSelection: [],
+        results: []
     }
 
     state = {
         bulkSelection: [],
-        selected: null
+        selected: -1
     }
 
     render() {
@@ -124,7 +132,7 @@ export default class CardList extends React.Component {
         }
     }
 
-    _go = (index) => {
+    _go = (index:number) => {
         if (index >= 0 && index < this.props.results.length) {
             if (index === this.props.results.length - 1) {
                 // Request more data on last index
@@ -139,7 +147,7 @@ export default class CardList extends React.Component {
 
     _deselect = () => {
         this.setState({
-            selected: null
+            selected: -1
         })
     }
 }

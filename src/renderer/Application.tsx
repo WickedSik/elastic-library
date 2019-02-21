@@ -20,8 +20,8 @@ import Document from './lib/components/Document'
 import ImagePreloader from './lib/components/loaders/ImagePreloader'
 import KeyCodes from './lib/constants/KeyCodes'
 import { RootState } from './lib/store/modules'
-
-import Config from '../config'
+import { Dispatch } from 'redux'
+import Config from './lib/constants'
 
 // const fs = electron.remote.require('fs')
 const { ipcRenderer } = window.require('electron')
@@ -51,17 +51,17 @@ ipcRenderer.on('command', (_:any, message:any) => {
 })
 
 interface AppPropTypes {
-    subjectList: Function
-    search: Function
-    delete: Function
+    subjectList: () => void
+    search: (terms:string, position:number, sort:any, more?:boolean) => void
+    delete: (id:string) => void
     results: Document[]
     total: number
 }
 
 interface AppState {
-    bulkSelection: string[]
+    bulkSelection: number[]
     settingsOpen: boolean
-    dialogType: string
+    dialogType: 'dialog' | 'overlay'
     searchterm: string
     sort: string
 }
@@ -126,7 +126,7 @@ class App extends React.Component<AppPropTypes, AppState> {
                                 onRequestMore={requestMore}
                                 onRequestDelete={this.props.delete}
                                 onRequestSearch={this._handleSearch}
-                                onRequestSelected={(i:string) => {
+                                onRequestSelected={(i:number) => {
                                     if (bulkSelection.indexOf(i) === -1) {
                                         this._bulkSelect(i)
                                     } else {
@@ -198,13 +198,13 @@ class App extends React.Component<AppPropTypes, AppState> {
         })
     }
 
-    _bulkSelect = (id:string) => {
+    _bulkSelect = (id:number) => {
         this.setState(state => ({
             bulkSelection: [...state.bulkSelection, id]
         }))
     }
 
-    _bulkDeselect = (id:string) => {
+    _bulkDeselect = (id:number) => {
         this.setState(state => ({
             bulkSelection: state.bulkSelection.filter(r => r !== id)
         }))
@@ -217,14 +217,14 @@ class App extends React.Component<AppPropTypes, AppState> {
     }
 }
 
-const ConnectedApp = connect(
+const AppConnect = connect(
     (state:RootState) => {
         return {
             total: state.search ? state.search.total : 0,
             results: state.search ? state.search.results : []
         }
     },
-    dispatch => {
+    (dispatch:Dispatch) => {
         return {
             search(terms:string, position:number, sort:any, more:boolean) {
                 const query = {
@@ -244,17 +244,25 @@ const ConnectedApp = connect(
                     }
                 }
 
-                dispatch(actions.search(query, Config.search.size, position || 0, more))
+                dispatch({
+                    type: 'eslib/search/SEARCH_REQUEST',
+                    query: query, 
+                    size: Config.search.size, 
+                    position: position || 0, 
+                    more
+                })
             },
             subjectList() {
-                dispatch(actions.subjectList())
+                dispatch({ type: 'eslib/search/SUBJECT_LIST_REQUEST' })
             },
             delete(id:string) {
-                dispatch(actions.deleteDocument(id))
+                dispatch({ type: 'eslib/search/DELETE_DOCUMENT_REQUEST', payload: id })
             }
         }
     }
-)(App)
+)
+
+const ConnectedApp = AppConnect(App as any)
 
 export default class Wrapper extends React.Component {
     render() {

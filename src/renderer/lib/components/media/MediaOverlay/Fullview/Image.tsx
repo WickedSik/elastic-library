@@ -2,13 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import KeyCodes from '../../../../constants/KeyCodes'
+import { FullviewProps } from './index'
 
-export default class Preview extends React.Component {
-    static propTypes = {
-        item: PropTypes.object.isRequired,
-        onRequestToggleTimer: PropTypes.func.isRequired
-    }
-
+export default class Preview extends React.Component<FullviewProps> {
     componentDidMount() {
         document.addEventListener('keydown', this._handleKeydown, false)
     }
@@ -27,7 +23,7 @@ export default class Preview extends React.Component {
         )
     }
 
-    _handleKeydown = (event) => {
+    _handleKeydown = (event:KeyboardEvent) => {
         switch (event.keyCode) {
             case KeyCodes.SPACE:
                 event.stopPropagation()

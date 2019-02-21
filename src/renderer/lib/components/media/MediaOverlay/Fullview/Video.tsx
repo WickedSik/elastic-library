@@ -7,21 +7,28 @@ import { faVolumeMute, faPause } from '@fortawesome/free-solid-svg-icons'
 
 import KeyCodes from '../../../../constants/KeyCodes'
 
-import { toggleMute } from '../../../../store/modules/player/actions'
+import { FullviewProps } from './index'
+import { RootState } from '@src/renderer/lib/store/modules';
+import { Dispatch } from 'redux';
 
 library.add(faVolumeMute, faPause)
 
-class Video extends React.Component {
-    static propTypes = {
-        item: PropTypes.object.isRequired,
-        muted: PropTypes.bool.isRequired,
-        onRequestToggleTimer: PropTypes.func.isRequired,
-        toggleMute: PropTypes.func.isRequired
-    }
+type FullviewVideoProps = FullviewProps & {
+    muted: boolean
+    toggleMute: () => void
+}
 
+interface FullviewVideoState {
+    paused: boolean
+    percentage: number
+}
+
+class Video extends React.Component<FullviewVideoProps, FullviewVideoState> {
     static defaultProps = {
         muted: true
     }
+
+    private _ref:HTMLVideoElement | undefined
 
     state = {
         paused: false,
@@ -51,7 +58,7 @@ class Video extends React.Component {
                         <FontAwesomeIcon icon={['fas', 'pause']} size={'4x'} />
                     </div>
                 )}
-                <video autoPlay loop ref={r => { this._ref = r }} muted={this.props.muted} onTimeUpdate={this._updateProgress}>
+                <video autoPlay loop ref={this._setRef} muted={this.props.muted} onTimeUpdate={this._updateProgress}>
                     <source src={item.url} type={`video/${item.attributes.file.extension.substring(1)}`} />
                 </video>
                 <div className={'playbar'}>
@@ -61,15 +68,21 @@ class Video extends React.Component {
         )
     }
 
-    _updateProgress = () => {
-        const percentage = Math.round((this._ref.currentTime / this._ref.duration) * 100)
-
-        this.setState({
-            percentage
-        })
+    _setRef = (reference:HTMLVideoElement) => {
+        this._ref = reference
     }
 
-    _handleKeydown = (event) => {
+    _updateProgress = () => {
+        if(this._ref) {
+            const percentage = Math.round((this._ref.currentTime / this._ref.duration) * 100)
+
+            this.setState({
+                percentage
+            })
+        }
+    }
+
+    _handleKeydown = (event:KeyboardEvent) => {
         switch (event.keyCode) {
             case KeyCodes.SPACE:
                 event.stopPropagation()
@@ -89,12 +102,14 @@ class Video extends React.Component {
     }
 
     _togglePlay = () => {
-        if (this._ref.paused) {
-            this._ref.play()
-            this.setState({ paused: false })
-        } else {
-            this._ref.pause()
-            this.setState({ paused: true })
+        if(this._ref) {
+            if (this._ref.paused) {
+                this._ref.play()
+                this.setState({ paused: false })
+            } else {
+                this._ref.pause()
+                this.setState({ paused: true })
+            }
         }
     }
 
@@ -103,14 +118,18 @@ class Video extends React.Component {
     }
 }
 
-const mapStateToProps = (state, props) => {
+const mapStateToProps = (state:RootState) => {
     return {
         ...state.player
     }
 }
 
-const mapDispatchToProps = {
-    toggleMute
+const mapDispatchToProps = (dispatch:Dispatch) => {
+    return {
+        toggleMute: () => {
+            dispatch({ type: 'eslib/player/TOGGLE_MUTE_REQUEST' })
+        }
+    }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Video)

@@ -1,21 +1,29 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import classnames from 'classnames'
-import PropTypes from 'prop-types'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faHeart, faGlobe, faTag } from '@fortawesome/free-solid-svg-icons'
-import { CHECKED_ON_BOORU, NOT_FOUND_ON_BOORU } from '../../../store/modules/search/actiontypes'
+import { CHECKED_ON_BOORU } from '@src/renderer/lib/constants/search'
+import { RootState } from '@src/renderer/lib/store/modules';
 
 library.add(faHeart, faGlobe, faTag)
 
-class SubjectList extends React.Component {
-    static propTypes = {
-        onSearch: PropTypes.func.isRequired,
-        subjects: PropTypes.array
-    }
+interface Subject {
+    key: string
+    doc_count: number
+}
 
+interface SubjectListProps {
+    onSearch: (term:string) => void
+    subjects: Subject[]
+}
+interface SubjectListState {
+    term: string
+}
+
+class SubjectList extends React.Component<SubjectListProps, SubjectListState> {
     state = {
         term: '*'
     }
@@ -24,7 +32,7 @@ class SubjectList extends React.Component {
         const { subjects } = this.props
         const { term } = this.state
 
-        const subjectCheck = s => s.key !== NOT_FOUND_ON_BOORU && s.key !== CHECKED_ON_BOORU
+        const subjectCheck = (s:Subject) => s.key !== CHECKED_ON_BOORU
 
         return (
             <div className={'subject-list'}>
@@ -49,7 +57,7 @@ class SubjectList extends React.Component {
         )
     }
 
-    _handleClick = (subject) => {
+    _handleClick = (subject:Subject) => {
         this.setState({
             term: subject.key
         }, () => {
@@ -67,7 +75,7 @@ class SubjectList extends React.Component {
 }
 
 export default connect(
-    (state) => {
+    (state:RootState) => {
         return {
             subjects: state.search ? state.search.subjects : []
         }

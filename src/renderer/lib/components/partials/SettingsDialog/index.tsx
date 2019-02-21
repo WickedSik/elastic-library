@@ -1,10 +1,9 @@
 import React from 'react'
 import _ from 'lodash'
-import Document from '../../Document'
 
 import Dialog from '../Dialog'
-import { renameKeyword, getSummary, update } from '../../../store/modules/search/api'
-import { CHECKED_ON_BOORU } from '../../../store/modules/search/actiontypes'
+import { renameKeyword, getSummary, update } from '@src/renderer/lib/store/modules/search/api'
+import { CHECKED_ON_BOORU } from '@src/renderer/lib/constants/search'
 
 import './style.scss'
 

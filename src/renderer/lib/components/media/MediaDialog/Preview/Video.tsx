@@ -1,12 +1,8 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import Document from '../../../Document'
+import { PreviewProps } from './index'
 
-export default class Video extends React.Component {
-    static propTypes = {
-        item: PropTypes.object.isRequired,
-        onRequestOverlay: PropTypes.func.isRequired
-    }
-
+export default class VideoPreview extends React.Component<PreviewProps> {
     render() {
         const { item, onRequestOverlay } = this.props
 

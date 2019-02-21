@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import numeral from 'numeraljs'
 import moment from 'moment'
 import _ from 'lodash'
@@ -21,11 +20,12 @@ import InlineEdit from '../../partials/InlineEdit'
 import Dialog from '../../partials/Dialog'
 import PopupMenu from '../../partials/PopupMenu'
 import Preview from './Preview'
-import { CHECKED_ON_BOORU } from '../../../store/modules/search/actiontypes'
 
 import e621NetLogo from '../../../../assets/e621-net-logo.png'
 import danBooruLogo from '../../../../assets/danbooru-logo.jpeg'
 import './style.scss'
+import Document from '../../Document';
+import { CHECKED_ON_BOORU } from '@src/renderer/lib/constants/search'
 
 library.add(
     faCaretLeft,
@@ -46,18 +46,27 @@ const SITES = [
 
 const { ipcRenderer } = window.require('electron')
 
-export default class MediaDialog extends React.Component {
-    static propTypes = {
-        onRequestDelete: PropTypes.func.isRequired,
-        onRequestClose: PropTypes.func.isRequired,
-        onRequestOverlay: PropTypes.func.isRequired,
-        onRequestNext: PropTypes.func.isRequired,
-        onRequestPrev: PropTypes.func.isRequired,
-        onRequestSearch: PropTypes.func.isRequired,
-        item: PropTypes.object.isRequired,
-        position: PropTypes.number.isRequired,
-        total: PropTypes.number.isRequired
-    }
+interface MediaDialogProps {
+    onRequestDelete: (id:string) => void
+    onRequestClose: () => void,
+    onRequestOverlay: () => void,
+    onRequestNext: () => void,
+    onRequestPrev: () => void,
+    onRequestSearch: (value:string) => void,
+    item: Document,
+    position: number,
+    total: number
+}
+
+interface MediaDialogState {
+    newKeyword: string
+    keywords: string[]
+    forceUpdate: boolean
+}
+
+export default class MediaDialog extends React.Component<MediaDialogProps, MediaDialogState> {
+    private el: HTMLDivElement
+    private _mounted: boolean = false
 
     static defaultProps = {
         onRequestDelete: () => {},
@@ -68,12 +77,13 @@ export default class MediaDialog extends React.Component {
         onRequestSearch: () => {}
     }
 
-    state = {
+    state:MediaDialogState = {
         newKeyword: '',
-        keywords: []
+        keywords: [],
+        forceUpdate: false
     }
 
-    constructor(props) {
+    constructor(props:MediaDialogProps) {
         super(props)
 
         this.el = document.createElement('div')
@@ -108,7 +118,7 @@ export default class MediaDialog extends React.Component {
         })
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps:MediaDialogProps) {
         const oldKey = prevProps.item.attributes.keywords.join('-')
         const newKey = this.props.item.attributes.keywords.join('-')
 
@@ -242,7 +252,7 @@ export default class MediaDialog extends React.Component {
         </Dialog>
     }
 
-    _handleKeydown = (event) => {
+    _handleKeydown = (event:KeyboardEvent) => {
         switch (event.keyCode) {
             case KeyCodes.ESCAPE:
                 this.props.onRequestClose()
@@ -268,9 +278,9 @@ export default class MediaDialog extends React.Component {
 
         console.info('-- media-dialog:force-rerender')
 
-        this.setState(state => ({
+        this.setState((state:MediaDialogState) => ({
             forceUpdate: !state.forceUpdate,
-            keywords: this.props.item.attributes.keywords
+            keywords: this.props.item.attributes.keywords as string[]
         }))
     }
 
@@ -285,7 +295,7 @@ export default class MediaDialog extends React.Component {
 
     _addNewKeyword = () => {
         let keywords = this.state.keywords
-        if (keywords.indexOf(this.state.keyword) === -1) {
+        if (keywords.indexOf(this.state.newKeyword) === -1) {
             keywords.push(this.state.newKeyword)
         }
 
@@ -298,7 +308,7 @@ export default class MediaDialog extends React.Component {
         })
     }
 
-    _handleDeleteKeyword = (keyword) => {
+    _handleDeleteKeyword = (keyword:string) => {
         let keywords = this.state.keywords.filter(k => k !== keyword)
 
         this.props.item.attributes.keywords = keywords
@@ -310,22 +320,22 @@ export default class MediaDialog extends React.Component {
         })
     }
 
-    _handleClickKeyword = (keyword) => {
+    _handleClickKeyword = (keyword:string) => {
         this.props.onRequestSearch(`keywords.keyword:${keyword}`)
         this.props.onRequestClose()
     }
 
-    _handleUpdateTitle = (value) => {
+    _handleUpdateTitle = (value:string) => {
         this.props.item.attributes.title = value
         this.props.item.update()
     }
 
-    _handleUpdateAuthor = (value) => {
+    _handleUpdateAuthor = (value:string) => {
         this.props.item.attributes.author = value
         this.props.item.update()
     }
 
-    _checkSite = (site) => {
+    _checkSite = (site:string) => {
         if (SITES.indexOf(site) === -1) {
             NotificationManager.warning(`Wrong site: ${site}`)
             return
@@ -346,11 +356,12 @@ export default class MediaDialog extends React.Component {
                 } else {
                     this.props.item.attributes.author = result.artist
                     this.props.item.attributes.source = result.source
-                    this.props.item.attributes.rating = (rating => {
+                    this.props.item.attributes.rating = ((rating:string) => {
                         switch (rating) {
                             case 'q': return 'questionable'
                             case 's': return 'safe'
                             case 'e': return 'explicit'
+                            default : return rating
                         }
                     })(result.rating)
 

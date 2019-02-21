@@ -3,13 +3,14 @@ import PropTypes from 'prop-types'
 
 import Image from './Image'
 import Video from './Video'
+import Document from '../../../Document'
 
-export default class Preview extends React.Component {
-    static propTypes = {
-        item: PropTypes.object.isRequired,
-        onRequestToggleTimer: PropTypes.func.isRequired
-    }
+export interface FullviewProps {
+    onRequestToggleTimer: () => void
+    item: Document
+}
 
+export default class Fullview extends React.Component<FullviewProps> {
     render() {
         const { item, onRequestToggleTimer } = this.props
 

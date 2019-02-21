@@ -1,11 +1,8 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import { PreviewProps } from './index'
 
-export default class Preview extends React.Component {
-    static propTypes = {
-        item: PropTypes.object.isRequired,
-        onRequestOverlay: PropTypes.func.isRequired
-    }
+export default class ImagePreview extends React.Component<PreviewProps> {
+    private previewImage?: HTMLImageElement
 
     render() {
         const { item, onRequestOverlay } = this.props
@@ -16,8 +13,13 @@ export default class Preview extends React.Component {
                     className={'img'}
                     alt={item.title}
                     src={item.url}
-                    onError={() => { this.src = item.thumb }} />
+                    ref={this._ref}
+                    onError={() => { this.previewImage && (this.previewImage.src = item.thumb) }} />
             </div>
         )
+    }
+
+    _ref = (reference:HTMLImageElement) => {
+        this.previewImage = reference
     }
 }
