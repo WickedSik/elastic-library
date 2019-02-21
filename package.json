@@ -17,6 +17,7 @@
   },
   "config": {
     "forge": {
+      "bundleIdentifier": "elastic-library",
       "packagerConfig": {},
       "makers": [
         {
