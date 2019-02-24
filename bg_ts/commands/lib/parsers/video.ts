@@ -1,5 +1,5 @@
 import { ParserModule, Metadata } from '../parser'
-import { StoredFile } from '../storage'
+import { StoredFile } from '../../declarations/files'
 import { execFile } from 'mz/child_process'
 
 const ACCEPTED_PROPERTIES = [
@@ -53,6 +53,8 @@ export default class VideoParser implements ParserModule {
                     })
 
                 resolve(metadata)
+            }).catch(error => {
+                reject(error)
             })
         })
     }

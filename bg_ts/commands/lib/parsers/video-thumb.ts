@@ -1,5 +1,5 @@
 import { ParserModule, Metadata } from '../parser'
-import { StoredFile } from '../storage'
+import { StoredFile } from '../../declarations/files'
 import { generateThumbnail } from 'thumbsupply'
 import * as fs from 'fs'
 
@@ -24,7 +24,7 @@ export default class VideoThumbParser implements ParserModule {
 
                     resolve(metadata)
                 })
-            })
+            }).catch(error => reject(error))
         })
     }
 

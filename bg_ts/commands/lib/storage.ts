@@ -1,11 +1,6 @@
 import * as path from 'path'
 import * as fs from 'fs'
-
-export interface StoredFile {
-    directory:string
-    filename:string
-    checksum?:string
-}
+import { StoredFile } from '../declarations/files';
 
 export default class Storage {
     directories:string[]

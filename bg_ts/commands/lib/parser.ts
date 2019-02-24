@@ -1,4 +1,3 @@
-import { StoredFile } from './storage'
 import { set as _set } from 'lodash'
 
 import DeviantArtParser from './parsers/deviantart'
@@ -12,6 +11,8 @@ import ImageParser from './parsers/image'
 import HentaiFoundryParser from './parsers/hentaifoundry'
 import FurAffinityParser from './parsers/furaffinity'
 import ExifParser from './parsers/exif';
+import { StoredFile } from '../declarations/files';
+import Meta from '../meta';
 
 export class Metadata {
     data:Map<string, any>
@@ -128,8 +129,12 @@ export default class Parser implements ParserModule {
     }
 
     async run(file:StoredFile):Promise<Metadata> {
-        return Promise.all(this.modules.map(module => {
-            return module.accepts(file) ? module.run(file) : new Metadata()
+        return Promise.all(this.modules.map(async module => {
+            try {
+                return module.accepts(file) ? await module.run(file) : new Metadata()
+            } catch(error) {
+                return new Metadata()
+            }
         })).then((allData:Metadata[]) => {
             return allData.reduce((prev:Metadata, value:Metadata) => {
                 return prev.setAll(value.getAll())

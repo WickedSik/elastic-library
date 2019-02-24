@@ -1,5 +1,5 @@
 import { ParserModule, Metadata } from '../parser'
-import { StoredFile } from '../storage'
+import { StoredFile } from '../../declarations/files'
 import * as path from 'path'
 
 interface PathParserConfig {

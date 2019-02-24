@@ -210,17 +210,21 @@ export default class Booru {
             const result:Response = await fetch(uri, options)
             if(sites[site].xml) {
                 const xml:string = await result.text()
-                const data = await promisify(this.parser.parseString, xml)
+                try {
+                    const data = await promisify(this.parser.parseString, xml)
 
-                if(data && data.posts) {
-                    if(data.posts.$.count > 0) {
-                        const posts = data.posts.post.map((post:any) => post.$)
+                    if(data && data.posts) {
+                        if(data.posts.$.count > 0) {
+                            const posts = data.posts.post.map((post:any) => post.$)
 
-                        return Array.isArray(posts) ? posts[0] : posts
+                            return Array.isArray(posts) ? posts[0] : posts
+                        }
+                        return {}
+                    } else {
+                        // console.info('-- %s:xml', site, data)
+                        return {}
                     }
-                    return {}
-                } else {
-                    // console.info('-- %s:xml', site, data)
+                } catch(error) {
                     return {}
                 }
             } else {

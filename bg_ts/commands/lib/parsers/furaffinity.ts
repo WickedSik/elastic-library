@@ -1,5 +1,5 @@
 import { ParserModule, Metadata } from '../parser'
-import { StoredFile } from '../storage'
+import { StoredFile } from '../../declarations/files'
 
 export default class FurAffinityParser implements ParserModule {
     run(file: StoredFile): Promise<Metadata> {

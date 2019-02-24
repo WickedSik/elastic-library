@@ -1,15 +1,12 @@
 import checksum from 'checksum'
 import { Task } from '../process'
 import Cacher from './lib/cacher'
-import { StoredFile } from './lib/storage'
 import visualize from './lib/utils/visualize'
 import Parser, { Metadata } from './lib/parser'
 import Elastic, { IndexResult } from './lib/elastic'
 import Booru from './lib/utils/booru'
-
-interface StoredFileExtra extends StoredFile {
-    titleSum?:string
-}
+import { StoredFileExtra } from './declarations/files'
+import NumberParser from './lib/parsers/number';
 
 export default class Remote implements Task {
     name:string = 'remote'
@@ -56,6 +53,8 @@ export default class Remote implements Task {
             const parser = new Parser()
             const metadata = await parser.run(document)
             metadata.set('checksum', document.checksum)
+            // NOTE(jurrien) Preparing the keywords, this will prevent the file from being indexed again
+            metadata.add('keywords', ['checked_on_booru'])
 
             console.log('')
 
@@ -139,6 +138,10 @@ export default class Remote implements Task {
                     break
             }
         }
+
+        await new Promise((resolve) => {
+            setTimeout(resolve, 1500)
+        })
 
         return metadata
     }

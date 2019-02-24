@@ -1,5 +1,5 @@
 import { ParserModule, Metadata } from '../parser'
-import { StoredFile } from '../storage'
+import { StoredFile } from '../../declarations/files'
 import { default as sharp } from 'sharp'
 import Vibrant from 'node-vibrant'
 

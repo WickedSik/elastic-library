@@ -47,11 +47,13 @@ export default class Elastic {
     }
 
     update(id:string, data:object):Promise<IndexResult> {
-        return this.client.index({
+        return this.client.update({
             index: 'media',
             type: 'media',
             id: id,
-            body: data
+            body: {
+                doc: data
+            }
         })
     }
 
@@ -106,6 +108,27 @@ export default class Elastic {
                     resolve(documents)
                 }
             })
+        })
+    }
+
+    async getSummary(includes:string[] = ['checksum'], excludeQuery:boolean = false):Promise<any> {
+        const query:any = {
+            _source: {
+                includes
+            },
+            sort: '_doc'
+        }
+    
+        if (excludeQuery) {
+            query.query = excludeQuery
+        }
+    
+        return this.scroll(query).then(docs => {
+            if (docs.length === 0) {
+                return []
+            }
+            return docs
+                .map((doc:any) => ({ id: doc._id, ...doc._source }))
         })
     }
 }

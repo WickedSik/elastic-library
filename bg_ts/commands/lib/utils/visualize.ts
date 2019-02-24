@@ -1,4 +1,11 @@
 import chalk from 'chalk'
+import { sprintf } from 'sprintf-js'
+
+export function timestamp():string {
+    const now = new Date()
+
+    return sprintf(`%02d:%02d:%02d.%04d`, now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds())
+}
 
 export default function visualize(key: string, obj:(any|any[]), indent:string = '\t'):void {
     const MAX_LENGTH = 50

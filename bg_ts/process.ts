@@ -2,6 +2,7 @@ import Import from './commands/import'
 import Help from './commands/help'
 import Meta from './commands/meta'
 import Remote from './commands/remote'
+import RemoteAll from './commands/remote-all'
 
 import chalk from 'chalk'
 
@@ -14,29 +15,35 @@ export interface Task {
 export default class Process {
     commands:Task[]
 
-    constructor() {
+    constructor(commands:Task[]) {
         // prepare commands
-        this.commands = [
-            new Import(),
-            new Meta(),
-            new Remote(),
-            new Help(this)
-        ]
+        this.commands = commands
     }
 
-    run(command:string, parameters:any[] = []):void {
+    async run(command:string, parameters:any[] = []):Promise<any> {
         const task:Task = this.commands.find(c => c.name === command)
 
         if(task) {
-            task.run(parameters).then(() => {
-                process.exit(0)
-            })
+            await task.run(parameters);
+            console.info(chalk`\n{green command %s finished}`, command);
         } else {
-            console.error(chalk`{red command %s not found}`, command)
+            console.error(chalk`\n{red command %s not found}`, command)
         }
     }
 }
 
 const [_, __, command, ...parameters] = process.argv
-const p = new Process()
+const p = new Process([
+    new Import(),
+    new Meta(),
+    new Remote(),
+    new RemoteAll()
+])
+p.commands.push(new Help(p))
 p.run(command, parameters)
+.then(() => {
+    process.exit(0)
+})
+.catch(error => {
+    console.error(chalk`\n{red command %s failed}: %s`, command, error)
+})

@@ -1,24 +1,15 @@
+import chalk from 'chalk'
+import checksum from 'checksum'
+
 import { Task } from '../process'
 import Elastic from './lib/elastic'
-import Storage, { StoredFile } from './lib/storage'
-import checksum from 'checksum'
-import chalk from 'chalk'
-import { sprintf } from 'sprintf-js'
+import Storage from './lib/storage'
 import Parser from './lib/parser'
-import ProgressBar from 'progress'
 import Cacher from './lib/cacher'
-
-interface Checksum {
-    id:string
-    checksum:string
-}
-
-interface SearchResultHit {
-    _id:string
-    _source: {
-        checksum:string
-    }
-}
+import { Checksum, StoredFile } from './declarations/files'
+import { SearchResultHit } from './declarations/search'
+import { timestamp } from './lib/utils/visualize'
+import { Progressbar } from './lib/utils/progressbar'
 
 export default class Import implements Task {
     name:string = 'import'
@@ -26,12 +17,13 @@ export default class Import implements Task {
 
     client:Elastic
     filesystem:Storage
-    progressbar:ProgressBar
     cacher:Cacher
+    progressbar:Progressbar
 
     constructor() {
         this.cacher = new Cacher('checksum')
         this.client = new Elastic()
+        this.progressbar = new Progressbar()
         this.filesystem = new Storage([
             '/Volumes/BIGCAKES/Images',
             '/Volumes/BIGCAKES/Sets',
@@ -40,21 +32,21 @@ export default class Import implements Task {
     }
 
     async run(parameters:any[]) {
-        console.info(chalk`-- {magenta [%s]} creating cache directory`, this.timestamp())
+        console.info(chalk`-- {magenta [%s]} creating cache directory`, timestamp())
         await this.cacher.initCacheDirectory()
 
-        console.info(chalk`-- {magenta [%s]} import starting`, this.timestamp())
+        console.info(chalk`-- {magenta [%s]} import starting`, timestamp())
 
         const checksums = await this.checksums()
-        console.info(chalk`-- {magenta [%s]} %d checksums`, this.timestamp(), checksums.length)
+        console.info(chalk`-- {magenta [%s]} %d checksums`, timestamp(), checksums.length)
 
         const files = await this.files()
-        console.info(chalk`-- {magenta [%s]} %d files`, this.timestamp(), files.length)
+        console.info(chalk`-- {magenta [%s]} %d files`, timestamp(), files.length)
 
-        this.createProgressbar('calculating checksums', files.length)
+        this.progressbar.createProgressbar('calculating checksums', files.length)
 
         const fileChecksums = await this.fileChecksum(files)
-        console.info(chalk`-- {magenta [%s]} %d file checksums`, this.timestamp(), fileChecksums.length)
+        console.info(chalk`-- {magenta [%s]} %d file checksums`, timestamp(), fileChecksums.length)
         await this.cacher.save()
 
         const simpleChecksums:string[] = checksums.map(sum => sum.checksum)
@@ -62,47 +54,47 @@ export default class Import implements Task {
         
         const simpleFileChecksums:string[] = fileChecksums.map(sum => sum.checksum)
         const oldDocs = checksums.filter(sum => simpleFileChecksums.indexOf(sum.checksum) === -1)
-        console.info(chalk`-- {magenta [%s]} %d new files, %d docs not found as file`, this.timestamp(), newFiles.length, oldDocs.length)
+        console.info(chalk`-- {magenta [%s]} %d new files, %d docs not found as file`, timestamp(), newFiles.length, oldDocs.length)
 
         const duplicateChecksums = this.duplicates(checksums)
         const duplicateFiles = this.duplicates(fileChecksums.map(file => ({ id: `${file.directory}/${file.filename}`, checksum: file.checksum })))
-        console.info(chalk`-- {magenta [%s]} %d duplicate checksums, %d duplicate files`, this.timestamp(), duplicateChecksums.length, duplicateFiles.length)
+        console.info(chalk`-- {magenta [%s]} %d duplicate checksums, %d duplicate files`, timestamp(), duplicateChecksums.length, duplicateFiles.length)
 
         if(oldDocs.length > 0) {
-            this.createProgressbar('removing old docs', oldDocs.length)
+            this.progressbar.createProgressbar('removing old docs', oldDocs.length)
 
             try {
                 for(let i = 0; i < oldDocs.length; i++) {
                     await this.client.delete(oldDocs[i].id)
-                    this.tick()
+                    this.progressbar.tick()
                 }
 
-                console.info(chalk`-- {magenta [%s]} %d docs removed`, this.timestamp(), oldDocs.length)
+                console.info(chalk`-- {magenta [%s]} %d docs removed`, timestamp(), oldDocs.length)
             } catch(error) {
-                console.error(chalk`-- {magenta [%s]} {red error while removing docs: %s}`, this.timestamp(), error)
+                console.error(chalk`-- {magenta [%s]} {red error while removing docs: %s}`, timestamp(), error)
             }
         } else {
-            console.info(chalk`-- {magenta [%s]} %d docs removed`, this.timestamp(), oldDocs.length)
+            console.info(chalk`-- {magenta [%s]} %d docs removed`, timestamp(), oldDocs.length)
         }
 
         if(newFiles.length) {
-            this.createProgressbar('indexing files', newFiles.length)
+            this.progressbar.createProgressbar('indexing files', newFiles.length)
 
             try {
                 for(let i = 0; i < newFiles.length; i++) {
                     await this.index(newFiles[i])
-                    this.tick()
+                    this.progressbar.tick()
                 }
 
-                console.info(chalk`-- {magenta [%s]} %d docs inserted`, this.timestamp(), newFiles.length)
+                console.info(chalk`-- {magenta [%s]} %d docs inserted`, timestamp(), newFiles.length)
             } catch (error) {
-                console.error(chalk`-- {magenta [%s]} {red error while indexing: %s}`, this.timestamp(), error)
+                console.error(chalk`-- {magenta [%s]} {red error while indexing: %s}`, timestamp(), error)
             }
         } else {
-            console.info(chalk`-- {magenta [%s]} %d docs inserted`, this.timestamp(), newFiles.length)
+            console.info(chalk`-- {magenta [%s]} %d docs inserted`, timestamp(), newFiles.length)
         }
 
-        console.info(chalk`-- {magenta [%s]} import finished`, this.timestamp())
+        console.info(chalk`-- {magenta [%s]} import finished`, timestamp())
     }
 
     async checksums():Promise<Checksum[]> {
@@ -132,7 +124,7 @@ export default class Import implements Task {
             return new Promise((resolve, reject) => {
                 if(this.cacher.has(`${file.directory}/${file.filename}`)) {
                     file.checksum = this.cacher.get(`${file.directory}/${file.filename}`)
-                    this.tick()
+                    this.progressbar.tick()
                     return resolve(file)
                 }
 
@@ -143,7 +135,7 @@ export default class Import implements Task {
 
                     this.cacher.set(`${file.directory}/${file.filename}`, hash)
                     file.checksum = hash
-                    this.tick()
+                    this.progressbar.tick()
                     return resolve(file)
                 })
             })
@@ -184,34 +176,5 @@ export default class Import implements Task {
             })
 
         return duplicates
-    }
-
-    timestamp():string {
-        const now = new Date()
-
-        return sprintf(`%02d:%02d:%02d.%04d`, now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds())
-    }
-
-    createProgressbar(label:string, total:number):void {
-        if(this.progressbar) {
-            // NOTE(jurrien) set completion to 100%
-            this.progressbar.update(1)
-        }
-
-        this.progressbar = new ProgressBar(chalk`-- {magenta [${this.timestamp()}]} ${label} [:bar] :percent :etas (:rate/s)`, {
-            complete: '=',
-            incomplete: ' ',
-            width: 120,
-            total: total,
-            callback: () => {
-                this.progressbar = null
-            }
-        })
-    }
-
-    tick() {
-        if(this.progressbar) {
-            this.progressbar.tick()
-        }
     }
 }

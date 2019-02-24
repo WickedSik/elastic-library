@@ -1,9 +1,9 @@
 import { Task } from '../process'
 import Parser from './lib/parser'
 import checksum from 'checksum'
-import { StoredFile } from './lib/storage'
 import Elastic, { IndexResult } from './lib/elastic'
 import visualize from './lib/utils/visualize'
+import { StoredFile } from './declarations/files'
 
 export default class Meta implements Task {
     name:string = 'meta'
