@@ -23,8 +23,10 @@ export class Progressbar {
     }
 
     tick() {
-        if(this.progressbar) {
-            this.progressbar.tick()
-        }
+        this.progressbar && this.progressbar.tick()
+    }
+
+    finish() {
+        this.progressbar && this.progressbar.terminate()
     }
 }

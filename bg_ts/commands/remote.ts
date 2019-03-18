@@ -1,4 +1,6 @@
 import checksum from 'checksum'
+import path from 'path'
+
 import { Task } from '../process'
 import Cacher from './lib/cacher'
 import visualize from './lib/utils/visualize'
@@ -6,7 +8,8 @@ import Parser, { Metadata } from './lib/parser'
 import Elastic, { IndexResult } from './lib/elastic'
 import Booru from './lib/utils/booru'
 import { StoredFileExtra } from './declarations/files'
-import NumberParser from './lib/parsers/number';
+import Logger from './lib/utils/logger'
+import Storage from './lib/storage'
 
 export default class Remote implements Task {
     name:string = 'remote'
@@ -22,13 +25,17 @@ export default class Remote implements Task {
         this.booru = new Booru()
     }
 
-    async run(parameters:string[]):Promise<any> {
+    async run(parameters:string[], logger:Logger):Promise<any> {
         if(parameters.length === 0) {
             throw 'No file given'
         }
 
-        const [filename, ...directory] = parameters[0].split('/').reverse()
-        const document:StoredFileExtra = { directory: directory.reverse().join('/'), filename }
+        const [filename, ...directory] = parameters[0].split(path.sep).reverse()
+        const document:StoredFileExtra = { 
+            directory: Storage.normalize(directory.reverse().join(path.sep)), 
+            filename: Storage.normalize(filename),
+            realpath: parameters[0]
+        }
         
         const sum:string = await new Promise<string>((resolve, reject) => {
             checksum.file(parameters[0], { algorithm: 'md5' }, (err, hash) => {
@@ -42,21 +49,23 @@ export default class Remote implements Task {
         document.titleSum = filename.substr(0, filename.lastIndexOf('.'))
         document.checksum = sum
 
-        console.log('')
-        visualize('document', document)
+        logger.info('')
+        visualize(logger, 'document', document)
 
         Object.freeze(document)
 
         const sites = ['e621', 'danbooru', 'rule34', 'paheal']
 
         try {
+            // FIXME(jurrien) Try to get rid of this...
             const parser = new Parser()
             const metadata = await parser.run(document)
+            // NOTE(jurrien) This will prevent the file from being indexed again
             metadata.set('checksum', document.checksum)
-            // NOTE(jurrien) Preparing the keywords, this will prevent the file from being indexed again
+            // NOTE(jurrien) Preparing the keywords
             metadata.add('keywords', ['checked_on_booru'])
 
-            console.log('')
+            logger.info('')
 
             const found = await this.client.find(document.checksum)
             if(found.hits.total > 0) {
@@ -65,7 +74,7 @@ export default class Remote implements Task {
                 // read the booru's
                 for(let site of sites) {
                     const m = await this.check(site, document)
-                    visualize(site, m.size() > 0)
+                    visualize(logger, site, m.size() > 0)
 
                     metadata.setAll(m.getAll())
                 }
@@ -82,16 +91,16 @@ export default class Remote implements Task {
                 // visualize('metadata', metadata.getAsTree())
                 
                 const indexed:IndexResult = await this.client.update(id, metadata.getAsTree())
-                console.log('')
-                console.log('updated document media/media/%s', id)
+                logger.info('')
+                logger.info('updated document media/media/%s', id)
             } else {
-                console.log('document is unknown, import it first using the `meta` command')
+                logger.info('document is unknown, import it first using the `meta` command')
             }
 
         } catch(e) {
             throw e
         } finally {
-            console.log('\nfinished!')
+            logger.info('\nfinished!')
         }
     }
 

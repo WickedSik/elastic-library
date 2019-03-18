@@ -1,13 +1,19 @@
 import { Client, SearchResponse, DeleteDocumentResponse, ShardsResponse } from 'elasticsearch'
+import { Document, IndexedDocument } from '../declarations/search'
 
 export interface IndexResult { 
-    _index:string
-    _type:string
-    _id:string
-    _version:number
-    result:string
-    _shards:ShardsResponse
-    created:boolean
+    _index: string
+    _type: string
+    _id: string
+    _version: number
+    result: string
+    _shards: ShardsResponse
+    created: boolean
+}
+
+export interface SummaryResult {
+    id: string
+    [key:string]: any
 }
 
 export default class Elastic {
@@ -19,7 +25,7 @@ export default class Elastic {
         })
     }
 
-    find(checksum:string):Promise<SearchResponse<object>> {
+    find(checksum:string):Promise<SearchResponse<Document>> {
         return this.client.search({
             index: 'media',
             type: 'media',
@@ -65,13 +71,13 @@ export default class Elastic {
         })
     }
 
-    search(query:object):Promise<SearchResponse<any>> {
+    search(query:object):Promise<SearchResponse<Document>> {
         return new Promise((resolve, reject) => {
             this.client.search({
                 index: 'media',
                 type: 'media',
                 body: query
-            }).then(data => {
+            }).then((data:SearchResponse<Document>) => {
                 resolve(data)
             }).catch(error => {
                 reject(error)
@@ -79,8 +85,8 @@ export default class Elastic {
         })
     }
 
-    scroll(query:object):Promise<object[]> {
-        const documents:object[] = []
+    scroll(query:object):Promise<IndexedDocument[]> {
+        const documents:IndexedDocument[] = []
         const client:Client = this.client
 
         return new Promise((resolve, reject) => {
@@ -90,7 +96,7 @@ export default class Elastic {
                 scroll: '30s',
                 size: 1000,
                 body: query
-            }, function untilldone(error: any, response: SearchResponse<any>) {
+            }, function untilldone(error: any, response: SearchResponse<Document>) {
                 if(error) {
                     return reject(error)
                 }
@@ -111,24 +117,24 @@ export default class Elastic {
         })
     }
 
-    async getSummary(includes:string[] = ['checksum'], excludeQuery:boolean = false):Promise<any> {
-        const query:any = {
+    async getSummary(includes:string[] = ['checksum'], query?:any):Promise<SummaryResult[]> {
+        const finalQuery:any = {
             _source: {
                 includes
             },
             sort: '_doc'
         }
     
-        if (excludeQuery) {
-            query.query = excludeQuery
+        if (query) {
+            finalQuery.query = query
         }
     
-        return this.scroll(query).then(docs => {
+        return this.scroll(finalQuery).then(docs => {
             if (docs.length === 0) {
                 return []
             }
             return docs
-                .map((doc:any) => ({ id: doc._id, ...doc._source }))
+                .map((doc:any) => ({ id: doc._id, ...doc._source } as SummaryResult))
         })
     }
 }

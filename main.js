@@ -32,23 +32,30 @@ const load = process.env.NODE_ENVIRONMENT === 'production'
     ? { APP_URL: path.resolve(__dirname, 'public/index.html'), loader: 'loadFile' }
     : { APP_URL: 'http://localhost:3000', loader: 'loadURL' }
 
-const handlersToLoad = config.handlers || []
-
-handlersToLoad.forEach(h => {
+const handlersToLoad = (config.handlers || []).map(h => {
     // console.info('-- handler:%s', h)
     const Handler = require('./lib/' + h)
     const handler = new Handler()
-    electron.protocol.registerStandardSchemes([Handler.PROTOCOL])
 
     handlers.push((protocol) => {
         handler.register(protocol)
     })
+
+    return Handler
 })
+
+console.info('-- handlers:', handlersToLoad.map(h => h.PROTOCOL))
+
+electron.protocol.registerStandardSchemes(handlersToLoad.map(h => h.PROTOCOL))
+
+console.info('-- registered')
 
 function createWindow() {
     handlers.forEach(handler => {
         handler(electron.protocol)
     })
+
+    console.info('-- handlers registered')
 
     // Initialize the window to our specified dimensions
     win = new BrowserWindow({
@@ -65,7 +72,7 @@ function createWindow() {
 
     // Show dev tools
     // Remove this line before distributing
-    // win.webContents.openDevTools()
+    win.webContents.openDevTools()
 
     // Remove window once app is closed
     win.on('closed', function() {

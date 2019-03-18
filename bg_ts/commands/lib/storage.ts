@@ -1,41 +1,60 @@
-import * as path from 'path'
-import * as fs from 'fs'
-import { StoredFile } from '../declarations/files';
+import path from 'path'
+import { fs } from 'mz'
+import chalk from 'chalk'
+import { StoredFile } from '../declarations/files'
+import Logger from './utils/logger'
+import { timestamp } from './utils/visualize';
 
 export default class Storage {
     directories:string[]
-    files:StoredFile[]
 
     constructor(dirs:string[]) {
         this.directories = dirs
-        this.files = []
     }
 
-    read(directory:string):Promise<StoredFile[]> {
+    read(directory:string, logger:Logger):Promise<StoredFile[]> {
+        const foundFiles:StoredFile[] = []
+
         return new Promise((resolve, reject) => {
-            const files = this.recursive(directory)
+            fs.exists(directory)
+                .then((exists:boolean) => {
+                    if(!exists) {
+                        return resolve([])
+                    }
 
-            for(const f of files) {
-                if(path.basename(f).substr(0, 1) === '.') {
-                    continue
-                }
+                    const files = this.recursive(directory)
 
-                let filename = f.replace(directory, '').substr(1)
+                    for(const f of files) {
+                        if(path.basename(f).substr(0, 1) === '.') {
+                            continue
+                        }
 
-                this.files.push({ directory, filename })
-            }
+                        let [filename, ...dirparts] = Storage.normalize(f).split('/').reverse()
+                        let dir = dirparts.reverse().slice(1).join('/')
 
-            return resolve(this.files)
+                        foundFiles.push({
+                            realpath: f,
+                            directory: dir,
+                            filename
+                        })
+                    }
+
+                    logger.info(chalk`-- {magenta [%s]} %s: {yellow %s files}`, timestamp(), directory, foundFiles.length)
+
+                    return resolve(foundFiles)
+                    
+                }).catch(error => reject(error))
         })
     }
 
-    async readAll():Promise<StoredFile[]> {
+    async readAll(logger:Logger):Promise<StoredFile[]> {
         const allFiles = await Promise.all(this.directories.map(directory => {
-            return this.read(directory);
-        }));
+            return this.read(directory, logger)
+        }))
+
         return allFiles.reduce((prev = [], data) => {
-            return prev.concat(data);
-        }).filter((value, index, array) => array.indexOf(value) === index);
+            return prev.concat(data)
+        }).filter((value, index, array) => array.indexOf(value) === index)
     }
 
     recursive(directory:string):string[] {
@@ -49,5 +68,17 @@ export default class Storage {
         }
 
         return walkSync(directory)
+    }
+
+    async exists(filepath:string):Promise<boolean> {
+        return fs.exists(filepath.replace(/[\/\\]/g, path.sep))
+    }
+
+    static normalize(filepath:string):string {
+        return filepath.toLowerCase().replace(/[\/\\]/g, '/').replace(/([a-z]):/g, '$1--')
+    }
+
+    static denormalize(filepath:string):string {
+        return filepath.toLowerCase().replace(/[\/]/g, path.sep).replace(/[a-z]--/g, '$1:')
     }
 }

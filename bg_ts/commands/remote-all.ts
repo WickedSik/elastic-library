@@ -3,6 +3,7 @@ import Process, { Task } from '../process'
 import Elastic from './lib/elastic'
 import { timestamp } from './lib/utils/visualize'
 import Remote from './remote'
+import Logger from './lib/utils/logger'
 
 export default class RemoteAll implements Task {
     name:string = 'remote-all'
@@ -16,9 +17,10 @@ export default class RemoteAll implements Task {
         this.process = new Process([
             new Remote()
         ])
+        this.process.logger.level = 'error'
     }
 
-    async run(parameters:string[]):Promise<any> {
+    async run(parameters:string[], logger:Logger):Promise<any> {
         type Sum = {
             id: string
             checksum: string
@@ -27,32 +29,53 @@ export default class RemoteAll implements Task {
             }
         }
 
-        const checksums:Sum[] = await this.checksums({
-            query_string: {
-                default_field: 'keywords',
-                query: '-checked_on_e621'
+        const filterQuery:any = {
+            bool: {
+                must_not: [
+                    {
+                        term: {
+                            'keywords.keyword': {
+                                value: 'checked_on_booru'
+                            }
+                        }
+                    }
+                ]
             }
-        })
+        }
 
-        console.info(chalk`-- {magenta [%s]} %d checksums`, timestamp(), checksums.length)
+        if (parameters.length > 0) {
+            filterQuery.bool.must = [
+                {
+                    term: {
+                        'keywords.keyword': {
+                            value: parameters.join(' ')
+                        }
+                    }
+                }
+            ]
+        }
+
+        const checksums:Sum[] = await this.checksums(filterQuery)
+
+        logger.info(chalk`-- {magenta [%s]} %d checksums %s`, timestamp(), checksums.length, parameters.length === 0 ? '' : `for ${parameters.join(' ')}`)
 
         for(let i = 0; i < checksums.length; i++) {
             const sum:Sum = checksums[i]
 
             if(!sum.file || !sum.file.path) {
-                console.warn(chalk`-- {magenta [%s]} Checksum {green 'media/media/%s'} does not have a file; {red deleting}`, timestamp(), sum.id)
+                logger.warning(chalk`-- {magenta [%s]} {yellow [%d/%d]} Checksum {green 'media/media/%s'} does not have a file; {red deleting}`, timestamp(), i, checksums.length, sum.id)
 
                 await this.client.delete(sum.id)
                 continue
             }
 
             try {
-                console.info(chalk`-- {magenta [%s]} Running file %s`, timestamp(), sum.file.path)
+                logger.info(chalk`-- {magenta [%s]} {yellow [%d/%d]} Running file %s`, timestamp(), i, checksums.length, sum.file.path)
                 await this.process.run('remote', [
                     sum.file.path
                 ])
             } catch(error) {
-                console.error(chalk`-- {magenta [%s]} Failed for file %s`, timestamp(), sum)
+                logger.error(chalk`-- {magenta [%s]} {yellow [%d/%d]} Failed for file %s`, timestamp(), i, checksums.length, sum.file.path)
             }
         }
     }

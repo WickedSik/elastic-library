@@ -18,7 +18,7 @@ export default class PathParser implements ParserModule {
     run(file: StoredFile): Promise<Metadata> {
         const metadata = new Metadata()
 
-        let pathdata = path.parse(`${file.directory}/${file.filename}`)
+        let pathdata = path.parse(file.realpath)
 
         let dirs = pathdata.dir.split(path.sep).filter((i) => {
             return this.config.ignored.indexOf(i) === -1 && i !== ''
@@ -27,7 +27,7 @@ export default class PathParser implements ParserModule {
         metadata.set('file.name', pathdata.name)
         metadata.set('file.extension', pathdata.ext)
         metadata.set('file.filename', pathdata.name + pathdata.ext)
-        metadata.set('file.path', `${file.directory}/${file.filename}`)
+        metadata.set('file.path', file.realpath)
 
         metadata.add('keywords', 
             dirs

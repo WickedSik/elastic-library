@@ -8,11 +8,21 @@
 
     cursor: pointer;
 
-    .is-video-icon, .is-gif-icon {
+    .is-video-icon, .is-gif-icon, .is-tags-icon {
         color: white;
         position: absolute;
+    }
+    .is-video-icon, .is-gif-icon {
+        left: 10px;
+        top: 25px;
+    }
+    .is-tags-icon {
         left: 10px;
         top: 5px;
+
+        .count {
+            margin-right: 2px;
+        }
     }
 
     h4 {
@@ -96,6 +106,10 @@
     &:hover {
         .icon.select-icon, .icon.favorite-icon {
             opacity: 1;
+        }
+
+        .is-tags-icon, .is-video-icon, .is-gif-icon {
+            opacity: 0;
         }
 
         .img {

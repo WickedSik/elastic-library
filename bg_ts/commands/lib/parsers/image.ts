@@ -4,29 +4,27 @@ import { default as sharp } from 'sharp'
 import Vibrant from 'node-vibrant'
 
 export default class ImageParser implements ParserModule {
-    run(file: StoredFile): Promise<Metadata> {
-        const path = `${file.directory}/${file.filename}`
-        
-        return Promise.all([
-            this.getMetadata(path),
-            this.getPalette(path),
-            this.getThumbnail(path),
-            this.getOtherData(path)
-        ]).then(values => {
-            const metadata = new Metadata()
-
+    async run(file: StoredFile): Promise<Metadata> {
+        try {
+            const values = await Promise.all([
+                this.getMetadata(file.realpath),
+                this.getPalette(file.realpath),
+                this.getThumbnail(file.realpath),
+                this.getOtherData(file.realpath)
+            ]);
+            const metadata = new Metadata();
             metadata.set('image', {
                 ...values[0],
                 ...values[1],
                 ...values[2],
                 ...values[3]
-            })
-
-            return metadata
-        }).catch(error => {
-            console.error('-- image-parser (%s) %s', path, error.message)
-            throw error
-        })
+            });
+            return metadata;
+        }
+        catch (error) {
+            console.error('-- image-parser (%s) %s', file.realpath, error.message);
+            throw error;
+        }
     }
 
     accepts(file:StoredFile):boolean {

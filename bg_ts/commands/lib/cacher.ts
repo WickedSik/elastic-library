@@ -2,19 +2,20 @@ import * as fs from 'fs'
 import { join as pathJoin } from 'path'
 
 export default class Cacher {
-    cacheDirectory:string = '.elastic-cache'
-    cache:Map<string, string> = new Map()
-    name:string
+    private cacheDirectory:string = '.elastic-cache'
+    private cache:Map<string, string> = new Map()
+    private name:string
+    private home:string
     private newCount:number = 0
 
     constructor(name:string) {
         this.name = name
+        this.home = process.env.HOME || (process.env.HOMEDRIVE + process.env.HOMEPATH)
     }
 
     async initCacheDirectory():Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
-            const home:string = process.env.HOME
-            const cachePath:string = pathJoin(home, this.cacheDirectory)
+            const cachePath:string = pathJoin(this.home, this.cacheDirectory)
 
             fs.exists(cachePath, (exists) => {
                 if(!exists) {
@@ -71,9 +72,8 @@ export default class Cacher {
 
     private async store():Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
-            const home:string = process.env.HOME
             const filename = `cache-${this.name}.json`
-            const cacheFile = pathJoin(home, this.cacheDirectory, filename)
+            const cacheFile = pathJoin(this.home, this.cacheDirectory, filename)
 
             fs.writeFile(cacheFile, this.toString(), (err) => {
                 if(err) {
@@ -86,9 +86,8 @@ export default class Cacher {
 
     private async read():Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
-            const home:string = process.env.HOME
             const filename = `cache-${this.name}.json`
-            const cacheFile = pathJoin(home, this.cacheDirectory, filename)
+            const cacheFile = pathJoin(this.home, this.cacheDirectory, filename)
 
             fs.exists(cacheFile, (exists:boolean) => {
                 if(exists) {

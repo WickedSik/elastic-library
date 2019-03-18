@@ -24,9 +24,10 @@
         "cheerio": "^1.0.0-rc.2",
         "classnames": "^2.2.6",
         "console-stamp": "^0.2.7",
+        "cross-env": "^5.2.0",
         "cross-fetch": "^3.0.0",
         "elasticsearch": "^15.1.1",
-        "electron": "^2.0.8",
+        "electron": "4.0",
         "electron-rpc": "^2.0.1",
         "es6-booru": "^0.4.4",
         "exif": "^0.6.0",
@@ -49,17 +50,18 @@
         "recursive-readdir": "^2.2.2",
         "request": "^2.88.0",
         "run-electron": "^0.1.0",
-        "sharp": "^0.20.5",
+        "sharp": "^0.21.3",
         "sprintf-js": "^1.1.2",
         "thumbsupply": "^0.3.1",
         "what-input": "^4.3.1",
         "yaml": "^1.1.0"
     },
     "scripts": {
-        "start": "BROWSER=false node scripts/start.js",
+        "start": "cross-env BROWSER=0 node scripts/start.js",
         "lint": "eslint src",
-        "gui": "ELECTRON_DISABLE_SECURITY_WARNINGS=1 run-electron .",
-        "import": "FORCE_COLOR=true node bg/process.js import"
+        "gui": "cross-env ELECTRON_DISABLE_SECURITY_WARNINGS=1 run-electron .",
+        "import": "cross-env FORCE_COLOR=true node bg/process.js import",
+        "rebuild": "electron-rebuild -f -w sharp"
     },
     "main": "main.js",
     "devDependencies": {
@@ -77,6 +79,7 @@
         "dotenv": "4.0.0",
         "electron-devtools-installer": "^2.2.4",
         "electron-packager": "^12.2.0",
+        "electron-rebuild": "^1.8.4",
         "eslint": "^4.19.1",
         "eslint-config-standard": "^11.0.0",
         "eslint-config-standard-react": "^6.0.0",

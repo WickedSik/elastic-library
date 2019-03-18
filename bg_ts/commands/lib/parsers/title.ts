@@ -7,7 +7,7 @@ export default class TitleParser implements ParserModule {
 
         metadata.set('title', file.filename
             .replace(/[\s_\-.]+/g, ' ')
-            .replace(/(jpe?g|png|gif)/g, '')
+            .replace(/(jpe?g|png|gif|webm|mpg|mp4|avi)/g, '')
             .replace(/[\s]{2,}/g, ' ')
         )
 

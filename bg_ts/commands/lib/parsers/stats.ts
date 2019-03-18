@@ -7,7 +7,7 @@ export default class StatsParser implements ParserModule {
         return new Promise((resolve, reject) => {
             const metadata = new Metadata()
 
-            fs.stat(`${file.directory}/${file.filename}`, (err, stats) => {
+            fs.stat(file.realpath, (err, stats) => {
                 if(err) {
                     return reject(err)
                 }

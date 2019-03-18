@@ -58,8 +58,13 @@ export default class InlineEdit extends React.Component {
                             <input
                                 className={''}
                                 value={value}
-                                onChange={event => { this.setState({ value: event.target.value }) }}
+                                onChange={event => {
+                                    this.setState({ value: event.target.value })
+                                }}
                                 onKeyPress={event => {
+                                    event.stopPropagation()
+                                    event.preventDefault()
+
                                     if (event.key === 'Enter') {
                                         this._handleChange()
                                     }

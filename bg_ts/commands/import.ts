@@ -6,59 +6,69 @@ import Elastic from './lib/elastic'
 import Storage from './lib/storage'
 import Parser from './lib/parser'
 import Cacher from './lib/cacher'
+import Queue, { QueueStatus } from './lib/utils/queue'
 import { Checksum, StoredFile } from './declarations/files'
 import { SearchResultHit } from './declarations/search'
 import { timestamp } from './lib/utils/visualize'
 import { Progressbar } from './lib/utils/progressbar'
+import Logger from './lib/utils/logger'
 
 export default class Import implements Task {
     name:string = 'import'
     description:string = 'Imports source directories into Elastic Library'
 
-    client:Elastic
-    filesystem:Storage
-    cacher:Cacher
-    progressbar:Progressbar
+    private queue:Queue<StoredFile>
+    private client:Elastic
+    private filesystem:Storage
+    private cacher:Cacher
+    private progressbar:Progressbar
 
     constructor() {
+        this.queue = new Queue<StoredFile>()
         this.cacher = new Cacher('checksum')
         this.client = new Elastic()
         this.progressbar = new Progressbar()
         this.filesystem = new Storage([
             '/Volumes/BIGCAKES/Images',
             '/Volumes/BIGCAKES/Sets',
-            '/Volumes/BIGCAKES/Videos'
+            '/Volumes/BIGCAKES/Videos',
+            'E:\\Images',
+            'E:\\Sets',
+            'E:\\Videos',
+            'D:\\Personal\\Videos'
         ])
     }
 
-    async run(parameters:any[]) {
-        console.info(chalk`-- {magenta [%s]} creating cache directory`, timestamp())
+    async run(parameters:any[], logger:Logger) {
+        logger.info(chalk`-- {magenta [%s]} creating cache directory`, timestamp())
         await this.cacher.initCacheDirectory()
 
-        console.info(chalk`-- {magenta [%s]} import starting`, timestamp())
+        logger.info(chalk`-- {magenta [%s]} import starting`, timestamp())
 
         const checksums = await this.checksums()
-        console.info(chalk`-- {magenta [%s]} %d checksums`, timestamp(), checksums.length)
+        logger.info(chalk`-- {magenta [%s]} %d checksums`, timestamp(), checksums.length)
 
-        const files = await this.files()
-        console.info(chalk`-- {magenta [%s]} %d files`, timestamp(), files.length)
+        const files = await this.files(logger)
+        logger.info(chalk`-- {magenta [%s]} %d files`, timestamp(), files.length)
 
         this.progressbar.createProgressbar('calculating checksums', files.length)
 
         const fileChecksums = await this.fileChecksum(files)
-        console.info(chalk`-- {magenta [%s]} %d file checksums`, timestamp(), fileChecksums.length)
+        logger.info(chalk`-- {magenta [%s]} %d file checksums`, timestamp(), fileChecksums.length)
         await this.cacher.save()
+        this.progressbar.finish()
 
         const simpleChecksums:string[] = checksums.map(sum => sum.checksum)
         const newFiles = fileChecksums.filter(file => simpleChecksums.indexOf(file.checksum) === -1)
         
         const simpleFileChecksums:string[] = fileChecksums.map(sum => sum.checksum)
         const oldDocs = checksums.filter(sum => simpleFileChecksums.indexOf(sum.checksum) === -1)
-        console.info(chalk`-- {magenta [%s]} %d new files, %d docs not found as file`, timestamp(), newFiles.length, oldDocs.length)
+        logger.info(chalk`-- {magenta [%s]} %d new files, %d docs not found as file`, timestamp(), newFiles.length, oldDocs.length)
 
         const duplicateChecksums = this.duplicates(checksums)
-        const duplicateFiles = this.duplicates(fileChecksums.map(file => ({ id: `${file.directory}/${file.filename}`, checksum: file.checksum })))
-        console.info(chalk`-- {magenta [%s]} %d duplicate checksums, %d duplicate files`, timestamp(), duplicateChecksums.length, duplicateFiles.length)
+        const duplicateFiles = this.duplicates(fileChecksums.map(file => ({ id: file.realpath, checksum: file.checksum })))
+        const missingFiles = await this.missingFiles(checksums)
+        logger.info(chalk`-- {magenta [%s]} %d duplicate checksums, %d duplicate files, %d missing files`, timestamp(), duplicateChecksums.length, duplicateFiles.length, missingFiles.length)
 
         if(oldDocs.length > 0) {
             this.progressbar.createProgressbar('removing old docs', oldDocs.length)
@@ -69,12 +79,12 @@ export default class Import implements Task {
                     this.progressbar.tick()
                 }
 
-                console.info(chalk`-- {magenta [%s]} %d docs removed`, timestamp(), oldDocs.length)
+                logger.info(chalk`-- {magenta [%s]} %d docs removed`, timestamp(), oldDocs.length)
             } catch(error) {
-                console.error(chalk`-- {magenta [%s]} {red error while removing docs: %s}`, timestamp(), error)
+                logger.error(chalk`-- {magenta [%s]} {red error while removing docs: %s}`, timestamp(), error)
             }
         } else {
-            console.info(chalk`-- {magenta [%s]} %d docs removed`, timestamp(), oldDocs.length)
+            logger.info(chalk`-- {magenta [%s]} %d docs removed`, timestamp(), oldDocs.length)
         }
 
         if(newFiles.length) {
@@ -86,28 +96,46 @@ export default class Import implements Task {
                     this.progressbar.tick()
                 }
 
-                console.info(chalk`-- {magenta [%s]} %d docs inserted`, timestamp(), newFiles.length)
+                logger.info(chalk`-- {magenta [%s]} %d docs inserted`, timestamp(), newFiles.length)
             } catch (error) {
-                console.error(chalk`-- {magenta [%s]} {red error while indexing: %s}`, timestamp(), error)
+                logger.error(chalk`-- {magenta [%s]} {red error while indexing: %s}`, timestamp(), error)
             }
         } else {
-            console.info(chalk`-- {magenta [%s]} %d docs inserted`, timestamp(), newFiles.length)
+            logger.info(chalk`-- {magenta [%s]} %d docs inserted`, timestamp(), newFiles.length)
+        }
+        
+        if(missingFiles.length > 0) {
+            this.progressbar.createProgressbar('removing missing files', missingFiles.length)
+
+            try {
+                for(let i = 0; i < missingFiles.length; i++) {
+                    await this.client.delete(missingFiles[i].id)
+                    this.progressbar.tick()
+                }
+
+                logger.info(chalk`-- {magenta [%s]} %d docs removed`, timestamp(), missingFiles.length)
+            } catch(error) {
+                logger.error(chalk`-- {magenta [%s]} {red error while removing docs: %s}`, timestamp(), error)
+            }
+        } else {
+            logger.info(chalk`-- {magenta [%s]} %d docs removed`, timestamp(), missingFiles.length)
         }
 
-        console.info(chalk`-- {magenta [%s]} import finished`, timestamp())
+        logger.info(chalk`-- {magenta [%s]} import finished`, timestamp())
     }
 
     async checksums():Promise<Checksum[]> {
         return this.client.scroll({
             _source: {
-                includes: ['checksum']
+                includes: ['checksum', 'file.path']
             },
             sort: '_doc'
         }).then(documents => {
             return documents.map((doc:SearchResultHit) => {
                 return {
                     id: doc._id,
-                    checksum: doc._source.checksum
+                    checksum: doc._source.checksum,
+                    filepath: doc._source.file.path
                 }
             })
         }).catch(error => {
@@ -115,33 +143,65 @@ export default class Import implements Task {
         })
     }
 
-    async files():Promise<StoredFile[]> {
-        return this.filesystem.readAll()
+    async files(logger:Logger):Promise<StoredFile[]> {
+        return this.filesystem.readAll(logger)
     }
 
     async fileChecksum(files:StoredFile[]):Promise<StoredFile[]> {
-        const promises = files.map((file:StoredFile):Promise<StoredFile> => {
-            return new Promise((resolve, reject) => {
-                if(this.cacher.has(`${file.directory}/${file.filename}`)) {
-                    file.checksum = this.cacher.get(`${file.directory}/${file.filename}`)
+        files.forEach((file:StoredFile) => {
+            this.queue.add(() => new Promise((resolve, reject) => {
+                if(this.cacher.has(file.realpath)) {
+                    file.checksum = this.cacher.get(file.realpath)
                     this.progressbar.tick()
                     return resolve(file)
                 }
 
-                checksum.file(`${file.directory}/${file.filename}`, { algorithm: 'md5' }, (err, hash) => {
+                checksum.file(file.realpath, { algorithm: 'md5' }, (err, hash) => {
                     if(err) {
+                        console.error('-- checksum error', err)
+                        this.progressbar.tick()
                         return reject(err)
                     }
 
-                    this.cacher.set(`${file.directory}/${file.filename}`, hash)
+                    this.cacher.set(file.realpath, hash)
                     file.checksum = hash
                     this.progressbar.tick()
                     return resolve(file)
                 })
+            }))
+        })
+
+        const results = await this.queue.start()
+
+        return results.map((result:QueueStatus<StoredFile>) => {
+            if(result.status === 'success') {
+                return result.value
+            }
+            return undefined
+        }).filter(r => r)
+    }
+
+    async missingFiles(sums:Checksum[]):Promise<Checksum[]> {
+        const q = new Queue<Checksum>()
+
+        sums.forEach((sum:Checksum) => {
+            q.add(() => {
+                return new Promise((resolve, reject) => {
+                    this.filesystem.exists(sum.filepath).then((exists:boolean) => {
+                        sum.exists = exists
+                        return resolve(sum)
+                    }).catch((error) => {
+                        sum.exists = false
+                        return resolve(sum)
+                    })
+                })
             })
         })
 
-        return Promise.all(promises)
+        const results = await q.start()
+
+        return results.map(result => result.value)
+            .filter(sum => !sum.exists)
     }
 
     async index(document:StoredFile):Promise<object> {

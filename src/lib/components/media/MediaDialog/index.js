@@ -2,8 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import numeral from 'numeraljs'
 import moment from 'moment'
-import _ from 'lodash'
-import { NotificationManager } from 'react-notifications'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
@@ -21,10 +19,8 @@ import InlineEdit from '../../partials/InlineEdit'
 import Dialog from '../../partials/Dialog'
 import PopupMenu from '../../partials/PopupMenu'
 import Preview from './Preview'
-import { CHECKED_ON_BOORU } from '../../../store/modules/search/actiontypes'
+import Tags from '../../partials/Tags'
 
-import e621NetLogo from '../../../../assets/e621-net-logo.png'
-import danBooruLogo from '../../../../assets/danbooru-logo.jpeg'
 import './style.scss'
 
 library.add(
@@ -36,15 +32,6 @@ library.add(
     faTrash,
     faGlobe
 )
-
-const SITES = [
-    'danbooru',
-    'e621',
-    'paheal',
-    'rule34'
-]
-
-const { ipcRenderer } = window.require('electron')
 
 export default class MediaDialog extends React.Component {
     static propTypes = {
@@ -69,7 +56,6 @@ export default class MediaDialog extends React.Component {
     }
 
     state = {
-        newKeyword: '',
         keywords: []
     }
 
@@ -164,20 +150,7 @@ export default class MediaDialog extends React.Component {
                     className={'clear cell auto'}
                     buttonClassName={'clear cell auto'}
                     label={<FontAwesomeIcon icon={['fas', 'globe']} />}
-                    options={[
-                        {
-                            content: <img src={e621NetLogo} />,
-                            onClick: () => { this._checkSite('e621') }
-                        },
-                        {
-                            content: <img src={danBooruLogo} />,
-                            onClick: () => { this._checkSite('danbooru') }
-                        },
-                        {
-                            content: 'C',
-                            onClick: () => { this._runCommand() }
-                        }
-                    ]}
+                    options={[]}
                 />
             </div>}
         >
@@ -196,6 +169,7 @@ export default class MediaDialog extends React.Component {
                                     <tr><th>Path</th><td>{item.attributes.file.path}</td></tr>
                                     <tr><th>Size</th><td>{numeral(item.attributes.file.size).format('0.00b')}</td></tr>
                                     <tr><th>Author</th><td><InlineEdit value={author} onUpdate={this._handleUpdateAuthor} /></td></tr>
+                                    <tr><th>Source</th><td>{item.attributes.source}</td></tr>
                                     {(item.attributes.checksum !== item.attributes.file.name) && (
                                         <tr><th>Checksum</th><td>{item.attributes.checksum}</td></tr>
                                     )}
@@ -203,33 +177,13 @@ export default class MediaDialog extends React.Component {
                                     <tr><th>Updated</th><td>{moment(item.attributes.file.updated_at).format('D MMMM YYYY')}</td></tr>
                                     <tr><th>Tags</th>
                                         <td>
-                                            <div className={'tags'}>
-                                                {this.state.keywords.map((keyword, index) => {
-                                                    return (
-                                                        <div className={'label'} key={`${index}-${keyword}`}>
-                                                            <div className={'closer'} onClick={() => {
-                                                                this._handleDeleteKeyword(keyword)
-                                                            }}>
-                                                                <FontAwesomeIcon icon={['fas', 'times']} />
-                                                            </div>
-                                                            <span onClick={() => {
-                                                                this._handleClickKeyword(keyword)
-                                                            }}>{keyword}</span>
-                                                        </div>
-                                                    )
-                                                })}
-                                                <input value={this.state.newKeyword}
-                                                    placeholder={'Add (+ enter)'}
-                                                    onChange={(event) => {
-                                                        this.setState({ newKeyword: event.target.value })
-                                                    }}
-                                                    onKeyPress={event => {
-                                                        if (event.key === 'Enter') {
-                                                            this._addNewKeyword()
-                                                        }
-                                                    }}
-                                                />
-                                            </div>
+                                            <Tags
+                                                tags={this.state.keywords}
+                                                titleFormat={'Click to search for "%s"'}
+                                                onRequestAddTag={this._addNewKeyword}
+                                                onRequestSelect={this._handleClickKeyword}
+                                                onRequestDelete={this._handleDeleteKeyword}
+                                            />
                                         </td>
                                     </tr>
                                 </tbody>
@@ -283,10 +237,10 @@ export default class MediaDialog extends React.Component {
         this.props.item.update()
     }
 
-    _addNewKeyword = () => {
+    _addNewKeyword = (newKeyword) => {
         let keywords = this.state.keywords
-        if (keywords.indexOf(this.state.keyword) === -1) {
-            keywords.push(this.state.newKeyword)
+        if (keywords.indexOf(newKeyword) === -1) {
+            keywords.push(newKeyword)
         }
 
         this.props.item.attributes.keywords = keywords
@@ -311,7 +265,7 @@ export default class MediaDialog extends React.Component {
     }
 
     _handleClickKeyword = (keyword) => {
-        this.props.onRequestSearch(`keywords.keyword:${keyword}`)
+        this.props.onRequestSearch(`keywords.keyword:"${keyword}"`)
         this.props.onRequestClose()
     }
 
@@ -323,54 +277,5 @@ export default class MediaDialog extends React.Component {
     _handleUpdateAuthor = (value) => {
         this.props.item.attributes.author = value
         this.props.item.update()
-    }
-
-    _checkSite = (site) => {
-        if (SITES.indexOf(site) === -1) {
-            NotificationManager.warning(`Wrong site: ${site}`)
-            return
-        }
-
-        fetch(`booru://${site}/${this.props.item.attributes.checksum}`)
-            .then(result => { console.info('-- booru:result', result); return result })
-            .then(result => result.json())
-            .then(result => {
-                console.table(result)
-
-                if (!result.id) {
-                    const keywords = [...this.props.item.attributes.keywords, CHECKED_ON_BOORU]
-                    this.props.item.attributes.keywords = _.uniq(keywords)
-                    this.props.item.update()
-
-                    NotificationManager.warning(`Not found on ${site.toUpperCase()}`)
-                } else {
-                    this.props.item.attributes.author = result.artist
-                    this.props.item.attributes.source = result.source
-                    this.props.item.attributes.rating = (rating => {
-                        switch (rating) {
-                            case 'q': return 'questionable'
-                            case 's': return 'safe'
-                            case 'e': return 'explicit'
-                        }
-                    })(result.rating)
-
-                    const tags = (result.tags || result.tag_string_general).split(/\s+/g)
-                    const keywords = [...this.props.item.attributes.keywords, ...tags, site, CHECKED_ON_BOORU]
-
-                    this.props.item.attributes.keywords = _.uniq(keywords)
-                    this.props.item.update()
-
-                    NotificationManager.success(`${site.toUpperCase()} successfully checked`)
-                }
-            })
-    }
-
-    _runCommand = () => {
-        ipcRenderer.send('command', {
-            command: 'remote',
-            args: [
-                this.props.item.attributes.file.path
-            ]
-        })
     }
 }

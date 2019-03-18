@@ -29,7 +29,7 @@ export default class VideoParser implements ParserModule {
                 '-of', 'flat=s=_',
                 '-select_streams', 'v:0',
                 '-show_entries', 'stream',
-                `${file.directory}/${file.filename}`
+                file.realpath
             ])
             .then((result:[string, string]) => {
                 const stdout = result[0].toString()

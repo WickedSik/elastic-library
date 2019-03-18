@@ -67,7 +67,8 @@ class App extends React.Component {
         settingsOpen: false,
         dialogType: 'dialog',
         searchterm: '',
-        sort: 'no'
+        sort: 'no',
+        sortDirection: 'desc'
     }
 
     componentDidMount() {
@@ -104,10 +105,12 @@ class App extends React.Component {
                             <Header
                                 dialogType={this.state.dialogType}
                                 term={this.state.searchterm}
-                                sort={Config.search.sortingOptions[this.state.sort]}
+                                sort={this.state.sort}
+                                sortDirection={this.state.sortDirection}
                                 onRequestOpenSettings={this._openSettings}
                                 onRequestSwitchDialogType={this._switchDialogType}
                                 onRequestSwitchSort={this._switchSort}
+                                onRequestSwitchSortDirection={this._switchSortDirection}
                                 onSearch={search}
                             />
                         </div>
@@ -151,9 +154,10 @@ class App extends React.Component {
             searchterm: term
         })
 
-        console.info('-- search', term, Config.search.sortingOptions[this.state.sort])
-
-        this.props.search(term, 0, Config.search.sortingOptions[this.state.sort])
+        const sort = {
+            [Config.search.sortingOptions[this.state.sort]]: this.state.sortDirection
+        }
+        this.props.search(term, 0, sort)
     }
 
     _handleRequestMore = () => {
@@ -168,6 +172,22 @@ class App extends React.Component {
         })
     }
 
+    _switchSortDirection = () => {
+        this.setState(state => {
+            return {
+                bulkSelection: [],
+                sortDirection: state.sortDirection === 'asc' ? 'desc' : 'asc'
+            }
+        }, () => {
+            console.info('-- sort', this.state.searchterm, Config.search.sortingOptions[this.state.sort], this.state.sortDirection)
+            const sort = {
+                [Config.search.sortingOptions[this.state.sort]]: this.state.sortDirection
+            }
+
+            this.props.search(this.state.searchterm, 0, sort)
+        })
+    }
+
     _switchSort = () => {
         this.setState(state => {
             return {
@@ -175,9 +195,12 @@ class App extends React.Component {
                 sort: state.sort === 'yes' ? 'no' : 'yes'
             }
         }, () => {
-            console.info('-- sort', this.state.searchterm, Config.search.sortingOptions[this.state.sort])
+            console.info('-- sort', this.state.searchterm, Config.search.sortingOptions[this.state.sort], this.state.sortDirection)
+            const sort = {
+                [Config.search.sortingOptions[this.state.sort]]: this.state.sortDirection
+            }
 
-            this.props.search(this.state.searchterm, 0, Config.search.sortingOptions[this.state.sort])
+            this.props.search(this.state.searchterm, 0, sort)
         })
     }
 
@@ -222,6 +245,8 @@ App = connect(
     dispatch => {
         return {
             search(terms, position, sort, more) {
+                console.info('-- demo:search', { terms, position, sort, more })
+
                 const query = {
                     index: Config.search.index,
                     type: Config.search.type,

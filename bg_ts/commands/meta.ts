@@ -1,9 +1,13 @@
+import checksum from 'checksum'
+import path from 'path'
+
 import { Task } from '../process'
 import Parser from './lib/parser'
-import checksum from 'checksum'
 import Elastic, { IndexResult } from './lib/elastic'
 import visualize from './lib/utils/visualize'
 import { StoredFile } from './declarations/files'
+import Logger from './lib/utils/logger'
+import Storage from './lib/storage'
 
 export default class Meta implements Task {
     name:string = 'meta'
@@ -15,13 +19,17 @@ export default class Meta implements Task {
         this.client = new Elastic()
     }
 
-    async run(parameters:string[]):Promise<any> {
+    async run(parameters:string[], logger:Logger):Promise<any> {
         if(parameters.length === 0) {
             throw 'No file given'
         }
 
-        const [filename, ...directory] = parameters[0].split('/').reverse()
-        const document:StoredFile = { directory: directory.reverse().join('/'), filename }
+        const [filename, ...directory] = parameters[0].split(path.sep).reverse()
+        const document:StoredFile = {
+            directory: Storage.normalize(directory.reverse().join(path.sep)),
+            filename: Storage.normalize(filename),
+            realpath: parameters[0]
+        }
         
         const sum:string = await new Promise<string>((resolve, reject) => {
             checksum.file(parameters[0], { algorithm: 'md5' }, (err, hash) => {
@@ -34,46 +42,45 @@ export default class Meta implements Task {
 
         document.checksum = sum
 
-        console.log('')
-        visualize('document', document)
+        logger.info('')
+        visualize(logger, 'document', document)
 
         const parser = new Parser()
-
         const moduleMap = {}
         parser.modules.forEach((module:Parser) => {
             moduleMap[module.constructor.name] = module.accepts(document)
         })
 
-        console.log('')
-        visualize('parsers', moduleMap)
+        logger.info('')
+        visualize(logger, 'parsers', moduleMap)
 
         try {
             const metadata = await parser.run(document)
             metadata.set('checksum', document.checksum)
 
-            console.log('')
+            logger.info('')
 
             const map:object = metadata.getAsTree()
-            visualize('metadata', map)
+            visualize(logger, 'metadata', map)
 
-            console.log('')
+            logger.info('')
 
             const found = await this.client.find(document.checksum)
             if(found.hits.total > 0) {
                 const id = found.hits.hits[0]._id
                 const indexed:IndexResult = await this.client.update(id, map)
 
-                console.log('updated document media/media/%s', id)
+                logger.info('updated document media/media/%s', id)
             } else {
                 const indexed:IndexResult = await this.client.index(map)
 
-                console.log('indexed document: media/media/%s', indexed._id)
+                logger.info('indexed document: media/media/%s', indexed._id)
             }
 
         } catch(e) {
             throw e
         } finally {
-            console.log('\nfinished!')
+            logger.info('\nfinished!')
         }
     }
 }
