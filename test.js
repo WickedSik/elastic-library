@@ -6,8 +6,8 @@ const ProgressBar = require('progress')
 const ReadlineSync = require('readline-sync')
 const notifier = require('node-notifier')
 
-const Connector = require('./server/connector')
-const Metadata = require('./server/lib/metadata')
+const Connector = require('./bg/lib/connector')
+const Metadata = require('./bg/lib/metadata')
 const getopts = require('getopts')
 
 const options = getopts(process.argv.slice(2), {

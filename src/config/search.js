@@ -4,7 +4,7 @@ export default {
     size: 100,
     defaultSearch: '*',
     sortingOptions: {
-        no: {'file.created_at': 'desc'},
-        yes: {'_score': 'desc'}
+        no: 'file.created_at',
+        yes: '_score'
     }
 }

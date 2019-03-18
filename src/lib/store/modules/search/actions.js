@@ -15,7 +15,7 @@ const SUBJECT_LIST_QUERY = {
         aggs: {
             keywords: {
                 terms: {
-                    field: 'keywords',
+                    field: 'keywords.keyword',
                     order: { '_count': 'desc' },
                     size: 10000
                 }

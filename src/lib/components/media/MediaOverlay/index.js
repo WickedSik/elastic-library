@@ -11,7 +11,8 @@ import {
     faClock,
     faAddressCard,
     faTrash,
-    faTimes
+    faTimes,
+    faTags
 } from '@fortawesome/free-solid-svg-icons'
 import { faHeart as faRegularHeart } from '@fortawesome/free-regular-svg-icons'
 
@@ -29,7 +30,8 @@ library.add(
     faClock,
     faAddressCard,
     faTimes,
-    faTrash
+    faTrash,
+    faTags
 )
 
 export default class MediaOverlay extends React.Component {
@@ -102,8 +104,9 @@ export default class MediaOverlay extends React.Component {
                                 <button className={'button'} onClick={this._toggleTimer}>
                                     <FontAwesomeIcon icon={['fas', 'clock']} color={this.__timer ? 'red' : 'white'} />
                                 </button>
-                                <button className={'button'} onClick={this.props.onRequestOpenDialog}>
-                                    <FontAwesomeIcon icon={['fas', 'address-card']} />
+                                <button className={'button button-with-text'} onClick={this.props.onRequestOpenDialog}>
+                                    {item.attributes.keywords.length}
+                                    <FontAwesomeIcon icon={['fas', 'tags']} />
                                 </button>
                                 <button className={'button'} onClick={() => { this.props.onRequestDelete(item.id) }}>
                                     <FontAwesomeIcon icon={['fas', 'trash']} />

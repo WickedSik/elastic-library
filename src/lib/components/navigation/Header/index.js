@@ -6,6 +6,7 @@ import {
     faCogs,
     faAddressCard,
     faImage,
+    faSortAmountUp,
     faSortAmountDown,
     faClock
 } from '@fortawesome/free-solid-svg-icons'
@@ -13,16 +14,18 @@ import {
 import SearchBar from '../SearchBar'
 import './style.scss'
 
-library.add(faCogs, faAddressCard, faImage, faSortAmountDown, faClock)
+library.add(faCogs, faAddressCard, faImage, faSortAmountUp, faSortAmountDown, faClock)
 
 export default class Header extends React.Component {
     static propTypes = {
         onRequestOpenSettings: PropTypes.func.isRequired,
         onRequestSwitchDialogType: PropTypes.func.isRequired,
         onRequestSwitchSort: PropTypes.func.isRequired,
+        onRequestSwitchSortDirection: PropTypes.func.isRequired,
         onSearch: PropTypes.func.isRequired,
         dialogType: PropTypes.string.isRequired,
-        sort: PropTypes.object.isRequired,
+        sort: PropTypes.string.isRequired,
+        sortDirection: PropTypes.string.isRequired,
         term: PropTypes.string.isRequired
     }
 
@@ -30,6 +33,7 @@ export default class Header extends React.Component {
         onRequestOpenSettings: () => {},
         onRequestSwitchDialogType: () => {},
         onRequestSwitchSort: () => {},
+        onRequestSwitchSortDirection: () => {},
         onSearch: () => {}
     }
 
@@ -67,7 +71,7 @@ export default class Header extends React.Component {
                             </div>
                             <div className={'cell small-1'}>
                                 <div className={'switch large'}>
-                                    <input className={'switch-input'} id={'sorttype'} type={'checkbox'} checked={'_score' in this.props.sort} onChange={this.props.onRequestSwitchSort} />
+                                    <input className={'switch-input'} id={'sorttype'} type={'checkbox'} checked={this.props.sort === '_score'} onChange={this.props.onRequestSwitchSort} />
                                     <label className={'switch-paddle'} htmlFor={'sorttype'}>
                                         <span className={'show-for-sr'}>Sort</span>
                                         <span className={'switch-active'} aria-hidden={'true'}>
@@ -75,6 +79,20 @@ export default class Header extends React.Component {
                                         </span>
                                         <span className={'switch-inactive'} aria-hidden={'true'}>
                                             <FontAwesomeIcon icon={['fas', 'clock']} fixedWidth />
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div className={'cell small-1'}>
+                                <div className={'switch large'}>
+                                    <input className={'switch-input'} id={'sorttype'} type={'checkbox'} checked={this.props.sortDirection === 'desc'} onChange={this.props.onRequestSwitchSortDirection} />
+                                    <label className={'switch-paddle'} htmlFor={'sorttype'}>
+                                        <span className={'show-for-sr'}>Sort Direction</span>
+                                        <span className={'switch-active'} aria-hidden={'true'}>
+                                            <FontAwesomeIcon icon={['fas', 'sort-amount-down']} fixedWidth />
+                                        </span>
+                                        <span className={'switch-inactive'} aria-hidden={'true'}>
+                                            <FontAwesomeIcon icon={['fas', 'sort-amount-up']} fixedWidth />
                                         </span>
                                     </label>
                                 </div>

@@ -1,8 +1,16 @@
 import { handleError } from '../index'
 import elasticsearch from 'elasticsearch'
+import Client from '../../includes/client'
 
 const client = new elasticsearch.Client({
     host: 'localhost:9200'
+})
+
+const ownClient = new Client({
+    index: 'media',
+    search: {
+        host: 'localhost:9200'
+    }
 })
 
 export const search = (query) =>
@@ -72,10 +80,46 @@ export const renameKeyword = (oldKeyword, newKeyword) =>
         })
     })
 
+export const scroll = (query) =>
+    new Promise((resolve, reject) => {
+        ownClient.scroll({
+            index: this._index,
+            type: 'media',
+            body: query
+        }).then(data => {
+            resolve(data)
+        }).catch(error => {
+            reject(error)
+        })
+    })
+
+export const getSummary = (includes = ['checksum'], excludeQuery = false) => {
+    const query = {
+        _source: {
+            includes
+        },
+        sort: '_doc'
+    }
+
+    if (excludeQuery) {
+        query.query = excludeQuery
+    }
+
+    return scroll(query).then(docs => {
+        if (docs.length === 0) {
+            return []
+        }
+        return docs
+            .map(doc => ({ id: doc._id, ...doc._source }))
+    })
+}
+
 export default {
     search,
     update,
     fetch,
     deleteDocument,
-    renameKeyword
+    renameKeyword,
+    scroll,
+    getSummary
 }
