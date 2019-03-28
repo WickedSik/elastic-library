@@ -8,6 +8,7 @@ import visualize from './lib/utils/visualize'
 import { StoredFile } from './declarations/files'
 import Logger from './lib/utils/logger'
 import Storage from './lib/storage'
+import { ConfigJSON } from './declarations/config';
 
 export default class Meta implements Task {
     name:string = 'meta'
@@ -15,8 +16,8 @@ export default class Meta implements Task {
     
     client:Elastic
 
-    constructor() {
-        this.client = new Elastic()
+    constructor(config:ConfigJSON) {
+        this.client = new Elastic(config.search.host)
     }
 
     async run(parameters:string[], logger:Logger):Promise<any> {

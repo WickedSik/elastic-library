@@ -9,6 +9,8 @@ import Test from './commands/test'
 import Logger, { LogLevel } from './commands/lib/utils/logger'
 import chalk from 'chalk'
 
+import config from '../config.json'
+
 export interface Task {
     name:string
     description?:string
@@ -46,14 +48,14 @@ export default class Process {
 
 const [_, __, command, ...parameters] = process.argv
 const p = new Process([
-    new Import(),
-    new Meta(),
-    new Remote(),
-    new RemoteAll(),
-    new Doctor(),
-    new Test()
+    new Import(config),
+    new Meta(config),
+    new Remote(config),
+    new RemoteAll(config),
+    new Doctor(config),
+    new Test(config)
 ])
-p.commands.push(new Help(p))
+p.commands.push(new Help(config, p))
 
 if(parameters.indexOf('--loglevel') > -1) {
     const loglevel = parameters.splice(parameters.indexOf('--loglevel') + 1, 1)

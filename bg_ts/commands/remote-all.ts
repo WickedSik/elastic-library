@@ -4,6 +4,7 @@ import Elastic from './lib/elastic'
 import { timestamp } from './lib/utils/visualize'
 import Remote from './remote'
 import Logger from './lib/utils/logger'
+import { ConfigJSON } from './declarations/config';
 
 export default class RemoteAll implements Task {
     name:string = 'remote-all'
@@ -12,10 +13,10 @@ export default class RemoteAll implements Task {
     client:Elastic
     process:Process
 
-    constructor() {
-        this.client = new Elastic()
+    constructor(config:ConfigJSON) {
+        this.client = new Elastic(config.search.host)
         this.process = new Process([
-            new Remote()
+            new Remote(config)
         ])
         this.process.logger.level = 'error'
     }

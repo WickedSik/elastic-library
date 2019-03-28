@@ -4,6 +4,7 @@ import { Progressbar } from './lib/utils/progressbar'
 import Logger from './lib/utils/logger'
 import Queue from './lib/utils/queue';
 import ThumbnailValidator from './lib/validators/ThumbnailValidator';
+import { ConfigJSON } from './declarations/config'
 
 export interface Validator {
     run(client:Elastic, logger:Logger):Promise<any>
@@ -17,8 +18,8 @@ export default class Doctor implements Task {
     private progressbar:Progressbar
     private validators:Validator[] 
 
-    constructor() {
-        this.client = new Elastic()
+    constructor(config:ConfigJSON) {
+        this.client = new Elastic(config.search.host)
         this.progressbar = new Progressbar()
         this.validators = [
             new ThumbnailValidator()

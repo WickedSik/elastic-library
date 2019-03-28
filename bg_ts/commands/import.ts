@@ -12,6 +12,7 @@ import { SearchResultHit } from './declarations/search'
 import { timestamp } from './lib/utils/visualize'
 import { Progressbar } from './lib/utils/progressbar'
 import Logger from './lib/utils/logger'
+import { ConfigJSON } from './declarations/config'
 
 export default class Import implements Task {
     name:string = 'import'
@@ -23,20 +24,12 @@ export default class Import implements Task {
     private cacher:Cacher
     private progressbar:Progressbar
 
-    constructor() {
+    constructor(config:ConfigJSON) {
         this.queue = new Queue<StoredFile>()
         this.cacher = new Cacher('checksum')
-        this.client = new Elastic()
+        this.client = new Elastic(config.search.host)
         this.progressbar = new Progressbar()
-        this.filesystem = new Storage([
-            '/Volumes/BIGCAKES/Images',
-            '/Volumes/BIGCAKES/Sets',
-            '/Volumes/BIGCAKES/Videos',
-            'E:\\Images',
-            'E:\\Sets',
-            'E:\\Videos',
-            'D:\\Personal\\Videos'
-        ])
+        this.filesystem = new Storage(config.media.directories)
     }
 
     async run(parameters:any[], logger:Logger) {

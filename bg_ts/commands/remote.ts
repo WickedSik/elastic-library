@@ -10,6 +10,7 @@ import Booru from './lib/utils/booru'
 import { StoredFileExtra } from './declarations/files'
 import Logger from './lib/utils/logger'
 import Storage from './lib/storage'
+import { ConfigJSON } from './declarations/config'
 
 export default class Remote implements Task {
     name:string = 'remote'
@@ -19,9 +20,9 @@ export default class Remote implements Task {
     client:Elastic
     booru:Booru
 
-    constructor() {
+    constructor(config:ConfigJSON) {
         this.cacher = new Cacher('checksum')
-        this.client = new Elastic()
+        this.client = new Elastic(config.search.host)
         this.booru = new Booru()
     }
 

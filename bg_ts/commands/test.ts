@@ -8,6 +8,7 @@ import Cacher from './lib/cacher'
 import Storage from './lib/storage'
 import Logger from './lib/utils/logger'
 import visualize, { timestamp } from './lib/utils/visualize'
+import { ConfigJSON } from './declarations/config'
 
 export default class Test implements Task {
     name:string = 'test'
@@ -18,19 +19,11 @@ export default class Test implements Task {
     private filesystem:Storage
     private cacher:Cacher
 
-    constructor() {
+    constructor(config:ConfigJSON) {
         this.queue = new Queue<StoredFile>()
         this.cacher = new Cacher('checksum')
-        this.client = new Elastic()
-        this.filesystem = new Storage([
-            '/Volumes/BIGCAKES/Images',
-            '/Volumes/BIGCAKES/Sets',
-            '/Volumes/BIGCAKES/Videos',
-            'E:\\Images',
-            'E:\\Sets',
-            'E:\\Videos',
-            'D:\\Personal\\Videos'
-        ])
+        this.client = new Elastic(config.search.host)
+        this.filesystem = new Storage(config.media.directories)
     }
 
     async run(parameters:any[], logger:Logger) {

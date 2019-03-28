@@ -19,10 +19,8 @@ export interface SummaryResult {
 export default class Elastic {
     client:Client
 
-    constructor() {
-        this.client = new Client({
-            host: 'localhost:9200'
-        })
+    constructor(host:string = 'localhost:9200') {
+        this.client = new Client({ host })
     }
 
     find(checksum:string):Promise<SearchResponse<Document>> {
