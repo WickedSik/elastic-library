@@ -20,9 +20,13 @@ const REPLACE_PROPERTY_NAMES = {
 }
 
 export default class VideoParser implements ParserModule {
+    name: 'Video'
+
     run(file: StoredFile): Promise<Metadata> {
         return new Promise((resolve, reject) => {
             const metadata = new Metadata()
+
+            metadata.add('keywords', ['video'])
 
             execFile('ffprobe', [
                 '-v', 'error',
@@ -31,35 +35,35 @@ export default class VideoParser implements ParserModule {
                 '-show_entries', 'stream',
                 file.realpath
             ])
-            .then((result:[string, string]) => {
-                const stdout = result[0].toString()
-                //   'streams_stream_0_tags_handler_name="VideoHandler"',
-                const lines = stdout.split('\n')
+                .then((result: [string, string]) => {
+                    const stdout = result[0].toString()
+                    //   'streams_stream_0_tags_handler_name="VideoHandler"',
+                    const lines = stdout.split('\n')
 
-                const data = lines.map(curr => {
-                    if (curr.length === 0) {
-                        return undefined
-                    }
-                    const [key, value] = curr.split('=')
-                    return {
-                        key: this.cleanKey(key),
-                        value: value.trim()
-                    }
-                })
-
-                data.filter(d => d && ACCEPTED_PROPERTIES.indexOf(d.key) > -1)
-                    .map(d => {
-                        metadata.set(`video.${d.key}`, d.value)
+                    const data = lines.map(curr => {
+                        if (curr.length === 0) {
+                            return undefined
+                        }
+                        const [key, value] = curr.split('=')
+                        return {
+                            key: this.cleanKey(key),
+                            value: value.trim()
+                        }
                     })
 
-                resolve(metadata)
-            }).catch(error => {
-                reject(error)
-            })
+                    data.filter(d => d && ACCEPTED_PROPERTIES.indexOf(d.key) > -1)
+                        .map(d => {
+                            metadata.set(`video.${d.key}`, d.value)
+                        })
+
+                    resolve(metadata)
+                }).catch(error => {
+                    reject(error)
+                })
         })
     }
 
-    cleanKey(key:string):string {
+    cleanKey(key: string): string {
         let newKey = key.replace('streams_stream_0_', '')
         if (newKey in REPLACE_PROPERTY_NAMES) {
             return REPLACE_PROPERTY_NAMES[newKey]
@@ -67,7 +71,7 @@ export default class VideoParser implements ParserModule {
         return newKey.replace(/_/g, '.')
     }
 
-    accepts(file:StoredFile):boolean {
+    accepts(file: StoredFile): boolean {
         return /(.+)\.(webm|mp4|mpg)/.test(file.filename)
     }
 }

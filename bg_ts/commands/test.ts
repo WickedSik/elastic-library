@@ -11,29 +11,29 @@ import visualize, { timestamp } from './lib/utils/visualize'
 import { ConfigJSON } from './declarations/config'
 
 export default class Test implements Task {
-    name:string = 'test'
-    description:string = 'A test command'
+    name: string = 'test'
+    description: string = 'A test command'
 
-    private queue:Queue<StoredFile>
-    private client:Elastic
-    private filesystem:Storage
-    private cacher:Cacher
+    private queue: Queue<StoredFile>
+    private client: Elastic
+    private filesystem: Storage
+    private cacher: Cacher
 
-    constructor(config:ConfigJSON) {
+    constructor(config: ConfigJSON) {
         this.queue = new Queue<StoredFile>()
         this.cacher = new Cacher('checksum')
         this.client = new Elastic(config.search.host)
         this.filesystem = new Storage(config.media.directories)
     }
 
-    async run(parameters:any[], logger:Logger) {
+    async run(parameters: any[], logger: Logger) {
         const files = await this.files(logger)
         logger.info(chalk`-- {magenta [%s]} %d files`, timestamp(), files.length)
 
         visualize(logger, 'file 1', files[0])
     }
 
-    async files(logger:Logger):Promise<StoredFile[]> {
+    async files(logger: Logger): Promise<StoredFile[]> {
         return this.filesystem.readAll(logger)
     }
 }

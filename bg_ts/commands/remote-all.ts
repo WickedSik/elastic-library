@@ -7,13 +7,13 @@ import Logger from './lib/utils/logger'
 import { ConfigJSON } from './declarations/config';
 
 export default class RemoteAll implements Task {
-    name:string = 'remote-all'
-    description:string = 'Parses and checks remote sites for metadata for all unknown files'
+    name: string = 'remote-all'
+    description: string = 'Parses and checks remote sites for metadata for all unknown files'
 
-    client:Elastic
-    process:Process
+    client: Elastic
+    process: Process
 
-    constructor(config:ConfigJSON) {
+    constructor(config: ConfigJSON) {
         this.client = new Elastic(config.search.host)
         this.process = new Process([
             new Remote(config)
@@ -21,7 +21,7 @@ export default class RemoteAll implements Task {
         this.process.logger.level = 'error'
     }
 
-    async run(parameters:string[], logger:Logger):Promise<any> {
+    async run(parameters: string[], logger: Logger): Promise<any> {
         type Sum = {
             id: string
             checksum: string
@@ -30,7 +30,7 @@ export default class RemoteAll implements Task {
             }
         }
 
-        const filterQuery:any = {
+        const filterQuery: any = {
             bool: {
                 must_not: [
                     {
@@ -56,14 +56,14 @@ export default class RemoteAll implements Task {
             ]
         }
 
-        const checksums:Sum[] = await this.checksums(filterQuery)
+        const checksums: Sum[] = await this.checksums(filterQuery)
 
         logger.info(chalk`-- {magenta [%s]} %d checksums %s`, timestamp(), checksums.length, parameters.length === 0 ? '' : `for ${parameters.join(' ')}`)
 
-        for(let i = 0; i < checksums.length; i++) {
-            const sum:Sum = checksums[i]
+        for (let i = 0; i < checksums.length; i++) {
+            const sum: Sum = checksums[i]
 
-            if(!sum.file || !sum.file.path) {
+            if (!sum.file || !sum.file.path) {
                 logger.warning(chalk`-- {magenta [%s]} {yellow [%d/%d]} Checksum {green 'media/media/%s'} does not have a file; {red deleting}`, timestamp(), i, checksums.length, sum.id)
 
                 await this.client.delete(sum.id)
@@ -75,13 +75,13 @@ export default class RemoteAll implements Task {
                 await this.process.run('remote', [
                     sum.file.path
                 ])
-            } catch(error) {
+            } catch (error) {
                 logger.error(chalk`-- {magenta [%s]} {yellow [%d/%d]} Failed for file %s`, timestamp(), i, checksums.length, sum.file.path)
             }
         }
     }
 
-    async checksums(excludes:any):Promise<any[]> {
+    async checksums(excludes: any): Promise<any[]> {
         return this.client.getSummary(['checksum', 'file.path'], excludes)
     }
 }

@@ -7,9 +7,8 @@ interface PathParserConfig {
 }
 
 export default class PathParser implements ParserModule {
-    config:PathParserConfig = {
-        ignored: []
-    }
+    name: 'Path'
+    config:PathParserConfig
 
     constructor(config:PathParserConfig) {
         this.config = config
@@ -20,7 +19,7 @@ export default class PathParser implements ParserModule {
 
         let pathdata = path.parse(file.realpath)
 
-        let dirs = pathdata.dir.split(path.sep).filter((i) => {
+        let dirs = pathdata.dir.toLowerCase().split(path.sep).filter((i) => {
             return this.config.ignored.indexOf(i) === -1 && i !== ''
         })
 

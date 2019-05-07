@@ -2,6 +2,8 @@ import { ParserModule, Metadata } from '../parser'
 import { StoredFile } from '../../declarations/files'
 
 export default class HentaiFoundryParser implements ParserModule {
+    name: 'Hentai Foundry'
+
     run(file: StoredFile): Promise<Metadata> {
         const metadata = new Metadata()
 

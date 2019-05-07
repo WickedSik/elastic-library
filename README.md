@@ -1,5 +1,6 @@
 # To Do
 
+- [ ] Fix sharp-versions between electron and node
 - [ ] Upgrade to latest react (>=16.4)
 - [x] Slideshow
 - [x] Toggle for details or big image (for use in media dialog)

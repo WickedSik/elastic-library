@@ -2,6 +2,8 @@ import { ParserModule, Metadata } from '../parser'
 import { StoredFile } from '../../declarations/files'
 
 export default class TitleParser implements ParserModule {
+    name: 'Title'
+    
     run(file: StoredFile): Promise<Metadata> {
         const metadata = new Metadata()
 
