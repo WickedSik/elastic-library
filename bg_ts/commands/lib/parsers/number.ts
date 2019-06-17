@@ -2,6 +2,8 @@ import { ParserModule, Metadata } from '../parser'
 import { StoredFile } from '../../declarations/files'
 
 export default class NumberParser implements ParserModule {
+    name: 'Number'
+
     run(file: StoredFile): Promise<Metadata> {
         const metadata = new Metadata()
 

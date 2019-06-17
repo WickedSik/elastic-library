@@ -4,6 +4,8 @@ import { default as sharp } from 'sharp'
 import Vibrant from 'node-vibrant'
 
 export default class ImageParser implements ParserModule {
+    name: 'Image'
+
     async run(file: StoredFile): Promise<Metadata> {
         try {
             const values = await Promise.all([

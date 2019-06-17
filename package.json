@@ -53,12 +53,13 @@
         "sharp": "^0.21.3",
         "sprintf-js": "^1.1.2",
         "thumbsupply": "^0.3.1",
+        "wallhaven-api": "^0.2.2",
         "what-input": "^4.3.1",
         "yaml": "^1.1.0"
     },
     "scripts": {
         "start": "cross-env BROWSER=0 node scripts/start.js",
-        "lint": "eslint src",
+        "lint": "eslint src bg_ts",
         "gui": "cross-env ELECTRON_DISABLE_SECURITY_WARNINGS=1 run-electron .",
         "import": "cross-env FORCE_COLOR=true node bg/process.js import",
         "rebuild": "electron-rebuild -f -w sharp"

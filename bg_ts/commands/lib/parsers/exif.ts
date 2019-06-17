@@ -3,6 +3,8 @@ import { StoredFile } from '../../declarations/files'
 import Exif from 'exif'
 
 export default class ExifParser implements ParserModule {
+    name: 'Exif'
+
     run(file: StoredFile): Promise<Metadata> {
         return new Promise((resolve, reject) => {
             new Exif(file.realpath, (error, data) => {

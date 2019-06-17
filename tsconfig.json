@@ -9,7 +9,8 @@
         "alwaysStrict": true,
         "lib": ["es7", "dom"],
         "esModuleInterop": true,
-        "downlevelIteration": true
+        "downlevelIteration": true,
+        "resolveJsonModule": true
     },
     "include": ["bg_ts"]
 }

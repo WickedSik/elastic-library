@@ -1,12 +1,13 @@
 import chalk from 'chalk'
 import Process, { Task } from '../process'
 import Logger from './lib/utils/logger'
+import { ConfigJSON } from './declarations/config'
 
 export default class Help implements Task {
     name:string = 'help'
     process:Process
 
-    constructor(process:Process) {
+    constructor(config:ConfigJSON, process:Process) {
         this.process = process
     }
 

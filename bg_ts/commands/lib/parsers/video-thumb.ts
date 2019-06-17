@@ -5,6 +5,8 @@ import fs from 'fs'
 import path from 'path'
 
 export default class VideoThumbParser implements ParserModule {
+    name: 'Video Thumb'
+    
     run(file: StoredFile): Promise<Metadata> {
         return new Promise(async (resolve, reject) => {
             const metadata = new Metadata()
@@ -24,6 +26,8 @@ export default class VideoThumbParser implements ParserModule {
                     resolve(metadata)
                 })
             } catch(err) {
+                console.error('-- failed video-thumb (1)', file.realpath, err)
+
                 try {
                     const thumbnail = await this.create0FrameThumbnail(file.realpath)
                     
@@ -39,6 +43,8 @@ export default class VideoThumbParser implements ParserModule {
                         resolve(metadata)
                     })
                 } catch(err) {
+                    console.error('-- failed video-thumb (2)', file.realpath, err)
+
                     return reject(err)
                 }
             }

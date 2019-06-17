@@ -8,32 +8,35 @@ import visualize from './lib/utils/visualize'
 import { StoredFile } from './declarations/files'
 import Logger from './lib/utils/logger'
 import Storage from './lib/storage'
+import { ConfigJSON } from './declarations/config';
 
 export default class Meta implements Task {
-    name:string = 'meta'
-    description:string = 'Parses and displays information of one file'
-    
-    client:Elastic
+    name: string = 'meta'
+    description: string = 'Parses and displays information of one file'
 
-    constructor() {
-        this.client = new Elastic()
+    client: Elastic
+    config: ConfigJSON
+
+    constructor(config: ConfigJSON) {
+        this.client = new Elastic(config.search.host)
+        this.config = config
     }
 
-    async run(parameters:string[], logger:Logger):Promise<any> {
-        if(parameters.length === 0) {
+    async run(parameters: string[], logger: Logger): Promise<any> {
+        if (parameters.length === 0) {
             throw 'No file given'
         }
 
         const [filename, ...directory] = parameters[0].split(path.sep).reverse()
-        const document:StoredFile = {
+        const document: StoredFile = {
             directory: Storage.normalize(directory.reverse().join(path.sep)),
             filename: Storage.normalize(filename),
             realpath: parameters[0]
         }
-        
-        const sum:string = await new Promise<string>((resolve, reject) => {
+
+        const sum: string = await new Promise<string>((resolve, reject) => {
             checksum.file(parameters[0], { algorithm: 'md5' }, (err, hash) => {
-                if(err) {
+                if (err) {
                     return reject(err)
                 }
                 resolve(hash)
@@ -45,9 +48,9 @@ export default class Meta implements Task {
         logger.info('')
         visualize(logger, 'document', document)
 
-        const parser = new Parser()
+        const parser = Parser.generateFromConfig(this.config)
         const moduleMap = {}
-        parser.modules.forEach((module:Parser) => {
+        parser.modules.forEach((module: Parser) => {
             moduleMap[module.constructor.name] = module.accepts(document)
         })
 
@@ -60,24 +63,24 @@ export default class Meta implements Task {
 
             logger.info('')
 
-            const map:object = metadata.getAsTree()
+            const map: object = metadata.getAsTree()
             visualize(logger, 'metadata', map)
 
             logger.info('')
 
             const found = await this.client.find(document.checksum)
-            if(found.hits.total > 0) {
+            if (found.hits.total > 0) {
                 const id = found.hits.hits[0]._id
-                const indexed:IndexResult = await this.client.update(id, map)
+                const indexed: IndexResult = await this.client.update(id, map)
 
                 logger.info('updated document media/media/%s', id)
             } else {
-                const indexed:IndexResult = await this.client.index(map)
+                const indexed: IndexResult = await this.client.index(map)
 
                 logger.info('indexed document: media/media/%s', indexed._id)
             }
 
-        } catch(e) {
+        } catch (e) {
             throw e
         } finally {
             logger.info('\nfinished!')

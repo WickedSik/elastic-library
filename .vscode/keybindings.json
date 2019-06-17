@@ -3,5 +3,9 @@
         "key": "shift+cmd+i",
         "command": "workbench.action.tasks.runTask",
         "when": "Elastic: Import"
+    },
+    {
+        "key": "alt+cmd+l",
+        "command": "editor.action.formatDocument"
     }
 ]

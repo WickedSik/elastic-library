@@ -143,7 +143,7 @@ export default class Document {
     get url() {
         const protocol = this.isVideo ? 'video:' : 'image:'
         const path = this.attributes.file.path
-        const pathname = path.toString().replace(/\\/g, '/').replace(/:/g, '--')
+        const pathname = '/x' + path.toString()
 
         const imageUrl = window.require
             ? url.format({

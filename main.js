@@ -88,7 +88,7 @@ function createWindow() {
 }
 
 function runCommand(exec, args = [], sender) {
-    let p = child_process.spawn('/usr/local/bin/node', ['bg/process.js', exec, ...args], { 
+    let p = child_process.spawn('/usr/local/bin/node', ['bg/process.js', exec, ...args], {
         env: {
             ...process.env,
             FORCE_COLOR: 0

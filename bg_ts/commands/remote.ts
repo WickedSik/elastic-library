@@ -10,36 +10,41 @@ import Booru from './lib/utils/booru'
 import { StoredFileExtra } from './declarations/files'
 import Logger from './lib/utils/logger'
 import Storage from './lib/storage'
+import { ConfigJSON } from './declarations/config'
+import PathParser from './lib/parsers/path'
+import StatsParser from './lib/parsers/stats'
 
 export default class Remote implements Task {
-    name:string = 'remote'
-    description:string = 'Parses and checks remote sites for metadata'
+    name: string = 'remote'
+    description: string = 'Parses and checks remote sites for metadata'
 
-    cacher:Cacher
-    client:Elastic
-    booru:Booru
+    cacher: Cacher
+    client: Elastic
+    booru: Booru
+    config: ConfigJSON
 
-    constructor() {
+    constructor(config: ConfigJSON) {
         this.cacher = new Cacher('checksum')
-        this.client = new Elastic()
+        this.client = new Elastic(config.search.host)
         this.booru = new Booru()
+        this.config = config
     }
 
-    async run(parameters:string[], logger:Logger):Promise<any> {
-        if(parameters.length === 0) {
+    async run(parameters: string[], logger: Logger): Promise<any> {
+        if (parameters.length === 0) {
             throw 'No file given'
         }
 
         const [filename, ...directory] = parameters[0].split(path.sep).reverse()
-        const document:StoredFileExtra = { 
-            directory: Storage.normalize(directory.reverse().join(path.sep)), 
+        const document: StoredFileExtra = {
+            directory: Storage.normalize(directory.reverse().join(path.sep)),
             filename: Storage.normalize(filename),
             realpath: parameters[0]
         }
-        
-        const sum:string = await new Promise<string>((resolve, reject) => {
+
+        const sum: string = await new Promise<string>((resolve, reject) => {
             checksum.file(parameters[0], { algorithm: 'md5' }, (err, hash) => {
-                if(err) {
+                if (err) {
                     return reject(err)
                 }
                 resolve(hash)
@@ -58,7 +63,10 @@ export default class Remote implements Task {
 
         try {
             // FIXME(jurrien) Try to get rid of this...
-            const parser = new Parser()
+            const parser = new Parser([
+                new PathParser(this.config.parsers.path),
+                new StatsParser()
+            ])
             const metadata = await parser.run(document)
             // NOTE(jurrien) This will prevent the file from being indexed again
             metadata.set('checksum', document.checksum)
@@ -68,19 +76,19 @@ export default class Remote implements Task {
             logger.info('')
 
             const found = await this.client.find(document.checksum)
-            if(found.hits.total > 0) {
+            if (found.hits.total > 0) {
                 const id = found.hits.hits[0]._id
 
                 // read the booru's
-                for(let site of sites) {
+                for (let site of sites) {
                     const m = await this.check(site, document)
                     visualize(logger, site, m.size() > 0)
 
                     metadata.setAll(m.getAll())
                 }
 
-                const keywords:string[] = metadata.get('keywords')
-                if(keywords) {
+                const keywords: string[] = metadata.get('keywords')
+                if (keywords) {
                     metadata.set('keywords', keywords
                         .filter(value => !!value)
                         .filter((value, index, array) => array.indexOf(value) === index)
@@ -89,60 +97,60 @@ export default class Remote implements Task {
 
                 // console.log('')
                 // visualize('metadata', metadata.getAsTree())
-                
-                const indexed:IndexResult = await this.client.update(id, metadata.getAsTree())
+
+                const indexed: IndexResult = await this.client.update(id, metadata.getAsTree())
                 logger.info('')
                 logger.info('updated document media/media/%s', id)
             } else {
                 logger.info('document is unknown, import it first using the `meta` command')
             }
 
-        } catch(e) {
+        } catch (e) {
             throw e
         } finally {
             logger.info('\nfinished!')
         }
     }
 
-    private async check(site:string, file:StoredFileExtra):Promise<Metadata> {
+    private async check(site: string, file: StoredFileExtra): Promise<Metadata> {
         const metadata = new Metadata()
         let results = await this.booru.search(site, [`md5:${file.checksum}`], { limit: 1 })
 
-        if(!results || Object.keys(results).length == 0) {
+        if (!results || Object.keys(results).length == 0) {
             // try again
             results = await this.booru.search(site, [`md5:${file.titleSum}`], { limit: 1 })
-            
-            if(!results || Object.keys(results).length == 0) {
+
+            if (!results || Object.keys(results).length == 0) {
                 return metadata
             }
         }
 
-        if(results.artist) {
+        if (results.artist) {
             metadata.set('author', results.artist.join(''))
         }
 
-        if(results.tags) {
+        if (results.tags) {
             metadata.add('keywords', results.tags.split(/\s+/g))
         }
-        if(results.tag_string_general) {
+        if (results.tag_string_general) {
             metadata.add('keywords', results.tag_string_general.split(/\s+/g))
         }
 
-        if(results.source) {
+        if (results.source) {
             metadata.set('source', results.source)
         }
-        if(results.status) {
+        if (results.status) {
             metadata.set('status', results.status)
         }
-        if(results.rating) {
+        if (results.rating) {
             switch (results.rating) {
-                case 'q': 
+                case 'q':
                     metadata.set('rating', 'questionable')
                     break
-                case 's': 
+                case 's':
                     metadata.set('rating', 'safe')
                     break
-                case 'e': 
+                case 'e':
                     metadata.set('rating', 'explicit')
                     break
             }

@@ -2,6 +2,8 @@ import { ParserModule, Metadata } from '../parser'
 import { StoredFile } from '../../declarations/files'
 
 export default class FurAffinityParser implements ParserModule {
+    name: 'Fur Affinity'
+
     run(file: StoredFile): Promise<Metadata> {
         const metadata = new Metadata()
 

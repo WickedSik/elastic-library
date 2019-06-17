@@ -3,6 +3,8 @@ import { StoredFile } from '../../declarations/files'
 import * as fs from 'fs'
 
 export default class StatsParser implements ParserModule {
+    name: 'Stats'
+    
     run(file: StoredFile): Promise<Metadata> {
         return new Promise((resolve, reject) => {
             const metadata = new Metadata()
