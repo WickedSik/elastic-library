@@ -11,7 +11,7 @@
 - [ ] Update index
 - [ ] Use backup index to restore backup
 - [ ] Autocompleting tags
-- [ ] Allow editing author
+- [x] Allow editing author
 - [ ] Scrolling for tags
 - [x] Fix the below error:  
       ```
