@@ -1,10 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { sprintf } from 'sprintf-js'
+import { toggleScreenlock } from '../../../store/modules/dialog/actions'
 
-export default class Tags extends React.PureComponent {
+class Tags extends React.PureComponent {
     static propTypes = {
+        toggleScreenlock: PropTypes.func.isRequired,
         onRequestDelete: PropTypes.func.isRequired,
         onRequestSelect: PropTypes.func.isRequired,
         onRequestAddTag: PropTypes.func.isRequired,
@@ -45,6 +48,12 @@ export default class Tags extends React.PureComponent {
                 })}
                 <input value={this.state.newKeyword}
                     placeholder={'Add (+ enter)'}
+                    onBlur={() => {
+                        this.props.toggleScreenlock(false)
+                    }}
+                    onFocus={() => {
+                        this.props.toggleScreenlock(false)
+                    }}
                     onChange={(event) => {
                         this.setState({ newKeyword: event.target.value })
                     }}
@@ -61,3 +70,5 @@ export default class Tags extends React.PureComponent {
         )
     }
 }
+
+export default connect(undefined, { toggleScreenlock })(Tags)

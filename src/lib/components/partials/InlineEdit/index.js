@@ -62,10 +62,10 @@ class InlineEdit extends React.Component {
                             <input
                                 className={''}
                                 value={value}
-                                onFocus={event => {
+                                onFocus={() => {
                                     this.props.toggleScreenlock(true)
                                 }}
-                                onBlur={event => {
+                                onBlur={() => {
                                     this.props.toggleScreenlock(false)
                                 }}
                                 onChange={event => {

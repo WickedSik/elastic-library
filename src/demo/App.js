@@ -11,7 +11,7 @@ import './app.scss'
 
 import configureStore from '../lib/store'
 import * as searchActions from '../lib/store/modules/search/actions'
-import * as dialogActions from '../lib/store/modules/dialog/actions'
+import { toggleFullscreen } from '../lib/store/modules/dialog/actions'
 
 import Header from '../lib/components/navigation/Header'
 import CardList from '../lib/components/media/CardList'
@@ -110,7 +110,7 @@ class App extends React.Component {
                                 sort={this.state.sort}
                                 sortDirection={this.state.sortDirection}
                                 onRequestOpenSettings={this._openSettings}
-                                onRequestSwitchDialogType={this._switchDialogType}
+                                onRequestSwitchDialogType={this.props.toggleFullscreen}
                                 onRequestSwitchSort={this._switchSort}
                                 onRequestSwitchSortDirection={this._switchSortDirection}
                                 onSearch={search}
@@ -122,7 +122,7 @@ class App extends React.Component {
                                 bulkSelection={bulkSelection}
                                 results={results}
                                 total={total}
-                                onRequestSwitchDialogType={this._switchDialogType}
+                                onRequestSwitchDialogType={this.props.toggleFullscreen}
                                 onRequestMore={requestMore}
                                 onRequestDelete={this.props.delete}
                                 onRequestSearch={this._handleSearch}
@@ -268,7 +268,7 @@ App = connect(
                 dispatch(searchActions.deleteDocument(id))
             },
             toggleFullscreen() {
-                dispatch(dialogActions.toggleFullscreen())
+                dispatch(toggleFullscreen())
             }
         }
     }
