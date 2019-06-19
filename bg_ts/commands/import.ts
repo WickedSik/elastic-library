@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import checksum from 'checksum'
+import checksum, { file } from 'checksum'
 
 import { Task } from '../process'
 import Elastic from './lib/elastic'
@@ -13,6 +13,8 @@ import { timestamp } from './lib/utils/visualize'
 import { Progressbar } from './lib/utils/progressbar'
 import Logger from './lib/utils/logger'
 import { ConfigJSON } from './declarations/config'
+import Database from './lib/database'
+import { timingSafeEqual } from 'crypto';
 
 export default class Import implements Task {
     name: string = 'import'
@@ -24,6 +26,7 @@ export default class Import implements Task {
     private cacher: Cacher
     private progressbar: Progressbar
     private config: ConfigJSON
+    private database: Database
 
     constructor(config: ConfigJSON) {
         this.queue = new Queue<StoredFile>()
@@ -31,10 +34,14 @@ export default class Import implements Task {
         this.client = new Elastic(config.search.host)
         this.progressbar = new Progressbar()
         this.filesystem = new Storage(config.media.directories)
+        this.database = new Database()
+
         this.config = config
     }
 
     async run(parameters: any[], logger: Logger) {
+        await this.database.connect()
+
         logger.info(chalk`-- {magenta [%s]} creating cache directory`, timestamp())
         await this.cacher.initCacheDirectory()
 
@@ -53,71 +60,87 @@ export default class Import implements Task {
         await this.cacher.save()
         this.progressbar.finish()
 
-        const simpleChecksums: string[] = checksums.map(sum => sum.checksum)
-        const newFiles = fileChecksums.filter(file => simpleChecksums.indexOf(file.checksum) === -1)
-
-        const simpleFileChecksums: string[] = fileChecksums.map(sum => sum.checksum)
-        const oldDocs = checksums.filter(sum => simpleFileChecksums.indexOf(sum.checksum) === -1)
-        logger.info(chalk`-- {magenta [%s]} %d new files, %d docs not found as file`, timestamp(), newFiles.length, oldDocs.length)
-
-        const duplicateChecksums = this.duplicates(checksums)
-        const duplicateFiles = this.duplicates(fileChecksums.map(file => ({ id: file.realpath, checksum: file.checksum })))
-        const missingFiles = await this.missingFiles(checksums)
-        logger.info(chalk`-- {magenta [%s]} %d duplicate checksums, %d duplicate files, %d missing files`, timestamp(), duplicateChecksums.length, duplicateFiles.length, missingFiles.length)
-
-        if (oldDocs.length > 0) {
-            this.progressbar.createProgressbar('removing old docs', oldDocs.length)
+        if(fileChecksums.length > 0) {
+            this.progressbar.createProgressbar('storing files in database', fileChecksums.length)
 
             try {
-                for (let i = 0; i < oldDocs.length; i++) {
-                    await this.client.delete(oldDocs[i].id)
+                for (let i = 0; i < fileChecksums.length; i++) {
+                    await this.store(fileChecksums[i])
                     this.progressbar.tick()
                 }
 
-                logger.info(chalk`-- {magenta [%s]} %d docs removed`, timestamp(), oldDocs.length)
+                logger.info(chalk`-- {magenta [%s]} %d docs stored`, timestamp(), fileChecksums.length)
             } catch (error) {
-                logger.error(chalk`-- {magenta [%s]} {red error while removing docs: %s}`, timestamp(), error)
+                logger.error(chalk`-- {magenta [%s]} {red error while storing docs: %s}`, timestamp(), error)
             }
-        } else {
-            logger.info(chalk`-- {magenta [%s]} %d docs removed`, timestamp(), oldDocs.length)
         }
+        
 
-        if (newFiles.length) {
-            this.progressbar.createProgressbar('indexing files', newFiles.length)
+        // const simpleChecksums: string[] = checksums.map(sum => sum.checksum)
+        // const newFiles = fileChecksums.filter(file => simpleChecksums.indexOf(file.checksum) === -1)
 
-            try {
-                for (let i = 0; i < newFiles.length; i++) {
-                    await this.index(newFiles[i])
-                    this.progressbar.tick()
-                }
+        // const simpleFileChecksums: string[] = fileChecksums.map(sum => sum.checksum)
+        // const oldDocs = checksums.filter(sum => simpleFileChecksums.indexOf(sum.checksum) === -1)
+        // logger.info(chalk`-- {magenta [%s]} %d new files, %d docs not found as file`, timestamp(), newFiles.length, oldDocs.length)
 
-                logger.info(chalk`-- {magenta [%s]} %d docs inserted`, timestamp(), newFiles.length)
-            } catch (error) {
-                logger.error(chalk`-- {magenta [%s]} {red error while indexing: %s}`, timestamp(), error)
-            }
-        } else {
-            logger.info(chalk`-- {magenta [%s]} %d docs inserted`, timestamp(), newFiles.length)
-        }
+        // const duplicateChecksums = this.duplicates(checksums)
+        // const duplicateFiles = this.duplicates(fileChecksums.map(file => ({ id: file.realpath, checksum: file.checksum })))
+        // const missingFiles = await this.missingFiles(checksums)
+        // logger.info(chalk`-- {magenta [%s]} %d duplicate checksums, %d duplicate files, %d missing files`, timestamp(), duplicateChecksums.length, duplicateFiles.length, missingFiles.length)
 
-        if (missingFiles.length > 0) {
-            this.progressbar.createProgressbar('removing missing files', missingFiles.length)
+        // if (oldDocs.length > 0) {
+        //     this.progressbar.createProgressbar('removing old docs', oldDocs.length)
 
-            try {
-                for (let i = 0; i < missingFiles.length; i++) {
-                    try {
-                        await this.client.delete(missingFiles[i].id)
-                    } catch (e) {}
+        //     try {
+        //         for (let i = 0; i < oldDocs.length; i++) {
+        //             await this.client.delete(oldDocs[i].id)
+        //             this.progressbar.tick()
+        //         }
 
-                    this.progressbar.tick()
-                }
+        //         logger.info(chalk`-- {magenta [%s]} %d docs removed`, timestamp(), oldDocs.length)
+        //     } catch (error) {
+        //         logger.error(chalk`-- {magenta [%s]} {red error while removing docs: %s}`, timestamp(), error)
+        //     }
+        // } else {
+        //     logger.info(chalk`-- {magenta [%s]} %d docs removed`, timestamp(), oldDocs.length)
+        // }
 
-                logger.info(chalk`-- {magenta [%s]} %d docs removed`, timestamp(), missingFiles.length)
-            } catch (error) {
-                logger.error(chalk`-- {magenta [%s]} {red error while removing docs: %s}`, timestamp(), error)
-            }
-        } else {
-            logger.info(chalk`-- {magenta [%s]} %d docs removed`, timestamp(), missingFiles.length)
-        }
+        // if (newFiles.length) {
+        //     this.progressbar.createProgressbar('indexing files', newFiles.length)
+
+        //     try {
+        //         for (let i = 0; i < newFiles.length; i++) {
+        //             await this.index(newFiles[i])
+        //             this.progressbar.tick()
+        //         }
+
+        //         logger.info(chalk`-- {magenta [%s]} %d docs inserted`, timestamp(), newFiles.length)
+        //     } catch (error) {
+        //         logger.error(chalk`-- {magenta [%s]} {red error while indexing: %s}`, timestamp(), error)
+        //     }
+        // } else {
+        //     logger.info(chalk`-- {magenta [%s]} %d docs inserted`, timestamp(), newFiles.length)
+        // }
+
+        // if (missingFiles.length > 0) {
+        //     this.progressbar.createProgressbar('removing missing files', missingFiles.length)
+
+        //     try {
+        //         for (let i = 0; i < missingFiles.length; i++) {
+        //             try {
+        //                 await this.client.delete(missingFiles[i].id)
+        //             } catch (e) {}
+
+        //             this.progressbar.tick()
+        //         }
+
+        //         logger.info(chalk`-- {magenta [%s]} %d docs removed`, timestamp(), missingFiles.length)
+        //     } catch (error) {
+        //         logger.error(chalk`-- {magenta [%s]} {red error while removing docs: %s}`, timestamp(), error)
+        //     }
+        // } else {
+        //     logger.info(chalk`-- {magenta [%s]} %d docs removed`, timestamp(), missingFiles.length)
+        // }
 
         logger.info(chalk`-- {magenta [%s]} import finished`, timestamp())
     }
@@ -219,6 +242,24 @@ export default class Import implements Task {
             return this.client.index(metadata.getAsTree())
         } catch (e) {
             // no error
+        }
+    }
+
+    async store(document: StoredFile): Promise<void> {
+        const parser = Parser.generateFromConfig(this.config)
+
+        try {
+            const metadata = await parser.run(document)
+            metadata.set('checksum', document.checksum)
+
+            if(!metadata.has('file.path')) {
+                console.info('-- failed', metadata.getAll())
+                process.exit(2)
+            }
+
+            await this.database.insert(metadata.getAsTree())
+        } catch (e) {
+            console.warn('-- import:store', e)
         }
     }
 

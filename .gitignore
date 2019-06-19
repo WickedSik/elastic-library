@@ -11,6 +11,8 @@ backups/**
 # production
 /build
 /bg
+/elastic-library
+*.nedb
 
 # misc
 config.json
