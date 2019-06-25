@@ -24,7 +24,7 @@ const initialState = {
 }
 
 export default (state = initialState, action) => {
-    console.info('-- reduce', action.type)
+    console.info('-- search:reduce', action.type)
     console.groupEnd()
     switch (action.type) {
         case SEARCH_REQUEST:

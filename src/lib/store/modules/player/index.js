@@ -9,7 +9,7 @@ const initialState = {
 }
 
 export default (state = initialState, action) => {
-    console.info('-- reduce', action.type)
+    console.info('-- player:reduce', action.type)
     console.groupEnd()
     switch (action.type) {
         case TOGGLE_MUTE_SUCCESS:

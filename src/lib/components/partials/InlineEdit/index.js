@@ -1,15 +1,19 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faEdit, faSave } from '@fortawesome/free-solid-svg-icons'
+
+import { toggleScreenlock } from '../../../store/modules/dialog/actions'
 
 import './style.scss'
 
 library.add(faEdit, faSave)
 
-export default class InlineEdit extends React.Component {
+class InlineEdit extends React.Component {
     static propTypes = {
+        toggleScreenlock: PropTypes.func.isRequired,
         onUpdate: PropTypes.func.isRequired,
         value: PropTypes.string
     }
@@ -58,6 +62,12 @@ export default class InlineEdit extends React.Component {
                             <input
                                 className={''}
                                 value={value}
+                                onFocus={() => {
+                                    this.props.toggleScreenlock(true)
+                                }}
+                                onBlur={() => {
+                                    this.props.toggleScreenlock(false)
+                                }}
                                 onChange={event => {
                                     this.setState({ value: event.target.value })
                                 }}
@@ -90,3 +100,5 @@ export default class InlineEdit extends React.Component {
         this.props.onUpdate(this.state.value)
     }
 }
+
+export default connect(undefined, { toggleScreenlock })(InlineEdit)

@@ -1,10 +1,13 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
+import { toggleScreenlock } from '../../../store/modules/dialog/actions'
 
 import './style.scss'
 
-export default class SearchBar extends React.Component {
+class SearchBar extends React.Component {
     static propTypes = {
+        toggleScreenlock: PropTypes.func.isRequired,
         handleSearch: PropTypes.func,
         term: PropTypes.string
     }
@@ -41,6 +44,12 @@ export default class SearchBar extends React.Component {
                         type={'search'}
                         value={this.state.value}
                         onChange={event => this.setState({ value: event.target.value })}
+                        onBlur={() => {
+                            this.props.toggleScreenlock(false)
+                        }}
+                        onFocus={() => {
+                            this.props.toggleScreenlock(true)
+                        }}
                         onKeyPress={event => {
                             if (event.key === 'Enter') {
                                 this.props.handleSearch(this.state.value)
@@ -57,3 +66,5 @@ export default class SearchBar extends React.Component {
         )
     }
 }
+
+export default connect(undefined, { toggleScreenlock })(SearchBar)

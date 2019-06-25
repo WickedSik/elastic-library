@@ -10,7 +10,8 @@ import 'react-notifications/lib/notifications.css'
 import './app.scss'
 
 import configureStore from '../lib/store'
-import * as actions from '../lib/store/modules/search/actions'
+import * as searchActions from '../lib/store/modules/search/actions'
+import { toggleFullscreen } from '../lib/store/modules/dialog/actions'
 
 import Header from '../lib/components/navigation/Header'
 import CardList from '../lib/components/media/CardList'
@@ -58,14 +59,15 @@ class App extends React.Component {
         subjectList: PropTypes.func.isRequired,
         search: PropTypes.func.isRequired,
         delete: PropTypes.func.isRequired,
+        toggleFullscreen: PropTypes.func.isRequired,
         results: PropTypes.array,
-        total: PropTypes.number
+        total: PropTypes.number,
+        dialogType: PropTypes.string.isRequired
     }
 
     state = {
         bulkSelection: [],
         settingsOpen: false,
-        dialogType: 'dialog',
         searchterm: '',
         sort: 'no',
         sortDirection: 'desc'
@@ -103,12 +105,12 @@ class App extends React.Component {
                     <div className={'grid-x'}>
                         <div className={'cell small-12'}>
                             <Header
-                                dialogType={this.state.dialogType}
+                                dialogType={this.props.dialogType}
                                 term={this.state.searchterm}
                                 sort={this.state.sort}
                                 sortDirection={this.state.sortDirection}
                                 onRequestOpenSettings={this._openSettings}
-                                onRequestSwitchDialogType={this._switchDialogType}
+                                onRequestSwitchDialogType={this.props.toggleFullscreen}
                                 onRequestSwitchSort={this._switchSort}
                                 onRequestSwitchSortDirection={this._switchSortDirection}
                                 onSearch={search}
@@ -116,11 +118,11 @@ class App extends React.Component {
                         </div>
                         <div className={'cell small-12'}>
                             <CardList
-                                dialogType={this.state.dialogType}
+                                dialogType={this.props.dialogType}
                                 bulkSelection={bulkSelection}
                                 results={results}
                                 total={total}
-                                onRequestSwitchDialogType={this._switchDialogType}
+                                onRequestSwitchDialogType={this.props.toggleFullscreen}
                                 onRequestMore={requestMore}
                                 onRequestDelete={this.props.delete}
                                 onRequestSearch={this._handleSearch}
@@ -162,14 +164,6 @@ class App extends React.Component {
 
     _handleRequestMore = () => {
         this.props.search(this.state.searchterm, this.props.results.length, this.sort, true)
-    }
-
-    _switchDialogType = () => {
-        this.setState(state => {
-            return {
-                dialogType: state.dialogType === 'dialog' ? 'overlay' : 'dialog'
-            }
-        })
     }
 
     _switchSortDirection = () => {
@@ -230,7 +224,7 @@ class App extends React.Component {
 
     _handleKeydown = (event) => {
         if (KeyCodes.getCharacterFromCode(event.keyCode) === 'f') {
-            this._switchDialogType()
+            this.props.toggleFullscreen()
         }
     }
 }
@@ -238,6 +232,7 @@ class App extends React.Component {
 App = connect(
     (state) => {
         return {
+            dialogType: state.dialog.fullscreen ? 'overlay' : 'dialog',
             total: state.search ? state.search.total : 0,
             results: state.search ? state.search.results : []
         }
@@ -264,13 +259,16 @@ App = connect(
                     }
                 }
 
-                dispatch(actions.search(query, Config.search.size, position || 0, more))
+                dispatch(searchActions.search(query, Config.search.size, position || 0, more))
             },
             subjectList() {
-                dispatch(actions.subjectList())
+                dispatch(searchActions.subjectList())
             },
             delete(id) {
-                dispatch(actions.deleteDocument(id))
+                dispatch(searchActions.deleteDocument(id))
+            },
+            toggleFullscreen() {
+                dispatch(toggleFullscreen())
             }
         }
     }
