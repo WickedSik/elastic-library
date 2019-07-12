@@ -2,10 +2,12 @@ import { all } from 'redux-saga/effects'
 
 import { saga as searchSaga, default as searchReducer } from './search'
 import { saga as playerSaga, default as playerReducer } from './player'
+import { saga as databaseSaga, default as databaseReducer } from './database'
 
 export const reducers = {
     search: searchReducer,
-    player: playerReducer
+    player: playerReducer,
+    database: databaseReducer
 }
 
 export default reducers
@@ -13,7 +15,8 @@ export default reducers
 export function* rootSaga() {
     yield all([
         ...searchSaga,
-        ...playerSaga
+        ...playerSaga,
+        ...databaseSaga
     ])
 }
 
