@@ -1,9 +1,9 @@
 import { set as _set } from 'lodash'
 
-export interface SearchResultHit {
+export type SearchResultHit {
     _id:string
     _source: {
-        checksum:string,
+        checksum:string
         file?: {
             path:string
         }
