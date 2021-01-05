@@ -18,7 +18,7 @@
         "@types/recursive-readdir": "^2.2.0",
         "@types/sharp": "^0.21.2",
         "@types/xml2js": "^0.4.3",
-        "axios": "^0.18.0",
+        "axios": "^0.21.1",
         "booru": "^0.4.0",
         "checksum": "^0.1.1",
         "cheerio": "^1.0.0-rc.2",
