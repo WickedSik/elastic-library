@@ -12,11 +12,7 @@ schema:
       filter:
         keyword_synonym_filter:
           type: synonym
-          synonyms:
-            - 'dickgirl,herm,futa,futanari,hermaphrodite => dickgirl'
-            - 'cum_in_ass,cum_in_pussy,cum_in_mouth,cum_in_nose,cum_while_penetrated => cum_inside'
-            - 'cum_on_balls,cum_on_butt,cum_on_perineum,cum_on_breasts,cum_on_face,cum_on_leg,cum_on_penis => cum_outside'
-            - 'cum_inside,cum_outside,cum_leaking,cum_splatter,cum_string,cum_inflation,cum_on_ground,cum_from_nose => cum'
+          synonyms: []
       analyzer:
         keyword_synonym_analyzer:
           tokenizer: standard
