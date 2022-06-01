@@ -50,7 +50,7 @@
         "recursive-readdir": "^2.2.2",
         "request": "^2.88.0",
         "run-electron": "^0.1.0",
-        "sharp": "^0.21.3",
+        "sharp": "^0.30.5",
         "sprintf-js": "^1.1.2",
         "thumbsupply": "^0.3.1",
         "wallhaven-api": "^0.2.2",
