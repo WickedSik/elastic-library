@@ -27,7 +27,7 @@
         "cross-env": "^5.2.0",
         "cross-fetch": "^3.0.0",
         "elasticsearch": "^15.1.1",
-        "electron": "4.0",
+        "electron": "15.5",
         "electron-rpc": "^2.0.1",
         "es6-booru": "^0.4.4",
         "exif": "^0.6.0",
