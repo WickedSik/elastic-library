@@ -38,7 +38,7 @@
         "jquery": "^3.3.1",
         "lodash": "^4.17.10",
         "migrate": "^1.6.2",
-        "moment": "^2.24.0",
+        "moment": "^2.29.4",
         "mz": "^2.7.0",
         "node-notifier": "^5.3.0",
         "node-vibrant": "^3.0.0",
